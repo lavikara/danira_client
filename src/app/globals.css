@@ -1,26 +1,275 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  HOW THEMING WORKS IN TAILWIND V4
+  ─────────────────────────────────────────────────────────────────
+  @theme inline { --color-X: var(--X); }
+    → Tailwind generates:  .bg-X { background-color: var(--color-X); }
+    → var(--color-X) resolves at runtime to var(--X)
+    → var(--X) is defined in :root (light) and overridden in .dark (dark)
+
+  If instead you write --color-X: #hex in @theme, Tailwind bakes in the
+  hex directly: .bg-X { background-color: #hex; } — no runtime switching.
+  That was the bug. This file fixes it.
+  ─────────────────────────────────────────────────────────────────
+*/
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ── Brand colours: never change per-theme, safe to hardcode ── */
+  --color-primary: #2563eb;
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-700: #1d4ed8;
+  --color-purple: #8b5cf6;
+  --color-green: #10b981;
+  --color-orange: #f59e0b;
+  --color-red: #ef4444;
+  --color-teal: #06b6d4;
+  --color-pink: #ec4899;
+  --color-indigo: #6366f1;
+
+  /* ── Semantic tokens: reference runtime vars so .dark works ── */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-t1: var(--t1);
+  --color-t2: var(--t2);
+  --color-t3: var(--t3);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+
+  /* Status chip bg/text: also runtime-switched in .dark */
+  --color-green-bg: var(--green-bg);
+  --color-green-text: var(--green-text);
+  --color-orange-bg: var(--orange-bg);
+  --color-orange-text: var(--orange-text);
+  --color-red-bg: var(--red-bg);
+  --color-red-text: var(--red-text);
+  --color-purple-bg: var(--purple-bg);
+  --color-purple-text: var(--purple-text);
+  --color-teal-bg: var(--teal-bg);
+  --color-teal-text: var(--teal-text);
+  --color-pink-bg: var(--pink-bg);
+  --color-pink-text: var(--pink-text);
+  --color-indigo-bg: var(--indigo-bg);
+  --color-indigo-text: var(--indigo-text);
+
+  /* Sidebar tokens: runtime-switched */
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-text-sub: var(--sidebar-text-sub);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-label: var(--sidebar-label);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────────────────────────
+   Runtime variables — Light mode
+───────────────────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --btn-bg: #2563eb;
+
+  /* Text */
+  --t1: #0f172a;
+  --t2: #475569;
+  --t3: #94a3b8;
+  --btn-t1: #e8edf5;
+
+  /* Borders */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  /* Status chips */
+  --green-bg: #ecfdf5;
+  --green-text: #065f46;
+  --orange-bg: #fffbeb;
+  --orange-text: #92400e;
+  --red-bg: #fef2f2;
+  --red-text: #991b1b;
+  --purple-bg: #f5f3ff;
+  --purple-text: #4c1d95;
+  --teal-bg: #ecfeff;
+  --teal-text: #164e63;
+  --pink-bg: #fdf2f8;
+  --pink-text: #831843;
+  --indigo-bg: #eef2ff;
+  --indigo-text: #3730a3;
+
+  /* Sidebar (shares surface in light mode) */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e2e8f0;
+  --sidebar-text: #0f172a;
+  --sidebar-text-sub: #64748b;
+  --sidebar-hover: rgba(15, 23, 42, 0.05);
+  --sidebar-label: #94a3b8;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.09), 0 16px 40px rgba(0, 0, 0, 0.11);
+  --shadow-sidebar: 2px 0 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Runtime variables — Dark mode
+   (applied when <html class="dark"> by the no-flash script)
+───────────────────────────────────────────────────────────────── */
+.dark {
+  /* Surfaces */
+  --bg: #0d1117;
+  --surface: #161b27;
+  --surface-2: #1e2535;
+  --btn-bg: #2563eb;
+
+  /* Text */
+  --t1: #e8edf5;
+  --t2: #8b95a8;
+  --t3: #4f5a6e;
+  --btn-t1: #e8edf5;
+
+  /* Borders */
+  --border: #252d3d;
+  --border-light: #1c2333;
+
+  /* Status chips — boosted contrast for dark */
+  --green-bg: #052e16;
+  --green-text: #4ade80;
+  --orange-bg: #2d1b00;
+  --orange-text: #fbbf24;
+  --red-bg: #2d0909;
+  --red-text: #f87171;
+  --purple-bg: #1e1040;
+  --purple-text: #c084fc;
+  --teal-bg: #042f2e;
+  --teal-text: #22d3ee;
+  --pink-bg: #2d0a1e;
+  --pink-text: #f472b6;
+  --indigo-bg: #1e1b4b;
+  --indigo-text: #a5b4fc;
+
+  /* Sidebar (matches surface in dark mode) */
+  --sidebar-bg: #161b27;
+  --sidebar-border: #252d3d;
+  --sidebar-text: #e8edf5;
+  --sidebar-text-sub: #5a6680;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-label: #3a4459;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-sidebar: 2px 0 16px rgba(0, 0, 0, 0.4);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Base
+───────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--t1);
+  font-family: var(--font-sans);
+  transition:
+    background-color 0.2s ease,
+    color 0.15s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Shadows (used via className, not Tailwind utility)
+───────────────────────────────────────────────────────────────── */
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+.shadow-card-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+.shadow-sidebar {
+  box-shadow: var(--shadow-sidebar);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Scrollbar
+───────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 99px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #252d3d;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Animations
+───────────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-up {
+  animation: fadeUp 0.26s ease;
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Timetable subject chip backgrounds
+   Separate from the badge status vars so we can tune opacity
+   independently without affecting badges elsewhere.
+───────────────────────────────────────────────────────────────── */
+:root {
+  --blue-chip-bg: #eff6ff;
+  --green-chip-bg: #ecfdf5;
+  --pink-chip-bg: #fdf2f8;
+  --purple-chip-bg: #f5f3ff;
+  --teal-chip-bg: #ecfeff;
+  --orange-chip-bg: #fffbeb;
+  --red-chip-bg: #fef2f2;
+}
+
+.dark {
+  --blue-chip-bg: rgba(37, 99, 235, 0.15);
+  --green-chip-bg: rgba(16, 185, 129, 0.15);
+  --pink-chip-bg: rgba(236, 72, 153, 0.15);
+  --purple-chip-bg: rgba(139, 92, 246, 0.15);
+  --teal-chip-bg: rgba(6, 182, 212, 0.15);
+  --orange-chip-bg: rgba(245, 158, 11, 0.15);
+  --red-chip-bg: rgba(239, 68, 68, 0.15);
 }
