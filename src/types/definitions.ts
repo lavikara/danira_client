@@ -7,15 +7,18 @@ interface SchoolFormData {
   country: string;
   state: string;
   phoneNumber: string;
+  isApproved?: boolean;
+  status?: string;
   termsConditions: boolean;
 }
 
 interface GroupFormData {
-  groupName: string | undefined;
+  groupName: string | null;
+  status?: string | null;
 }
 
 interface AdminFormData {
-  userName: string;
+  username: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -24,10 +27,23 @@ interface AdminFormData {
   address: string;
   gender: string;
   phoneNumber: string;
+  isVerified?: boolean;
+  status?: string;
+  role?: string;
 }
 
 export interface SignupFormData {
   schoolData: SchoolFormData;
   groupData: GroupFormData;
   adminData: AdminFormData;
+}
+
+export interface ResetPasswordFormData {
+  token: string;
+  newPassword: string;
+}
+
+export interface LoginFormData {
+  email: string;
+  password: string;
 }
