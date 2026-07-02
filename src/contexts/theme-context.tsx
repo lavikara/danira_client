@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { getItem ,setItem} from '@/utils/storage';
 
-type Theme = "light" | "dark";
+type Theme = 'light' | 'dark';
 
 interface ThemeContextValue {
   theme: Theme;
@@ -11,33 +12,34 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
-const STORAGE_KEY = "eduadmin-theme";
+const STORAGE_KEY = 'eduadmin-theme';
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
   // Single effect — runs once on mount to sync state from whatever
   // the no-flash inline script already applied to <html>.
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial: Theme = saved === "dark" || saved === "light"
-      ? saved
-      : prefersDark ? "dark" : "light";
+    const saved = getItem(STORAGE_KEY) as Theme | null;
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial: Theme =
+      saved === 'dark' || saved === 'light' ? saved : prefersDark ? 'dark' : 'light';
 
     setTheme(initial);
     // Apply class immediately in case the inline script missed it
-    document.documentElement.classList.toggle("dark", initial === "dark");
+    document.documentElement.classList.toggle('dark', initial === 'dark');
     setMounted(true);
   }, []);
 
   // Toggle: directly manipulate the DOM class and persist — no effect needed
   const toggleTheme = () => {
-    setTheme(prev => {
-      const next: Theme = prev === "dark" ? "light" : "dark";
-      document.documentElement.classList.toggle("dark", next === "dark");
-      try { localStorage.setItem(STORAGE_KEY, next); } catch (_) {}
+    setTheme((prev) => {
+      const next: Theme = prev === 'dark' ? 'light' : 'dark';
+      document.documentElement.classList.toggle('dark', next === 'dark');
+      try {
+        setItem(STORAGE_KEY, next);
+      } catch (_) {}
       return next;
     });
   };
@@ -51,6 +53,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme() {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
   return ctx;
 }
