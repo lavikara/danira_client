@@ -102,6 +102,45 @@
   --indigo-bg: #eef2ff;
   --indigo-text: #3730a3;
 
+  /* timetable */
+  --blue-chip-bg: #eff6ff;
+  --green-chip-bg: #ecfdf5;
+  --pink-chip-bg: #fdf2f8;
+  --purple-chip-bg: #f5f3ff;
+  --teal-chip-bg: #ecfeff;
+  --orange-chip-bg: #fffbeb;
+  --red-chip-bg: #fef2f2;
+
+  /* toast */
+  --edu-primary: #2563eb;
+  --edu-primary-50: #eff6ff;
+  --edu-primary-100: #dbeafe;
+  --edu-primary-700: #1d4ed8;
+
+  --edu-green: #10b981;
+  --edu-green-bg: #ecfdf5;
+  --edu-green-text: #065f46;
+
+  --edu-orange: #f59e0b;
+  --edu-orange-bg: #fffbeb;
+  --edu-orange-text: #92400e;
+
+  --edu-red: #ef4444;
+  --edu-red-bg: #fef2f2;
+  --edu-red-text: #991b1b;
+
+  --edu-teal: #06b6d4;
+  --edu-teal-bg: #ecfeff;
+  --edu-teal-text: #164e63;
+
+  /* Surface & typography (light) */
+  --toast-bg: #ffffff;
+  --toast-border: #e2e8f0;
+  --toast-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 16px 40px rgba(0, 0, 0, 0.1);
+  --toast-t1: #0f172a;
+  --toast-t2: #475569;
+  --toast-radius: 12px;
+
   /* Sidebar (shares surface in light mode) */
   --sidebar-bg: #ffffff;
   --sidebar-border: #e2e8f0;
@@ -152,6 +191,36 @@
   --pink-text: #f472b6;
   --indigo-bg: #1e1b4b;
   --indigo-text: #a5b4fc;
+
+  /* timetable */
+  --blue-chip-bg: rgba(37, 99, 235, 0.15);
+  --green-chip-bg: rgba(16, 185, 129, 0.15);
+  --pink-chip-bg: rgba(236, 72, 153, 0.15);
+  --purple-chip-bg: rgba(139, 92, 246, 0.15);
+  --teal-chip-bg: rgba(6, 182, 212, 0.15);
+  --orange-chip-bg: rgba(245, 158, 11, 0.15);
+  --red-chip-bg: rgba(239, 68, 68, 0.15);
+
+  /* toast */
+  --toast-bg: #1e293b;
+  --toast-border: #334155;
+  --toast-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.35);
+  --toast-t1: #f1f5f9;
+  --toast-t2: #94a3b8;
+
+  /* Soften the tinted backgrounds for dark */
+  --edu-primary-50: rgba(37, 99, 235, 0.15);
+  --edu-green-bg: rgba(16, 185, 129, 0.12);
+  --edu-orange-bg: rgba(245, 158, 11, 0.12);
+  --edu-red-bg: rgba(239, 68, 68, 0.12);
+  --edu-teal-bg: rgba(6, 182, 212, 0.12);
+
+  /* Lighten text on dark backgrounds */
+  --edu-green-text: #34d399;
+  --edu-orange-text: #fcd34d;
+  --edu-red-text: #f87171;
+  --edu-teal-text: #22d3ee;
+  --edu-primary-700: #93c5fd;
 
   /* Sidebar (matches surface in dark mode) */
   --sidebar-bg: #161b27;
@@ -249,27 +318,351 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
-/* ─────────────────────────────────────────────────────────────────
-   Timetable subject chip backgrounds
-   Separate from the badge status vars so we can tune opacity
-   independently without affecting badges elsewhere.
-───────────────────────────────────────────────────────────────── */
-:root {
-  --blue-chip-bg: #eff6ff;
-  --green-chip-bg: #ecfdf5;
-  --pink-chip-bg: #fdf2f8;
-  --purple-chip-bg: #f5f3ff;
-  --teal-chip-bg: #ecfeff;
-  --orange-chip-bg: #fffbeb;
-  --red-chip-bg: #fef2f2;
+/* Hide the password reveal button in Edge */
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
+  display: none !important;
 }
 
-.dark {
-  --blue-chip-bg: rgba(37, 99, 235, 0.15);
-  --green-chip-bg: rgba(16, 185, 129, 0.15);
-  --pink-chip-bg: rgba(236, 72, 153, 0.15);
-  --purple-chip-bg: rgba(139, 92, 246, 0.15);
-  --teal-chip-bg: rgba(6, 182, 212, 0.15);
-  --orange-chip-bg: rgba(245, 158, 11, 0.15);
-  --red-chip-bg: rgba(239, 68, 68, 0.15);
+/* For Chromium-based Edge */
+input[type='password']::-webkit-credentials-auto-fill-button {
+  visibility: hidden !important;
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* ─── TOASTER CONTAINER ──────────────────────────────────────────────────── */
+.toaster {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none; /* let clicks through the gap between toasts */
+}
+
+.toaster--top-right {
+  top: 24px;
+  right: 24px;
+}
+.toaster--top-left {
+  top: 24px;
+  left: 24px;
+}
+.toaster--top-center {
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.toaster--bottom-right {
+  bottom: 24px;
+  right: 24px;
+  flex-direction: column-reverse;
+}
+.toaster--bottom-left {
+  bottom: 24px;
+  left: 24px;
+  flex-direction: column-reverse;
+}
+.toaster--bottom-center {
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column-reverse;
+}
+
+/* ─── TOAST ──────────────────────────────────────────────────────────────── */
+.toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 18px 14px; /* bottom padding for progress bar */
+  border-radius: var(--toast-radius);
+  border: 1px solid var(--toast-border);
+  background: var(--toast-bg);
+  box-shadow: var(--toast-shadow);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  pointer-events: all;
+  cursor: default;
+
+  /* Enter state */
+  opacity: 0;
+  transform: translateX(16px) scale(0.97);
+  transition:
+    opacity 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease;
+}
+
+/* Left accent stripe */
+.toast::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: var(--toast-radius) 0 0 var(--toast-radius);
+}
+
+.toast--visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.toast--leaving {
+  opacity: 0;
+  transform: translateX(16px) scale(0.97);
+  pointer-events: none;
+}
+
+.toast:hover {
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 20px 48px rgba(0, 0, 0, 0.14);
+}
+
+/* ─── VARIANT COLOURS ────────────────────────────────────────────────────── */
+.toast--success {
+  background: color-mix(in srgb, var(--edu-green-bg) 60%, var(--toast-bg));
+  border-color: color-mix(in srgb, var(--edu-green) 25%, var(--toast-border));
+}
+.toast--success::before {
+  background: var(--edu-green);
+}
+.toast--success .toast__icon {
+  color: var(--edu-green);
+  background: var(--edu-green-bg);
+}
+
+.toast--error {
+  background: color-mix(in srgb, var(--edu-red-bg) 60%, var(--toast-bg));
+  border-color: color-mix(in srgb, var(--edu-red) 25%, var(--toast-border));
+}
+.toast--error::before {
+  background: var(--edu-red);
+}
+.toast--error .toast__icon {
+  color: var(--edu-red);
+  background: var(--edu-red-bg);
+}
+
+.toast--warning {
+  background: color-mix(in srgb, var(--edu-orange-bg) 60%, var(--toast-bg));
+  border-color: color-mix(in srgb, var(--edu-orange) 25%, var(--toast-border));
+}
+.toast--warning::before {
+  background: var(--edu-orange);
+}
+.toast--warning .toast__icon {
+  color: var(--edu-orange);
+  background: var(--edu-orange-bg);
+}
+
+.toast--info {
+  background: color-mix(in srgb, var(--edu-teal-bg) 60%, var(--toast-bg));
+  border-color: color-mix(in srgb, var(--edu-teal) 25%, var(--toast-border));
+}
+.toast--info::before {
+  background: var(--edu-teal);
+}
+.toast--info .toast__icon {
+  color: var(--edu-teal);
+  background: var(--edu-teal-bg);
+}
+
+.toast--primary {
+  background: color-mix(in srgb, var(--edu-primary-50) 60%, var(--toast-bg));
+  border-color: color-mix(in srgb, var(--edu-primary) 25%, var(--toast-border));
+}
+.toast--primary::before {
+  background: var(--edu-primary);
+}
+.toast--primary .toast__icon {
+  color: var(--edu-primary);
+  background: var(--edu-primary-50);
+}
+
+/* ─── ICON ───────────────────────────────────────────────────────────────── */
+.toast__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  /* colour set per-variant above */
+}
+
+/* ─── CONTENT ────────────────────────────────────────────────────────────── */
+.toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast__title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--toast-t1);
+  line-height: 1.35;
+  margin: 0 0 2px;
+}
+
+.toast__description {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--toast-t2);
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+
+.toast__action {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid currentColor;
+  background: transparent;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
+  line-height: 1;
+}
+.toast--success .toast__action {
+  color: var(--edu-green-text);
+}
+.toast--error .toast__action {
+  color: var(--edu-red-text);
+}
+.toast--warning .toast__action {
+  color: var(--edu-orange-text);
+}
+.toast--info .toast__action {
+  color: var(--edu-teal-text);
+}
+.toast--primary .toast__action {
+  color: var(--edu-primary-700);
+}
+
+.toast__action:hover {
+  opacity: 0.8;
+}
+
+/* ─── CLOSE BUTTON ───────────────────────────────────────────────────────── */
+.toast__close {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--toast-t2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  margin-top: 1px;
+  font-family: var(--font-sans);
+}
+
+.toast__close:hover {
+  background: color-mix(in srgb, var(--toast-border) 60%, transparent);
+  color: var(--toast-t1);
+}
+
+/* ─── PROGRESS BAR ───────────────────────────────────────────────────────── */
+.toast__progress-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--toast-border) 50%, transparent);
+  border-radius: 0 0 var(--toast-radius) var(--toast-radius);
+  overflow: hidden;
+}
+
+.toast__progress {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  transform-origin: left center;
+  animation: toast-progress linear forwards;
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.toast__progress--success {
+  background: var(--edu-green);
+}
+.toast__progress--error {
+  background: var(--edu-red);
+}
+.toast__progress--warning {
+  background: var(--edu-orange);
+}
+.toast__progress--info {
+  background: var(--edu-teal);
+}
+.toast__progress--primary {
+  background: var(--edu-primary);
+}
+
+/* ─── ACCESSIBILITY ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: opacity 0.15s ease;
+    transform: none !important;
+  }
+  .toast--visible {
+    opacity: 1;
+  }
+  .toast--leaving {
+    opacity: 0;
+  }
+  .toast__progress {
+    animation: none;
+    transform: scaleX(0);
+  }
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .toaster {
+    width: calc(100vw - 32px);
+    left: 16px !important;
+    right: 16px !important;
+    transform: none !important;
+  }
+  .toaster--top-right,
+  .toaster--top-left,
+  .toaster--top-center {
+    top: 16px;
+  }
+  .toaster--bottom-right,
+  .toaster--bottom-left,
+  .toaster--bottom-center {
+    bottom: 16px;
+  }
 }
