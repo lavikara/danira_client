@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NAV_SECTIONS } from '@/lib/nav-config';
 import { useSidebar } from '@/contexts/sidebar-context';
+import { useRouter } from 'next/navigation';
 // import { logoutAction } from '@/app/(auth)/actions/authActions';
 import { cn } from '@/utils/helpers';
 
@@ -11,11 +12,15 @@ export function Sidebar() {
   const { collapsed, toggleSidebar, mobileOpen, setMobileOpen } = useSidebar();
   const pathname = usePathname();
 
+  const router = useRouter();
+
   const handleLogout = async () => {
-    const logout = await fetch('/api/auth/logout', {
+    const res = await fetch('/api/auth/logout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
+    const logout = await res.json();
+    if (logout.success) router.replace('/login');
   };
 
   return (
