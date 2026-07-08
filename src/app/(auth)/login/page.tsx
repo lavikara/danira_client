@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginFormData } from '@/types/definitions';
-import { loginAction } from '../actions/authActions';
+// import { loginAction } from '../actions/authActions';
 import { useToastContext } from '@/contexts/toast-context';
 import { AuthShell, AuthInput, AuthButton, AuthDivider } from '@/components/auth/auth-shell';
 
@@ -25,7 +25,6 @@ export default function LoginPage() {
     });
 
     const signedIn = await res.json();
-    console.log(signedIn);
 
     // const signedIn = await loginAction(loginFormData);
     if (signedIn.success) {
@@ -33,7 +32,7 @@ export default function LoginPage() {
       success('Login successful', {
         description: `Welcome back, ${signedIn.data.user.firstName} ${signedIn.data.user.lastName}.`,
       });
-      router.push('/');
+      router.replace('/');
     } else {
       setLoading(false);
       error('Login failed', {

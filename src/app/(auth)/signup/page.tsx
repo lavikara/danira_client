@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import countryRegionData from '@/utils/countryRegionData.js';
-import { signupAction } from '../actions/authActions';
+import { useFormState } from 'react-dom';
+// import { signupAction } from '../actions/authActions';
 import { cn } from '@/utils/helpers';
 import { useToastContext } from '@/contexts/toast-context';
 import { generateUsernames } from '@/utils/helpers';
@@ -125,7 +126,15 @@ export default function SignupPage() {
       signupFormData.groupData.groupName = null;
     }
     setLoading(true);
-    const signedUp = await signupAction(signupFormData);
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(signupFormData),
+    });
+
+    const signedUp = await res.json();
+    console.log(signedUp);
+    // const signedUp = await signupAction(signupFormData);
     if (signedUp.success) {
       setLoading(false);
       setDone(true);

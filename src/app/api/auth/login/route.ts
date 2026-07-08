@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
-  console.log(email, password);
   // 1. Call your Express backend to authenticate
   const expressRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
     method: 'POST',
