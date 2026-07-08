@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AuthShell, AuthButton, AuthInput, AuthPageToast } from '@/components/auth/auth-shell';
 import { ForgotPasswordFormData } from '@/types/definitions';
-import { forgotPasswordAction } from '../actions/authActions';
+// import { forgotPasswordAction } from '../actions/authActions';
 import { useToastContext } from '@/contexts/toast-context';
 
 export default function ResetPasswordPage() {
@@ -17,14 +17,21 @@ export default function ResetPasswordPage() {
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     setLoading(true);
-    const response = await forgotPasswordAction({ email } as ForgotPasswordFormData);
-    if (response.success) {
+    const res = await fetch('/api/auth/forgotPassword', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const parsedRes = await res.json();
+    // const response = await forgotPasswordAction({ email } as ForgotPasswordFormData);
+    if (parsedRes.success) {
       setLoading(false);
       setDone(true);
     } else {
       setLoading(false);
       error('Request failed', {
-        description: response.message,
+        description: parsedRes.message,
       });
     }
   };

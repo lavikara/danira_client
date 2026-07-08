@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AuthShell, AuthButton, AuthPageToast } from '@/components/auth/auth-shell';
-import { resetPasswordAction } from '../actions/authActions';
+// import { resetPasswordAction } from '../actions/authActions';
 import { ResetPasswordFormData } from '@/types/definitions';
 import { useToastContext } from '@/contexts/toast-context';
 import { cn } from '@/utils/helpers';
@@ -58,14 +58,21 @@ function ResetPasswordContent() {
       newPassword: newPw,
     };
     setLoading(true);
-    const passwordReset = await resetPasswordAction(payload);
-    if (passwordReset.success) {
+    const res = await fetch('/api/auth/resetPassword', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const parsedRes = await res.json();
+    // const passwordReset = await resetPasswordAction(payload);
+    if (parsedRes.success) {
       setLoading(false);
       setDone(true);
     } else {
       setLoading(false);
       error('Password reset failed', {
-        description: passwordReset.message,
+        description: parsedRes.message,
       });
     }
   };
