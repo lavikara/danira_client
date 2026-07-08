@@ -55,7 +55,7 @@ export function AuthShell({
             backgroundColor: 'var(--surface)',
             color: 'var(--t2)',
           }}
-          className="flex h-9 w-9 items-center justify-center rounded-[9px] border text-[15px] transition-all hover:border-primary hover:text-primary"
+          className="flex h-9 w-9 items-center justify-center rounded-[9px] border text-[15px] transition-all hover:border-primary hover:text-primary cursor-pointer"
         >
           {!mounted ? (
             <i className="bi bi-moon" />
@@ -111,7 +111,7 @@ export function AuthInput({
   onToggle,
   onChange,
   readOnly,
-  required = false,
+  required = true,
 }: {
   label: string;
   id: string;
@@ -120,7 +120,7 @@ export function AuthInput({
   showToggle?: boolean;
   autoComplete?: string;
   hint?: string;
-  value?: string;
+  value?: string | null;
   onToggle?: (data: boolean) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
@@ -141,7 +141,7 @@ export function AuthInput({
         type={type}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        value={value}
+        value={value ?? ''}
         onChange={onChange}
         required={required}
         readOnly={readOnly}
@@ -154,7 +154,7 @@ export function AuthInput({
           'w-full rounded-[9px] border-[1.5px] px-3.5 py-2.5 text-[13.5px] placeholder:text-t3',
           'outline-none transition-all duration-150',
           ' focus:shadow-[0_0_0_3px_rgba(37,99,235,.1)]',
-          readOnly && 'cursor-default opacity-70',
+          readOnly && 'cursor-not-allowed',
         )}
       />
       {showToggle && (
@@ -166,7 +166,7 @@ export function AuthInput({
           }}
           className={
             hint
-              ? 'absolute bottom-10 right-4 bi bi-toggle-off cursor-pointer'
+              ? 'absolute bottom-6 right-4 bi bi-toggle-off cursor-pointer'
               : 'absolute bottom-2 right-4 bi bi-toggle-off cursor-pointer'
           }
           onClick={() => onToggle?.(false)}
@@ -190,7 +190,7 @@ export function AuthSelectInput({
   hint,
   showToggle = false,
   showCaret = true,
-  required = false,
+  required = true,
   value,
   onToggle,
   onChange,
@@ -282,6 +282,7 @@ export function AuthButton({
   children,
   type = 'submit',
   className,
+  loading = false,
   onClick,
   ghost = false,
 }: {
@@ -289,11 +290,13 @@ export function AuthButton({
   type?: 'submit' | 'button';
   className?: string;
   onClick?: () => void;
+  loading?: boolean;
   ghost?: boolean;
 }) {
   return (
     <button
       type={type}
+      disabled={loading}
       onClick={onClick}
       style={{
         backgroundColor: ghost ? 'transparent' : 'var(--btn-bg)',
@@ -301,12 +304,52 @@ export function AuthButton({
         borderColor: ghost ? 'var(--border)' : 'transparent',
       }}
       className={cn(
-        'w-full rounded-[9px] border-[1.5px] text-[14px] font-semibold transition-all duration-300 hover:bg-transparent! hover:text-primary! hover:shadow-[0_3px_12px_rgba(37,99,235,.3)] cursor-pointer py-2.5 mt-2',
-        ghost ? ' bg-transparent hover:text-primary!' : '',
+        'w-full flex justify-center rounded-[9px] border-[1.5px] text-[14px] font-semibold transition-all duration-300 enabled:hover:bg-transparent! hover:border-primary! enabled:hover:text-primary! enabled:hover:shadow-[0_3px_12px_rgba(37,99,235,.3)] cursor-pointer py-2.5 mt-2',
+        ghost ? 'shadow-none! bg-transparent  hover:text-primary!' : '',
+        loading ? 'cursor-not-allowed!' : '',
         className,
       )}
     >
-      {children}
+      {loading && (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="20" height="20">
+          <g fill="currentColor" stroke="currentColor" strokeWidth="15">
+            <rect width="30" height="30" x="125" y="45">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                calcMode="spline"
+                dur="2"
+                values="0 0;0 80;0 80;0 80;-80 80;"
+                keySplines=".5 0 .5 1;.5 0 .5 1;.5 0 .5 1;.5 0 .5 1"
+                repeatCount="indefinite"
+              ></animateTransform>
+            </rect>
+            <rect width="30" height="30" x="45" y="45">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                calcMode="spline"
+                dur="2"
+                values="0 0;0 0;80 0;80 0;80 0;"
+                keySplines=".5 0 .5 1;.5 0 .5 1;.5 0 .5 1;.5 0 .5 1"
+                repeatCount="indefinite"
+              ></animateTransform>
+            </rect>
+            <rect width="30" height="30" x="45" y="125">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                calcMode="spline"
+                dur="2"
+                values="0 0;0 0 ;0 0;0 -80;0 -80;"
+                keySplines=".5 0 .5 1;.5 0 .5 1;.5 0 .5 1;.5 0 .5 1"
+                repeatCount="indefinite"
+              ></animateTransform>
+            </rect>
+          </g>
+        </svg>
+      )}
+      {!loading && children}
     </button>
   );
 }
@@ -320,5 +363,43 @@ export function AuthDivider({ label = 'or' }: { label?: string }) {
       </span>
       <div style={{ backgroundColor: 'var(--border)' }} className="h-px flex-1" />
     </div>
+  );
+}
+
+interface CtaButton {
+  href: string;
+  title: string;
+}
+
+interface AuthPageToastProps {
+  title: string;
+  subtitle: string;
+  message: string;
+  cta: CtaButton;
+}
+
+export function AuthPageToast({ title, subtitle, message, cta }: AuthPageToastProps) {
+  return (
+    <AuthShell title={title} subtitle={subtitle}>
+      <div className="flex flex-col items-center gap-5 py-2">
+        <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-green/10">
+          <i className="bi bi-check2-circle text-[38px] text-green" />
+        </div>
+        <div className="w-full rounded-[9px] border border-dashed border-green/30 bg-green/5 px-4 py-3 text-center">
+          <p className="text-[12.5px] text-green-text">{message}</p>
+        </div>
+        <Link
+          href={cta.href}
+          className={cn(
+            'flex w-full items-center justify-center gap-2 rounded-[9px] bg-primary py-2.5',
+            'text-[14px] font-bold text-white shadow-[0_3px_12px_rgba(37,99,235,.3)]',
+            'transition-all hover:-translate-y-px hover:bg-primary-700',
+          )}
+        >
+          <i className="bi bi-box-arrow-in-right" />
+          {cta.title}
+        </Link>
+      </div>
+    </AuthShell>
   );
 }

@@ -1,21 +1,29 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { NAV_SECTIONS } from "@/lib/nav-config";
-import { useSidebar } from "@/contexts/sidebar-context";
-import { cn } from "@/utils/helpers";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { NAV_SECTIONS } from '@/lib/nav-config';
+import { useSidebar } from '@/contexts/sidebar-context';
+// import { logoutAction } from '@/app/(auth)/actions/authActions';
+import { cn } from '@/utils/helpers';
 
 export function Sidebar() {
   const { collapsed, toggleSidebar, mobileOpen, setMobileOpen } = useSidebar();
   const pathname = usePathname();
+
+  const handleLogout = async () => {
+    const logout = await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
 
   return (
     <>
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-[150] bg-black/40 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-150 bg-black/40 backdrop-blur-sm md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -23,23 +31,23 @@ export function Sidebar() {
       {/* ── Sidebar panel ── */}
       <aside
         style={{
-          backgroundColor: "var(--sidebar-bg)",
-          borderRightColor: "var(--sidebar-border)",
+          backgroundColor: 'var(--sidebar-bg)',
+          borderRightColor: 'var(--sidebar-border)',
         }}
         className={cn(
-          "fixed top-0 left-0 z-[200] flex h-screen flex-col",
-          "border-r shadow-sidebar",
+          'fixed top-0 left-0 z-200 flex h-screen flex-col',
+          'border-r shadow-sidebar',
           /* No overflow-hidden here — it was clipping the toggle button */
-          "transition-[width,transform] duration-300 ease-in-out",
-          collapsed ? "w-[68px]" : "w-[260px]",
-          "md:translate-x-0",
-          mobileOpen ? "translate-x-0" : "-translate-x-full",
+          'transition-[width,transform] duration-300 ease-in-out',
+          collapsed ? 'w-17' : 'w-65',
+          'md:translate-x-0',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
         {/* ── Logo header ── */}
         <div
-          style={{ borderBottomColor: "var(--sidebar-border)" }}
-          className="relative flex h-[68px] shrink-0 items-center border-b px-3 overflow-hidden"
+          style={{ borderBottomColor: 'var(--sidebar-border)' }}
+          className="relative flex h-17 shrink-0 items-center border-b px-3 overflow-hidden"
         >
           {/* Mortarboard — always visible */}
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-[18px] text-white shadow-[0_2px_8px_rgba(37,99,235,.35)]">
@@ -49,18 +57,18 @@ export function Sidebar() {
           {/* Brand text — fades/slides out when collapsed */}
           <div
             className={cn(
-              "ml-2.5 min-w-0 transition-all duration-300",
-              collapsed ? "w-0 opacity-0" : "w-[152px] opacity-100",
+              'ml-2.5 min-w-0 transition-all duration-300',
+              collapsed ? 'w-0 opacity-0' : 'w-30 opacity-100',
             )}
           >
             <p
-              style={{ color: "var(--sidebar-text)" }}
+              style={{ color: 'var(--sidebar-text)' }}
               className="truncate text-[15px] font-bold tracking-tight"
             >
               EduAdmin Pro
             </p>
             <p
-              style={{ color: "var(--sidebar-label)" }}
+              style={{ color: 'var(--sidebar-label)' }}
               className="truncate text-[9.5px] font-medium uppercase tracking-widest"
             >
               Management System
@@ -73,10 +81,10 @@ export function Sidebar() {
           {NAV_SECTIONS.map((section) => (
             <div key={section.label} className="mb-1">
               <div
-                style={{ color: "var(--sidebar-label)" }}
+                style={{ color: 'var(--sidebar-label)' }}
                 className={cn(
-                  "mb-0.5 px-2 pt-2.5 pb-0.5 text-[9.5px] font-bold uppercase tracking-[1.4px] whitespace-nowrap transition-all duration-200",
-                  collapsed && "h-0 overflow-hidden py-0 opacity-0",
+                  'mb-0.5 px-2 pt-2.5 pb-0.5 text-[9.5px] font-bold uppercase tracking-[1.4px] whitespace-nowrap transition-all duration-200',
+                  collapsed && 'h-0 overflow-hidden py-0 opacity-0',
                 )}
               >
                 {section.label}
@@ -91,37 +99,27 @@ export function Sidebar() {
                     title={item.label}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      "group mb-0.5 flex items-center gap-2.5 rounded-[9px] px-[10px] py-[9px]",
-                      "transition-all duration-150",
+                      'group mb-0.5 flex items-center gap-2.5 rounded-[9px] px-2.5 py-2.25',
+                      'transition-all duration-150',
                       active
-                        ? "bg-primary shadow-[0_2px_10px_rgba(37,99,235,.28)]"
-                        : "hover:bg-[var(--sidebar-hover)]",
+                        ? 'bg-primary shadow-[0_2px_10px_rgba(37,99,235,.28)]'
+                        : 'hover:bg-sidebar-hover',
                     )}
                   >
                     <i
-                      style={
-                        active
-                          ? { color: "#fff" }
-                          : { color: "var(--sidebar-text-sub)" }
-                      }
+                      style={active ? { color: '#fff' } : { color: 'var(--sidebar-text-sub)' }}
                       className={cn(
                         item.icon,
-                        "w-5 shrink-0 text-center text-[16px] transition-colors duration-150",
-                        !active && "group-hover:!text-[var(--sidebar-text)]",
+                        'w-5 shrink-0 text-center text-[16px] transition-colors duration-150',
+                        !active && 'group-hover:text-sidebar-text!',
                       )}
                     />
                     <span
-                      style={
-                        active
-                          ? { color: "#fff" }
-                          : { color: "var(--sidebar-text-sub)" }
-                      }
+                      style={active ? { color: '#fff' } : { color: 'var(--sidebar-text-sub)' }}
                       className={cn(
-                        "flex-1 truncate text-[13px] font-medium transition-all duration-200",
-                        !active && "group-hover:!text-[var(--sidebar-text)]",
-                        collapsed
-                          ? "w-0 overflow-hidden opacity-0"
-                          : "opacity-100",
+                        'flex-1 truncate text-[13px] font-medium transition-all duration-200',
+                        !active && 'group-hover:text-sidebar-text!',
+                        collapsed ? 'w-0 overflow-hidden opacity-0' : 'opacity-100',
                       )}
                     >
                       {item.label}
@@ -130,10 +128,8 @@ export function Sidebar() {
                     {item.badge && !collapsed && (
                       <span
                         className={cn(
-                          "shrink-0 rounded-full px-1.5 py-px text-[10px] font-bold",
-                          active
-                            ? "bg-white/25 text-white"
-                            : "bg-primary/10 text-primary",
+                          'shrink-0 rounded-full px-1.5 py-px text-[10px] font-bold',
+                          active ? 'bg-white/25 text-white' : 'bg-primary/10 text-primary',
                         )}
                       >
                         {item.badge}
@@ -147,42 +143,41 @@ export function Sidebar() {
         </nav>
 
         {/* ── User footer ── */}
-        <div
-          style={{ borderTopColor: "var(--sidebar-border)" }}
-          className="shrink-0 border-t p-2"
-        >
-          <div className="flex items-center gap-2.5 rounded-[9px] px-[10px] py-2 transition-colors hover:bg-[var(--sidebar-hover)]">
-            <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-primary to-purple text-xs font-bold text-white">
+        <div style={{ borderTopColor: 'var(--sidebar-border)' }} className="shrink-0 border-t p-2">
+          <div className="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 transition-colors hover:bg-sidebar-hover">
+            <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[9px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">
               PA
             </div>
             <div
               className={cn(
-                "min-w-0 transition-all duration-200",
-                collapsed ? "w-0 overflow-hidden opacity-0" : "opacity-100",
+                'min-w-0 transition-all duration-200',
+                collapsed ? 'w-0 overflow-hidden opacity-0' : 'opacity-100',
               )}
             >
               <p
-                style={{ color: "var(--sidebar-text)" }}
+                style={{ color: 'var(--sidebar-text)' }}
                 className="truncate text-[13px] font-semibold"
               >
                 Priya Adeyemi
               </p>
-              <p
-                style={{ color: "var(--sidebar-label)" }}
-                className="text-[11px]"
-              >
+              <p style={{ color: 'var(--sidebar-label)' }} className="text-[11px]">
                 Principal
               </p>
             </div>
           </div>
 
-          <button className="mt-0.5 flex w-full items-center gap-2.5 rounded-[9px] px-[10px] py-2 text-left transition-colors hover:bg-red/[0.08]">
+          <button
+            className="mt-0.5 flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-left transition-colors hover:bg-red/8 cursor-pointer"
+            onClick={() => {
+              handleLogout();
+            }}
+          >
             <i className="bi bi-box-arrow-right w-5 shrink-0 text-center text-[16px] text-red/60" />
             <span
-              style={{ color: "var(--sidebar-text-sub)" }}
+              style={{ color: 'var(--sidebar-text-sub)' }}
               className={cn(
-                "truncate text-[13px] transition-all duration-200",
-                collapsed ? "w-0 overflow-hidden opacity-0" : "opacity-100",
+                'truncate text-[13px] transition-all duration-200',
+                collapsed ? 'w-0 overflow-hidden opacity-0' : 'opacity-100',
               )}
             >
               Log Out
@@ -196,23 +191,23 @@ export function Sidebar() {
           Positioned fixed, tracks the sidebar width via CSS transition.          */}
       <button
         onClick={toggleSidebar}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         style={{
-          backgroundColor: "var(--sidebar-bg)",
-          borderColor: "var(--sidebar-border)",
-          color: "var(--sidebar-text-sub)",
+          backgroundColor: 'var(--sidebar-bg)',
+          borderColor: 'var(--sidebar-border)',
+          color: 'var(--sidebar-text-sub)',
           /* Sits exactly on the right border of the sidebar */
-          left: collapsed ? "calc(68px - 14px)" : "calc(260px - 14px)",
+          left: collapsed ? 'calc(68px - 14px)' : 'calc(260px - 14px)',
         }}
         className={cn(
           /* Hidden on mobile (sidebar is off-canvas there, toggle not needed) */
-          "fixed top-[34px] z-[201] -translate-y-1/2",
-          "hidden md:flex",
-          "h-7 w-7 items-center justify-center",
-          "rounded-full border-2 shadow-md",
-          "transition-[left] duration-300 ease-in-out",
-          "hover:border-primary hover:text-primary hover:bg-[var(--surface)]",
-          collapsed && "rotate-180",
+          'fixed top-8.5 z-201 -translate-y-1/2',
+          'hidden md:flex',
+          'h-7 w-7 items-center justify-center',
+          'rounded-full border-2 shadow-md',
+          'transition-[left] duration-300 ease-in-out',
+          'hover:border-primary hover:text-primary hover:bg-surface',
+          collapsed && 'rotate-180',
         )}
       >
         <i className="bi bi-chevron-left text-[12px] font-bold" />

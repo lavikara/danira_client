@@ -5,8 +5,10 @@ import ClientRouteGuard from '@/components/auth/client-route-guard';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <ClientRouteGuard>{children}</ClientRouteGuard>
-    </AuthProvider>
+    // <AuthProvider>
+    //   <ClientRouteGuard>
+    { children }
+    //     </ClientRouteGuard>
+    // </AuthProvider>
   );
 }

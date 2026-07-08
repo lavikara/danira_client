@@ -19,10 +19,14 @@ export default function ClientRouteGuard({ children }: { children: React.ReactNo
     ) {
       router.replace('/login');
     }
-    if (!isLoading && isAuthenticated) {
+    if (
+      !isLoading &&
+      isAuthenticated &&
+      ['/forgot-password', '/signup', '/reset-password', '/login'].includes(pathname)
+    ) {
       router.replace('/');
     }
-  }, [isAuthenticated, isLoading, pathname, router]);
+  }, [isAuthenticated, isLoading, pathname]);
 
   if (isLoading) {
     setTimeout(() => {

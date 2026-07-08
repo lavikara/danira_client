@@ -1,35 +1,34 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import { PAGE_META } from "@/lib/nav-config";
-import { useSidebar } from "@/contexts/sidebar-context";
-import { useTheme } from "@/contexts/theme-context";
-import { cn } from "@/utils/helpers";
+import { usePathname } from 'next/navigation';
+import { PAGE_META } from '@/lib/nav-config';
+import { useSidebar } from '@/contexts/sidebar-context';
+import { useTheme } from '@/contexts/theme-context';
+import { cn } from '@/utils/helpers';
 
 export function Topbar() {
   const { collapsed, setMobileOpen } = useSidebar();
   const { theme, toggleTheme, mounted } = useTheme();
   const pathname = usePathname();
-  const meta = PAGE_META[pathname] ?? { title: "EduAdmin Pro", subtitle: "" };
-
+  const meta = PAGE_META[pathname] ?? { title: 'EduAdmin Pro', subtitle: '' };
   return (
     <header
       style={{
-        backgroundColor: "var(--surface)",
-        borderBottomColor: "var(--border)",
-        color: "var(--t1)",
+        backgroundColor: 'var(--surface)',
+        borderBottomColor: 'var(--border)',
+        color: 'var(--t1)',
       }}
       className={cn(
-        "fixed top-0 right-0 left-0 z-[100] flex h-[68px] items-center gap-3.5",
-        "border-b px-4 sm:px-6",
-        "transition-[left] duration-300 ease-in-out",
-        collapsed ? "md:left-[68px]" : "md:left-[260px]",
+        'fixed top-0 right-0 left-0 z-100 flex h-17 items-center gap-3.5',
+        'border-b px-4 sm:px-6',
+        'transition-[left] duration-300 ease-in-out',
+        collapsed ? 'md:left-17' : 'md:left-65',
       )}
     >
       {/* Mobile hamburger */}
       <button
-        style={{ color: "var(--t2)" }}
-        className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-[var(--surface-2)] hover:!text-[var(--t1)] md:hidden"
+        style={{ color: 'var(--t2)' }}
+        className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-surface-2 hover:text-t1! md:hidden"
         onClick={() => setMobileOpen(true)}
         aria-label="Open menu"
       >
@@ -38,39 +37,33 @@ export function Topbar() {
 
       {/* Page title */}
       <div className="min-w-0">
-        <h2
-          style={{ color: "var(--t1)" }}
-          className="truncate text-[15px] font-bold leading-tight"
-        >
+        <h2 style={{ color: 'var(--t1)' }} className="truncate text-[15px] font-bold leading-tight">
           {meta.title}
         </h2>
-        <span
-          style={{ color: "var(--t3)" }}
-          className="hidden text-[11.5px] sm:block"
-        >
+        <span style={{ color: 'var(--t3)' }} className="hidden text-[11.5px] sm:block">
           {meta.subtitle}
         </span>
       </div>
 
       {/* Search */}
-      <div className="relative ml-2 hidden max-w-[340px] flex-1 lg:block">
+      <div className="relative ml-2 hidden max-w-85 flex-1 lg:block">
         <i
-          style={{ color: "var(--t3)" }}
+          style={{ color: 'var(--t3)' }}
           className="bi bi-search absolute top-1/2 left-3 -translate-y-1/2 text-[14px]"
         />
         <input
           type="text"
           placeholder="Search students, staff, classes…"
           style={{
-            backgroundColor: "var(--bg)",
-            borderColor: "var(--border)",
-            color: "var(--t1)",
+            backgroundColor: 'var(--bg)',
+            borderColor: 'var(--border)',
+            color: 'var(--t1)',
           }}
           className={cn(
-            "w-full rounded-[10px] border-[1.5px]",
-            "py-2 pl-9 pr-3.5 text-[13px] placeholder:text-[var(--t3)]",
-            "outline-none transition-all duration-150",
-            "focus:border-primary focus:shadow-[0_0_0_3px_rgba(37,99,235,.12)]",
+            'w-full rounded-[10px] border-[1.5px]',
+            'py-2 pl-9 pr-3.5 text-[13px] placeholder:text-t3',
+            'outline-none transition-all duration-150',
+            'focus:border-primary focus:shadow-[0_0_0_3px_rgba(37,99,235,.12)]',
           )}
         />
       </div>
@@ -88,29 +81,25 @@ export function Topbar() {
         </IconBtn>
 
         <div
-          style={{ backgroundColor: "var(--border)" }}
-          className="mx-1.5 hidden h-[22px] w-px sm:block"
+          style={{ backgroundColor: 'var(--border)' }}
+          className="mx-1.5 hidden h-5.5 w-px sm:block"
         />
 
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          aria-label={
-            mounted && theme === "dark"
-              ? "Switch to light mode"
-              : "Switch to dark mode"
-          }
+          aria-label={mounted && theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           style={{
-            backgroundColor: "var(--bg)",
-            borderColor: "var(--border)",
-            color: "var(--t2)",
+            backgroundColor: 'var(--bg)',
+            borderColor: 'var(--border)',
+            color: 'var(--t2)',
           }}
-          className="relative flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border-[1.5px] text-[17px] transition-all duration-150 hover:border-primary hover:text-primary"
+          className="relative flex h-9.5 w-9.5 items-center justify-center rounded-[10px] border-[1.5px] text-[17px] transition-all duration-150 hover:border-primary hover:text-primary cursor-pointer"
         >
           {/* Show a stable placeholder until mounted to avoid hydration mismatch */}
           {!mounted ? (
             <i className="bi bi-moon" />
-          ) : theme === "dark" ? (
+          ) : theme === 'dark' ? (
             <i className="bi bi-sun" />
           ) : (
             <i className="bi bi-moon" />
@@ -118,19 +107,19 @@ export function Topbar() {
         </button>
 
         {/* User chip */}
-        <div className="ml-1 hidden cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 py-1.5 transition-colors hover:bg-[var(--surface-2)] sm:flex">
+        <div className="ml-1 hidden cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 py-1.5 transition-colors hover:bg-surface-2 sm:flex">
           <div className="text-right">
             <p
-              style={{ color: "var(--t1)" }}
+              style={{ color: 'var(--t1)' }}
               className="text-[13px] font-semibold whitespace-nowrap"
             >
               Priya Adeyemi
             </p>
-            <p style={{ color: "var(--t3)" }} className="text-[11px]">
+            <p style={{ color: 'var(--t3)' }} className="text-[11px]">
               Principal
             </p>
           </div>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-primary to-purple text-xs font-bold text-white">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">
             PA
           </div>
         </div>
@@ -151,12 +140,12 @@ function IconBtn({
   return (
     <button
       aria-label={label}
-      style={{ color: "var(--t2)" }}
-      className="relative flex h-[38px] w-[38px] items-center justify-center rounded-[10px] text-[18px] transition-colors duration-150 hover:bg-[var(--surface-2)] hover:!text-[var(--t1)]"
+      style={{ color: 'var(--t2)' }}
+      className="relative flex h-9.5 w-9.5 items-center justify-center rounded-[10px] text-[18px] transition-colors duration-150 hover:bg-surface-2 hover:text-t1!"
     >
       {children}
       {badge !== undefined && (
-        <span className="absolute top-1.5 right-1.5 flex h-[15px] w-[15px] items-center justify-center rounded-full border-2 border-[var(--surface)] bg-red text-[8.5px] font-bold text-white">
+        <span className="absolute top-1.5 right-1.5 flex h-3.75 w-3.75 items-center justify-center rounded-full border-2 border-surface bg-red text-[8.5px] font-bold text-white">
           {badge}
         </span>
       )}

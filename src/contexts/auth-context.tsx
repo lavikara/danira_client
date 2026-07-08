@@ -9,35 +9,20 @@ type AuthContextType = {
   isLoading: boolean;
 };
 
-type AuthProviderProps = {
-  children: React.ReactNode;
-  enabled?: boolean;
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children, enabled = true }: AuthProviderProps) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(enabled);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!enabled) {
-      setIsLoading(false);
-      return;
-    }
-
     const token = getItem('authToken');
 
     if (token) {
       setIsAuthenticated(true);
     }
-
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, [enabled]);
+    setIsLoading(false);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, isLoading }}>{children}</AuthContext.Provider>

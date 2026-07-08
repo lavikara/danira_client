@@ -1,12 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import authApi from '@/app/api/auth/authApi';
 import { useState, useEffect } from 'react';
 import countryRegionData from '@/utils/countryRegionData.js';
+import { signupAction } from '../actions/authActions';
 import { cn } from '@/utils/helpers';
+import { useToastContext } from '@/contexts/toast-context';
 import { generateUsernames } from '@/utils/helpers';
-import { AuthShell, AuthInput, AuthSelectInput, AuthButton } from '@/components/auth/auth-shell';
+import {
+  AuthShell,
+  AuthInput,
+  AuthSelectInput,
+  AuthButton,
+  AuthPageToast,
+} from '@/components/auth/auth-shell';
 import { SignupFormData } from '@/types/definitions';
 
 const STEPS = ['School Info', 'Admin Info'] as const;
@@ -20,6 +27,8 @@ const gender = ['FEMALE', 'MALE'];
 export default function SignupPage() {
   const [step, setStep] = useState(0);
   const [enterUserName, setEnterUserName] = useState(false);
+  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [suggestUserName, setSuggestUserName] = useState<string[]>([]);
   const [signupFormData, setFormData] = useState<SignupFormData>({
     schoolData: {
@@ -37,7 +46,7 @@ export default function SignupPage() {
       groupName: '',
     },
     adminData: {
-      userName: '',
+      username: '',
       email: '',
       firstName: '',
       lastName: '',
@@ -48,6 +57,8 @@ export default function SignupPage() {
       phoneNumber: '',
     },
   });
+
+  const { error } = useToastContext();
 
   const countryList = () => {
     const list: string[] = [];
@@ -109,10 +120,21 @@ export default function SignupPage() {
     setEnterUserName(data);
   };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    console.log(signupFormData);
-    const response = await authApi.signup(signupFormData);
-    console.log(response);
+  const handleSubmit = async () => {
+    if (signupFormData.schoolData.setup === 'SINGLE') {
+      signupFormData.groupData.groupName = null;
+    }
+    setLoading(true);
+    const signedUp = await signupAction(signupFormData);
+    if (signedUp.success) {
+      setLoading(false);
+      setDone(true);
+    } else {
+      setLoading(false);
+      error('Signup failed', {
+        description: `${signedUp.message} school already exists.`,
+      });
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -186,12 +208,12 @@ export default function SignupPage() {
         case 'user_name':
           return {
             ...prev,
-            adminData: { ...prev.adminData, userName: value },
+            adminData: { ...prev.adminData, username: value },
           };
         case 'suggested_user_name':
           return {
             ...prev,
-            adminData: { ...prev.adminData, userName: value },
+            adminData: { ...prev.adminData, username: value },
           };
         case 'admin_country':
           return {
@@ -223,7 +245,16 @@ export default function SignupPage() {
       }
     });
   };
-
+  if (done) {
+    return (
+      <AuthPageToast
+        title="Signup successfully!"
+        subtitle="Our team will review your request and get back to you shortly."
+        message="Your request is under review. We will notify you once it's approved. Feel free to reach out to us if you have any questions."
+        cta={{ href: '/login', title: 'Go to Sign In' }}
+      />
+    );
+  }
   return (
     <AuthShell
       title="Create your school account"
@@ -359,14 +390,14 @@ export default function SignupPage() {
           className="flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
-            handleSubmit(e);
+            handleSubmit();
           }}
         >
           <div className="sm:grid grid-cols-2 gap-3">
             <AuthInput
               label="First Name"
               id="first_name"
-              placeholder="Adaeze"
+              placeholder="Femi"
               value={signupFormData.adminData.firstName}
               onChange={handleInputChange}
             />
@@ -374,7 +405,7 @@ export default function SignupPage() {
             <AuthInput
               label="Last Name"
               id="last_name"
-              placeholder="Okonkwo"
+              placeholder="Adegoke"
               value={signupFormData.adminData.lastName}
               onChange={handleInputChange}
             />
@@ -406,7 +437,7 @@ export default function SignupPage() {
               showToggle={true}
               hint="Toggle to sellect from suggestions"
               onToggle={handleToggle}
-              value={signupFormData.adminData.userName}
+              value={signupFormData.adminData.username}
               onChange={handleInputChange}
             />
           )}
@@ -420,7 +451,7 @@ export default function SignupPage() {
               hint="Toggle to input prefered username"
               onToggle={handleToggle}
               list={suggestUserName}
-              value={signupFormData.adminData.userName}
+              value={signupFormData.adminData.username}
               onChange={handleInputChange}
             />
           )}
@@ -495,7 +526,7 @@ export default function SignupPage() {
                 <span>Back</span>
               </div>
             </AuthButton>
-            <AuthButton>Signup</AuthButton>
+            <AuthButton loading={loading}>Signup</AuthButton>
           </div>
         </form>
       )}

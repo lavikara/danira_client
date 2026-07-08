@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getItem } from '@/utils/storage';
 
 // 1. Create a reusable axios instance
 const apiClient = axios.create({
@@ -15,7 +16,7 @@ apiClient.interceptors.request.use(
 
     // Check if we are running in the browser (Client-Side)
     if (typeof window !== 'undefined') {
-      token = localStorage.getItem('authToken');
+      token = getItem('authToken');
     } else {
       // Running on the server (Server Components / Route Handlers)
       // Dynamic import to avoid errors in client-only environments

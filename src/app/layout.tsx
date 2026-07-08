@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/theme-context';
-import { AuthProvider } from '@/contexts/auth-context';
 import { ToastProvider } from '@/contexts/toast-context';
-import ClientRouteGuard from '@/components/auth/client-route-guard';
 
 export const metadata: Metadata = {
   title: 'EduAdmin Pro — School Management System',

@@ -1,24 +1,71 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
-import { AuthShell, AuthInput, AuthButton, AuthDivider } from "@/components/auth/auth-shell";
+import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { LoginFormData } from '@/types/definitions';
+import { loginAction } from '../actions/authActions';
+import { useToastContext } from '@/contexts/toast-context';
+import { AuthShell, AuthInput, AuthButton, AuthDivider } from '@/components/auth/auth-shell';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loginFormData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
+
+  const router = useRouter();
+  const { success, error } = useToastContext();
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginFormData),
+    });
+
+    const signedIn = await res.json();
+    console.log(signedIn);
+
+    // const signedIn = await loginAction(loginFormData);
+    if (signedIn.success) {
+      setLoading(false);
+      success('Login successful', {
+        description: `Welcome back, ${signedIn.data.user.firstName} ${signedIn.data.user.lastName}.`,
+      });
+      router.push('/');
+    } else {
+      setLoading(false);
+      error('Login failed', {
+        description: signedIn.message,
+      });
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   return (
-    <AuthShell
-      title="Welcome back"
-      subtitle="Sign in to your EduAdmin Pro account"
-    >
-      <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+    <AuthShell title="Welcome" subtitle="Sign in to your EduAdmin Pro account">
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
         <AuthInput
           label="Email address"
           id="email"
           type="email"
           placeholder="admin@school.edu.ng"
-          autoComplete="email"
+          value={loginFormData.email}
+          onChange={handleInputChange}
         />
 
         <div>
@@ -37,19 +84,21 @@ export default function LoginPage() {
             <input
               id="password"
               name="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               autoComplete="current-password"
               className="w-full rounded-[9px] border-[1.5px] border-border bg-bg px-3.5 py-2.5 pr-10 text-[13.5px] text-t1 placeholder:text-t3 outline-none transition-all duration-150 focus:border-primary focus:bg-surface focus:shadow-[0_0_0_3px_rgba(37,99,235,.1)]"
+              value={loginFormData.password}
+              onChange={handleInputChange}
             />
             <button
               type="button"
               tabIndex={-1}
-              onClick={() => setShowPassword((v) => !v)}
+              onClick={() => setShowPassword((show) => !show)}
               className="absolute top-1/2 right-3 -translate-y-1/2 text-[16px] text-t3 hover:text-t2"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"} />
+              <i className={showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'} />
             </button>
           </div>
         </div>
@@ -65,11 +114,8 @@ export default function LoginPage() {
           </label>
         </div>
 
-        <AuthButton>
-          <span className="flex items-center justify-center gap-2">
-            Sign In
-            <i className="bi bi-arrow-right" />
-          </span>
+        <AuthButton loading={loading}>
+          <span className="flex items-center justify-center gap-2">Sign In</span>
         </AuthButton>
       </form>
 
@@ -85,7 +131,7 @@ export default function LoginPage() {
       </button>
 
       <p className="mt-6 text-center text-[12.5px] text-t2">
-        New school?{" "}
+        New school?{' '}
         <Link href="/signup" className="font-semibold text-primary hover:underline">
           Create an account
         </Link>
