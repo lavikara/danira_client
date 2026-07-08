@@ -139,7 +139,7 @@
   --toast-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 16px 40px rgba(0, 0, 0, 0.1);
   --toast-t1: #0f172a;
   --toast-t2: #475569;
-  --toast-radius: 12px;
+  --toast-radius: 8px;
 
   /* Sidebar (shares surface in light mode) */
   --sidebar-bg: #ffffff;
