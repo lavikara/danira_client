@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginFormData } from '@/types/definitions';
-// import { loginAction } from '../actions/authActions';
 import { useToastContext } from '@/contexts/toast-context';
+import { post } from '@/app/api/apiClient';
 import { AuthShell, AuthInput, AuthButton, AuthDivider } from '@/components/auth/auth-shell';
 
 export default function LoginPage() {
@@ -18,26 +18,20 @@ export default function LoginPage() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginFormData),
-    });
-
-    const signedIn = await res.json();
-
-    // const signedIn = await loginAction(loginFormData);
-    if (signedIn.success) {
+    try {
+      const signedIn = await post('/api/auth/login', loginFormData);
+      if (signedIn.success) {
+        success('Login successful', {
+          description: `Welcome back, ${signedIn.data.user.firstName} ${signedIn.data.user.lastName}.`,
+        });
+        router.replace('/dashboard');
+      } else {
+        error('Login failed', {
+          description: signedIn.error,
+        });
+      }
+    } finally {
       setLoading(false);
-      success('Login successful', {
-        description: `Welcome back, ${signedIn.data.user.firstName} ${signedIn.data.user.lastName}.`,
-      });
-      router.replace('/');
-    } else {
-      setLoading(false);
-      error('Login failed', {
-        description: signedIn.message,
-      });
     }
   };
 
