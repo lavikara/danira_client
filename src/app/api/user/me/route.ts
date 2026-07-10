@@ -1,5 +1,8 @@
-import { forwardServerRequest } from '../../apiClient';
+import { getServerRequest } from '../../apiClient';
+import authHeader from '../../authHeader';
 
 export async function GET(request: Request) {
-  return forwardServerRequest('/user/me', request.method);
+  return getServerRequest('/user/me', request.method, {
+    Authorization: `Bearer ${await authHeader()}`,
+  });
 }
