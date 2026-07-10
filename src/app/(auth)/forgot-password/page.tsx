@@ -2,36 +2,39 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { AuthShell, AuthButton, AuthInput, AuthPageToast } from '@/components/auth/auth-shell';
+import { post } from '@/app/api/apiClient';
 import { ForgotPasswordFormData } from '@/types/definitions';
-// import { forgotPasswordAction } from '../actions/authActions';
+import { AuthShell, AuthButton, AuthInput, AuthPageToast } from '@/components/auth/auth-shell';
 import { useToastContext } from '@/contexts/toast-context';
 
 export default function ResetPasswordPage() {
-  const [email, setEmail] = useState('');
+  const [forgotPasswordFormData, setForgotPasswordFormData] = useState<ForgotPasswordFormData>({
+    email: '',
+  });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   const router = useRouter();
   const { error } = useToastContext();
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setForgotPasswordFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     setLoading(true);
-    const res = await fetch('/api/auth/forgotPassword', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-
-    const parsedRes = await res.json();
-    // const response = await forgotPasswordAction({ email } as ForgotPasswordFormData);
-    if (parsedRes.success) {
+    const response = await post('/api/auth/forgotPassword', forgotPasswordFormData);
+    if (response.success) {
       setLoading(false);
       setDone(true);
     } else {
       setLoading(false);
       error('Request failed', {
-        description: parsedRes.message,
+        description: response.error,
       });
     }
   };
@@ -65,8 +68,8 @@ export default function ResetPasswordPage() {
             id="email"
             type="email"
             placeholder="admin@school.edu.ng"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={forgotPasswordFormData.email}
+            onChange={handleInputChange}
           />
         </div>
 

@@ -1,5 +1,3 @@
-import { logoutAction } from '@/app/(auth)/actions/authActions';
-
 export const handleApiError = (err: any) => {
   console.log('error');
   console.log(err);
@@ -8,7 +6,6 @@ export const handleApiError = (err: any) => {
   if (err?.message === 'Network Error') {
     message = 'Connection not established';
   } else if (err?.message === 'Request failed with status code 401') {
-    logoutAction();
     message = err?.response?.data?.message || 'Session expired';
   } else if (err?.message == 'timeout exceeded') {
     message = err?.message;

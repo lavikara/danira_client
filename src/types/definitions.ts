@@ -48,6 +48,101 @@ export interface LoginFormData {
   password: string;
 }
 
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
+
 export interface ForgotPasswordFormData {
   email: string;
 }
+
+type SchoolSetup = 'SINGLE' | 'GROUP' | 'DANIRA';
+
+type Gender = 'MALE' | 'FEMALE';
+
+export type Role =
+  | 'SUPERADMIN'
+  | 'DANIRAADMIN'
+  | 'SCHOOLADMIN'
+  | 'GROUPSCHOOLADMIN'
+  | 'SUBSCHOOLADMIN'
+  | 'SCHOOLSTAFF'
+  | 'STUDENT'
+  | 'GUARDIAN';
+
+type UserCondition =
+  | 'BLOCKED'
+  | 'DELETED'
+  | 'ACTIVE'
+  | 'DEACTIVATED'
+  | 'SUSPENDED'
+  | 'EXPELLED'
+  | 'GRADUATED'
+  | 'MUTUALEXIT'
+  | 'SACKED'
+  | 'LEAVE'
+  | 'PENDING'
+  | 'TRANSFERED';
+
+type Accomodation = 'ONCAMPUS' | 'OFFCAMPUS' | 'STAFFQUARTERS';
+
+type StaffStatus = 'PERTIME' | 'FULLTIME' | 'VISITING';
+
+type Admins = {
+  id: string;
+  userId: string;
+  type: SchoolSetup | null;
+  schoolIds: string[];
+  groupId: string | null;
+};
+
+type Staffs = {
+  id: string;
+  userId: string;
+  position: string;
+  image: string | null;
+  depertment: string | null;
+  accomodation: Accomodation | null;
+  employmentStatus: StaffStatus;
+  schoolId: string | null;
+};
+
+export type Users = {
+  email: string;
+  id: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  designation: string | null;
+  phoneNumber: string;
+  country: string;
+  state: string;
+  address: string;
+  isVerified: boolean;
+  gender: Gender;
+  role: Role;
+  status: UserCondition;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export interface AdminUser {
+  admins: Admins & {
+    users: Users;
+  };
+}
+
+export interface StaffUser {
+  staffs: Staffs & {
+    users: Users;
+  };
+}
+export type LoggedInUser = AdminUser | StaffUser;
+
+export type FetchPayload =
+  | SignupFormData
+  | ResetPasswordFormData
+  | LoginFormData
+  | ForgotPasswordFormData;

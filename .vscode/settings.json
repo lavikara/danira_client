@@ -14,5 +14,6 @@
   "eslint.validate": ["javascript", "typescript", "typescriptreact"],
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
-  }
+  },
+  "explorer.compactFolders": false
 }

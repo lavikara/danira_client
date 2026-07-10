@@ -74,3 +74,26 @@ export const generateUsernames = (input: UsernameInput): string[] => {
 
   return suggestions;
 };
+
+export const capitalize = (phrase: string) => {
+  if (!phrase) return;
+  return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+};
+
+export const formatAmount = (amount: number, decimal: number, currency: string) => {
+  if (amount === undefined) return;
+  const value = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: decimal,
+    currencyDisplay: 'narrowSymbol',
+  });
+  return value.format(amount);
+};
+
+export const abbreviate = (str: string): string => {
+  return str
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase())
+    .join('');
+};

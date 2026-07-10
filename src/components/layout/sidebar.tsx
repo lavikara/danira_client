@@ -5,14 +5,27 @@ import { usePathname } from 'next/navigation';
 import { NAV_SECTIONS } from '@/lib/nav-config';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { useRouter } from 'next/navigation';
-// import { logoutAction } from '@/app/(auth)/actions/authActions';
-import { cn } from '@/utils/helpers';
+import { useEffect } from 'react';
+import { useToastContext } from '@/contexts/toast-context';
+import { cn, abbreviate, capitalize } from '@/utils/helpers';
+import { LoadingSvg } from '@/components/ui/loading-svg';
+import { useLoggedInUser } from '@/store/userStore';
 
 export function Sidebar() {
   const { collapsed, toggleSidebar, mobileOpen, setMobileOpen } = useSidebar();
   const pathname = usePathname();
 
   const router = useRouter();
+  const { error } = useToastContext();
+  const { user, isLoading, fetchLoggedInUser } = useLoggedInUser();
+
+  useEffect(() => {
+    fetchLoggedInUser({
+      onError: (errorMessage) => {
+        error('User not found', { description: errorMessage });
+      },
+    });
+  }, [fetchLoggedInUser, error]);
 
   const handleLogout = async () => {
     const res = await fetch('/api/auth/logout', {
@@ -149,27 +162,35 @@ export function Sidebar() {
 
         {/* ── User footer ── */}
         <div style={{ borderTopColor: 'var(--sidebar-border)' }} className="shrink-0 border-t p-2">
-          <div className="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 transition-colors hover:bg-sidebar-hover">
-            <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[9px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">
-              PA
+          {isLoading ? (
+            <div className="w-full h-13 flex justify-center items-center">
+              <LoadingSvg />
             </div>
-            <div
-              className={cn(
-                'min-w-0 transition-all duration-200',
-                collapsed ? 'w-0 overflow-hidden opacity-0' : 'opacity-100',
-              )}
-            >
-              <p
-                style={{ color: 'var(--sidebar-text)' }}
-                className="truncate text-[13px] font-semibold"
+          ) : (
+            <div className="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 transition-colors hover:bg-sidebar-hover cursor-pointer">
+              <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[9px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">
+                {abbreviate(`${user?.firstName} ${user?.lastName}`)}
+              </div>
+              <div
+                className={cn(
+                  'min-w-0 transition-all duration-200',
+                  collapsed ? 'w-0 overflow-hidden opacity-0' : 'opacity-100',
+                )}
               >
-                Priya Adeyemi
-              </p>
-              <p style={{ color: 'var(--sidebar-label)' }} className="text-[11px]">
-                Principal
-              </p>
+                <p
+                  style={{ color: 'var(--sidebar-text)' }}
+                  className="truncate text-[13px] font-semibold"
+                >
+                  {capitalize(`${user?.firstName} ${user?.lastName}`)}
+                </p>
+                <p style={{ color: 'var(--sidebar-label)' }} className="text-[11px]">
+                  {user?.designation
+                    ? capitalize(`${user?.designation}`)
+                    : capitalize(`${user?.role}`)}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           <button
             className="mt-0.5 flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2 text-left transition-colors hover:bg-red/8 cursor-pointer"
@@ -201,14 +222,12 @@ export function Sidebar() {
           backgroundColor: 'var(--sidebar-bg)',
           borderColor: 'var(--sidebar-border)',
           color: 'var(--sidebar-text-sub)',
-          /* Sits exactly on the right border of the sidebar */
           left: collapsed ? 'calc(68px - 14px)' : 'calc(260px - 14px)',
         }}
         className={cn(
-          /* Hidden on mobile (sidebar is off-canvas there, toggle not needed) */
           'fixed top-8.5 z-201 -translate-y-1/2',
           'hidden md:flex',
-          'h-7 w-7 items-center justify-center',
+          'h-7 w-7 items-center justify-center cursor-pointer',
           'rounded-full border-2 shadow-md',
           'transition-[left] duration-300 ease-in-out',
           'hover:border-primary hover:text-primary hover:bg-surface',
