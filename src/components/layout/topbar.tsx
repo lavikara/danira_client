@@ -4,13 +4,18 @@ import { usePathname } from 'next/navigation';
 import { PAGE_META } from '@/lib/nav-config';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { useTheme } from '@/contexts/theme-context';
-import { cn } from '@/utils/helpers';
+import { useLoggedInUser } from '@/store/userStore';
+import { LoadingSvg } from '@/components/ui/loading-svg';
+import { cn, abbreviate } from '@/utils/helpers';
 
 export function Topbar() {
   const { collapsed, setMobileOpen } = useSidebar();
   const { theme, toggleTheme, mounted } = useTheme();
   const pathname = usePathname();
   const meta = PAGE_META[pathname] ?? { title: 'EduAdmin Pro', subtitle: '' };
+
+  const { user, isLoading } = useLoggedInUser();
+
   return (
     <header
       style={{
@@ -107,22 +112,28 @@ export function Topbar() {
         </button>
 
         {/* User chip */}
-        <div className="ml-1 hidden cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 py-1.5 transition-colors hover:bg-surface-2 sm:flex">
-          <div className="text-right">
-            <p
-              style={{ color: 'var(--t1)' }}
-              className="text-[13px] font-semibold whitespace-nowrap"
-            >
-              Priya Adeyemi
-            </p>
-            <p style={{ color: 'var(--t3)' }} className="text-[11px]">
-              Principal
-            </p>
+        {isLoading ? (
+          <div className="w-full w-38!  h-13 flex justify-center items-center">
+            <LoadingSvg />
           </div>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">
-            PA
+        ) : (
+          <div className="ml-1 hidden cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 py-1.5 transition-colors hover:bg-surface-2 sm:flex">
+            <div className="text-right">
+              <p
+                style={{ color: 'var(--t1)' }}
+                className="text-[13px] font-semibold whitespace-nowrap"
+              >
+                {`${user?.firstName} ${user?.lastName}`}
+              </p>
+              <p style={{ color: 'var(--t3)' }} className="text-[11px]">
+                {user?.designation ? `${user?.designation}` : `${user?.role}`}
+              </p>
+            </div>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">
+              {abbreviate(`${user?.firstName} ${user?.lastName}`)}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );
