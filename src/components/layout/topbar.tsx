@@ -6,7 +6,7 @@ import { useSidebar } from '@/contexts/sidebar-context';
 import { useTheme } from '@/contexts/theme-context';
 import { useLoggedInUser } from '@/store/userStore';
 import { LoadingSvg } from '@/components/ui/loading-svg';
-import { cn, abbreviate } from '@/utils/helpers';
+import { cn, abbreviate, capitalize } from '@/utils/helpers';
 
 export function Topbar() {
   const { collapsed, setMobileOpen } = useSidebar();
@@ -123,10 +123,12 @@ export function Topbar() {
                 style={{ color: 'var(--t1)' }}
                 className="text-[13px] font-semibold whitespace-nowrap"
               >
-                {`${user?.firstName} ${user?.lastName}`}
+                {capitalize(`${user?.firstName} ${user?.lastName}`)}
               </p>
               <p style={{ color: 'var(--t3)' }} className="text-[11px]">
-                {user?.designation ? `${user?.designation}` : `${user?.role}`}
+                {user?.designation
+                  ? capitalize(`${user?.designation}`)
+                  : capitalize(`${user?.role}`)}
               </p>
             </div>
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">

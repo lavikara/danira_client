@@ -7,7 +7,7 @@ import { useSidebar } from '@/contexts/sidebar-context';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useToastContext } from '@/contexts/toast-context';
-import { cn, abbreviate } from '@/utils/helpers';
+import { cn, abbreviate, capitalize } from '@/utils/helpers';
 import { LoadingSvg } from '@/components/ui/loading-svg';
 import { useLoggedInUser } from '@/store/userStore';
 
@@ -167,7 +167,7 @@ export function Sidebar() {
               <LoadingSvg />
             </div>
           ) : (
-            <div className="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 transition-colors hover:bg-sidebar-hover">
+            <div className="flex items-center gap-2.5 rounded-[9px] px-2.5 py-2 transition-colors hover:bg-sidebar-hover cursor-pointer">
               <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[9px] bg-linear-to-br from-primary to-purple text-xs font-bold text-white">
                 {abbreviate(`${user?.firstName} ${user?.lastName}`)}
               </div>
@@ -181,10 +181,12 @@ export function Sidebar() {
                   style={{ color: 'var(--sidebar-text)' }}
                   className="truncate text-[13px] font-semibold"
                 >
-                  {`${user?.firstName} ${user?.lastName}`}
+                  {capitalize(`${user?.firstName} ${user?.lastName}`)}
                 </p>
                 <p style={{ color: 'var(--sidebar-label)' }} className="text-[11px]">
-                  {user?.designation ? `${user?.designation}` : `${user?.role}`}
+                  {user?.designation
+                    ? capitalize(`${user?.designation}`)
+                    : capitalize(`${user?.role}`)}
                 </p>
               </div>
             </div>
@@ -220,14 +222,12 @@ export function Sidebar() {
           backgroundColor: 'var(--sidebar-bg)',
           borderColor: 'var(--sidebar-border)',
           color: 'var(--sidebar-text-sub)',
-          /* Sits exactly on the right border of the sidebar */
           left: collapsed ? 'calc(68px - 14px)' : 'calc(260px - 14px)',
         }}
         className={cn(
-          /* Hidden on mobile (sidebar is off-canvas there, toggle not needed) */
           'fixed top-8.5 z-201 -translate-y-1/2',
           'hidden md:flex',
-          'h-7 w-7 items-center justify-center',
+          'h-7 w-7 items-center justify-center cursor-pointer',
           'rounded-full border-2 shadow-md',
           'transition-[left] duration-300 ease-in-out',
           'hover:border-primary hover:text-primary hover:bg-surface',
