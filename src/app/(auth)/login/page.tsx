@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginFormData } from '@/types/definitions';
 import { useToastContext } from '@/contexts/toast-context';
-import { post } from '@/app/api/apiClient';
+import { postMethod } from '@/app/api/apiClient';
 import { AuthShell, AuthInput, AuthButton, AuthDivider } from '@/components/auth/auth-shell';
 
 export default function LoginPage() {
@@ -19,7 +19,7 @@ export default function LoginPage() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const signedIn = await post('/api/auth/login', loginFormData);
+      const signedIn = await postMethod('/api/auth/login', loginFormData);
       if (signedIn.success) {
         success('Login successful', {
           description: `Welcome back, ${signedIn.data.user.firstName} ${signedIn.data.user.lastName}.`,
