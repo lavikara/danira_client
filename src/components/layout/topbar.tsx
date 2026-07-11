@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { PAGE_META } from '@/lib/nav-config';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { useTheme } from '@/contexts/theme-context';
-import { useLoggedInUser } from '@/store/userStore';
+import { useUserStore } from '@/store/userStore';
 import { LoadingSvg } from '@/components/ui/loading-svg';
 import { cn, abbreviate, capitalize } from '@/utils/helpers';
 
@@ -14,7 +14,7 @@ export function Topbar() {
   const pathname = usePathname();
   const meta = PAGE_META[pathname] ?? { title: 'EduAdmin Pro', subtitle: '' };
 
-  const { user, isLoading } = useLoggedInUser();
+  const { user, isLoading } = useUserStore();
 
   return (
     <header
