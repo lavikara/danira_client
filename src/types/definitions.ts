@@ -89,7 +89,7 @@ type Accomodation = 'ONCAMPUS' | 'OFFCAMPUS' | 'STAFFQUARTERS';
 
 type StaffStatus = 'PERTIME' | 'FULLTIME' | 'VISITING';
 
-type Admins = {
+export type Admins = {
   id: string;
   userId: string;
   type: SchoolSetup | null;
@@ -97,7 +97,7 @@ type Admins = {
   groupId: string | null;
 };
 
-type Staffs = {
+export type Staffs = {
   id: string;
   userId: string;
   position: string;
@@ -127,6 +127,70 @@ export type Users = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type Schools = {
+  id: string;
+  email: string;
+  schoolName: string;
+  type: SchoolType;
+  setup: SchoolSetup;
+  address: string;
+  phoneNumber: string;
+  country: string;
+  state: string;
+  createdBy: string | null;
+  approvedBy: string | null;
+  isApproved: boolean;
+  termsConditions: boolean;
+  status: SchoolStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  groupId: string | null;
+};
+
+export type Students = {
+  id: string;
+  userId: string;
+  image: string | null;
+  accomodation: Accomodation | null;
+  classId: string;
+  guardianId: string;
+  schoolId: string | null;
+  gradeYearId: string | null;
+  examId: string | null;
+  testId: string | null;
+  assignmentId: string | null;
+  subjectId: string | null;
+  departmentId: string | null;
+};
+
+export interface SchoolWithInclude {
+  schools: Schools & { students: Students; staffs: Staffs };
+}
+export interface GroupSchools {
+  schools: Schools & { students: Students; staffs: Staffs };
+}
+
+export type SchoolGroups = {
+  id: string;
+  groupName: string;
+  status: SchoolStatus;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type SchoolType = 'PRIMARY' | 'SECONDARY' | 'TERTIARY';
+
+type SchoolStatus = 'ACTIVE' | 'BLOCKED' | 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type RelationKeys =
+  | 'admins'
+  | 'students'
+  | 'staffs'
+  | 'guardians'
+  | 'users'
+  | 'schools'
+  | 'schoolGroups';
 
 export interface AdminUser {
   admins: Admins & {
