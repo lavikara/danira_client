@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { FetchPayload } from '@/types/definitions';
 
-export const post = async (endpoint: string, payload: FetchPayload) => {
+export const postMethod = async (endpoint: string, payload: FetchPayload | null) => {
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -10,7 +10,7 @@ export const post = async (endpoint: string, payload: FetchPayload) => {
   return response.json();
 };
 
-export const get = async (endpoint: string) => {
+export const getMethod = async (endpoint: string) => {
   const response = await fetch(endpoint, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
@@ -18,7 +18,7 @@ export const get = async (endpoint: string) => {
   return response.json();
 };
 
-export const patch = async (endpoint: string, payload: FetchPayload) => {
+export const patchMethod = async (endpoint: string, payload: FetchPayload) => {
   const response = await fetch(endpoint, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
