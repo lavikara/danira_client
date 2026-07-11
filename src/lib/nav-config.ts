@@ -27,9 +27,9 @@ export const NAV_SECTIONS: NavSection[] = [
         badge: '1,248',
       },
       {
-        key: 'teachers',
-        label: 'Teachers',
-        href: '/dashboard/teachers',
+        key: 'staffs',
+        label: 'Staffs',
+        href: '/dashboard/staffs',
         icon: 'bi-person-workspace',
       },
       { key: 'parents', label: 'Parents', href: '/dashboard/parents', icon: 'bi-heart' },
@@ -108,7 +108,7 @@ export const NAV_SECTIONS: NavSection[] = [
 export const PAGE_META: Record<string, { title: string; subtitle: string }> = {
   '/dashboard': { title: 'Dashboard', subtitle: 'EduAdmin Pro / Dashboard' },
   '/dashboard/students': { title: 'Students', subtitle: 'EduAdmin Pro / Students' },
-  '/dashboard/teachers': { title: 'Teachers', subtitle: 'EduAdmin Pro / Teachers' },
+  '/dashboard/staffs': { title: 'Teachers', subtitle: 'EduAdmin Pro / Staffs' },
   '/dashboard/parents': { title: 'Parents', subtitle: 'EduAdmin Pro / Parents' },
   '/dashboard/attendance': { title: 'Attendance', subtitle: 'EduAdmin Pro / Attendance' },
   '/dashboard/classes': { title: 'Classes', subtitle: 'EduAdmin Pro / Classes' },

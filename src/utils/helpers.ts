@@ -1,3 +1,11 @@
+interface UsernameInput {
+  firstName: string;
+  lastName: string;
+  schoolName: string;
+  gradYear?: number;
+  mascot?: string;
+}
+
 export const AVATAR_COLORS = [
   '#2563EB',
   '#10B981',
@@ -26,14 +34,6 @@ export function initials(name: string): string {
 
 export function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
-}
-
-interface UsernameInput {
-  firstName: string;
-  lastName: string;
-  schoolName: string;
-  gradYear?: number;
-  mascot?: string;
 }
 
 export const generateUsernames = (input: UsernameInput): string[] => {
@@ -97,3 +97,60 @@ export const abbreviate = (str: string): string => {
     .map((word) => word.charAt(0).toUpperCase())
     .join('');
 };
+
+
+
+export const formatToStringDate = (date: number | string, hideDay: boolean = true) => {
+  if (!date) return '';
+  let datetime = '';
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  let currentdate = new Date(date);
+  if (hideDay) {
+    datetime =
+      currentdate.getDate() +
+      ' ' +
+      months[currentdate.getMonth()] +
+      ', ' +
+      currentdate.getFullYear();
+  } else {
+    datetime =
+      days[currentdate.getDay()] +
+      ', ' +
+      currentdate.getDate() +
+      ' ' +
+      months[currentdate.getMonth()] +
+      ' ' +
+      currentdate.getFullYear();
+  }
+
+  return datetime;
+};
+
+export const getTimeOfDay = (date: Date = new Date()): string => {
+  const hour = date.getHours();
+  if (hour < 12) return 'morning';
+  if (hour < 18) return 'afternoon';
+  return 'evening';
+};
+
+export const getCurrentTime = (date: Date = new Date()): string => {
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+};
+

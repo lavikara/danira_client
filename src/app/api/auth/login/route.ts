@@ -17,11 +17,9 @@ async function setAuthTokenCookie(token: string) {
 export async function POST(request: Request) {
   const { email, password } = await request.json();
   const response = await postServerRequest('/auth/login', request.method, { email, password });
-
   const data = await response.json();
-
   if (!response.ok) {
-    return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
+    return NextResponse.json({ error: data.error }, { status: 400 });
   }
   const token = data.data?.token;
 

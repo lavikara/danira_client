@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
-import { patch } from '@/app/api/apiClient';
+import { patchMethod } from '@/app/api/apiClient';
 import { AuthShell, AuthButton, AuthPageToast } from '@/components/auth/auth-shell';
 import { ResetPasswordFormData } from '@/types/definitions';
 import { useToastContext } from '@/contexts/toast-context';
@@ -58,7 +58,7 @@ function ResetPasswordContent() {
       newPassword: newPw,
     };
     setLoading(true);
-    const response = await patch('/api/auth/resetPassword', payload);
+    const response = await patchMethod('/api/auth/resetPassword', payload);
     if (response.success) {
       setLoading(false);
       setDone(true);

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { StatCard } from '@/components/ui/stat-card';
@@ -29,14 +30,63 @@ import {
 } from '@/data/dashboard';
 import { RECENT_REGISTRATIONS } from '@/data/students';
 import Link from 'next/link';
-import loading from './loading';
+import { Role } from '@/types/definitions';
+import { useToastContext } from '@/contexts/toast-context';
+import { useSchoolStore } from '@/store/schoolStore';
+import { useUserStore } from '@/store/userStore';
+import { formatToStringDate, getTimeOfDay, getCurrentTime, capitalize } from '@/utils/helpers';
 
 export default function DashboardPage() {
+  const { user, isLoading } = useUserStore();
+  const [time, setTime] = useState<string>();
+  const apiCall = useRef(false);
+
+  const { error } = useToastContext();
+
+  const {
+    groupSchools,
+    groupDetails,
+    schoolLoading,
+    fetchSchoolDetails,
+    fetchGroupDetails,
+    fetchGroupSchools,
+  } = useSchoolStore();
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const currentTime = getCurrentTime();
+      setTime(currentTime);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (!user?.role || apiCall.current) return;
+    apiCall.current = true;
+    fetchGroupDetails(user.role as Role, {
+      onError: (errorMessage) => {
+        error('Unable to get school details', { description: errorMessage });
+      },
+    });
+    fetchGroupSchools(user.role as Role, {
+      onError: (errorMessage) => {
+        error('Unable to get school details', { description: errorMessage });
+      },
+    });
+    fetchSchoolDetails(user.role as Role, {
+      onError: (errorMessage) => {
+        error('Unable to get school details', { description: errorMessage });
+      },
+    });
+  }, [user?.role]);
+
   return (
     <div className="min-w-0">
       <PageHeader
-        title="Good morning, Priya 👋"
-        subtitle="Greenfield Academy — Wednesday, 14 May 2025"
+        loading={isLoading}
+        title={`Good ${getTimeOfDay()}, ${capitalize(`${user?.firstName}`)} 👋`}
+        subtitle={`${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`}
         actions={
           <>
             <Button variant="ghost" size="sm">

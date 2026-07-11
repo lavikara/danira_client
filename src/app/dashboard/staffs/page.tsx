@@ -9,18 +9,18 @@ import { Badge, Tag } from '@/components/ui/badge';
 import { NameCell } from '@/components/ui/avatar';
 import { Table, THead, TH, TBody, TR, TD, ActionButtons } from '@/components/ui/table';
 import { AppChart } from '@/components/charts/app-chart';
-import { EmptyTeachers, EmptyRecentActivity } from '@/components/ui/empty-state';
+import { EmptyStaffs, EmptyRecentActivity } from '@/components/ui/empty-state';
 import { NotificationList } from '@/components/dashboard/notification-list';
-import { TEACHERS, TEACHER_ACTIVITY } from '@/data/teachers';
+import { TEACHERS, TEACHER_ACTIVITY } from '@/data/staffs';
 import { AVATAR_COLORS } from '@/utils/helpers';
 
-export default function TeachersPage() {
+export default function StaffsPage() {
   const [isEmpty, setIsEmpty] = useState(false);
 
   return (
     <div className="min-w-0">
       <PageHeader
-        title="Teacher Management"
+        title="Staff Management"
         subtitle="Staff directory, ratings and workload tracking"
         actions={
           <>
@@ -41,7 +41,7 @@ export default function TeachersPage() {
       />
 
       {isEmpty ? (
-        <EmptyTeachers />
+        <EmptyStaffs />
       ) : (
         <>
           <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">

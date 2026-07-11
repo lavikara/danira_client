@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { post } from '@/app/api/apiClient';
+import { postMethod } from '@/app/api/apiClient';
 import { ForgotPasswordFormData } from '@/types/definitions';
 import { AuthShell, AuthButton, AuthInput, AuthPageToast } from '@/components/auth/auth-shell';
 import { useToastContext } from '@/contexts/toast-context';
@@ -27,7 +27,7 @@ export default function ResetPasswordPage() {
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     setLoading(true);
-    const response = await post('/api/auth/forgotPassword', forgotPasswordFormData);
+    const response = await postMethod('/api/auth/forgotPassword', forgotPasswordFormData);
     if (response.success) {
       setLoading(false);
       setDone(true);
@@ -79,6 +79,7 @@ export default function ResetPasswordPage() {
         </AuthButton>
 
         <AuthButton
+          type="button"
           ghost={true}
           className="flex items-center justify-center gap-1.5 rounded-[9px] border border-border bg-surface py-2.5 text-[13.5px] font-semibold text-t2 transition-all hover:border-primary hover:text-primary"
           onClick={() => router.push('/login')}

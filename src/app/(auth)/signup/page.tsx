@@ -7,7 +7,7 @@ import { cn } from '@/utils/helpers';
 import { useToastContext } from '@/contexts/toast-context';
 import { generateUsernames } from '@/utils/helpers';
 import { SignupFormData } from '@/types/definitions';
-import { post } from '@/app/api/apiClient';
+import { postMethod } from '@/app/api/apiClient';
 import {
   AuthShell,
   AuthInput,
@@ -125,7 +125,7 @@ export default function SignupPage() {
       signupFormData.groupData.groupName = null;
     }
     setLoading(true);
-    const signedUp = await post('/api/auth/signup', signupFormData);
+    const signedUp = await postMethod('/api/auth/signup', signupFormData);
     if (signedUp.success) {
       setLoading(false);
       setDone(true);
