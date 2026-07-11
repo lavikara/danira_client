@@ -31,7 +31,6 @@ export const useSchoolStore = create<SchoolState>((set) => ({
     try {
       const response = await getMethod('/api/school/single-school');
       if (response.error === 'Unauthorised') {
-        console.log(response);
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
@@ -53,7 +52,6 @@ export const useSchoolStore = create<SchoolState>((set) => ({
     try {
       const response = await getMethod('/api/school/group-details');
       if (response.error === 'Unauthorised') {
-        console.log(response);
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
