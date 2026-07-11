@@ -1,17 +1,17 @@
-import { cn } from "@/utils/helpers";
-import { Button } from "@/components/ui/button";
+import { cn } from '@/utils/helpers';
+import { Button } from '@/components/ui/button';
 
-type EmptyStateSize = "sm" | "md" | "lg";
+type EmptyStateSize = 'sm' | 'md' | 'lg';
 type EmptyStateColor =
-  | "blue"
-  | "green"
-  | "orange"
-  | "purple"
-  | "red"
-  | "teal"
-  | "pink"
-  | "indigo"
-  | "gray";
+  | 'blue'
+  | 'green'
+  | 'orange'
+  | 'purple'
+  | 'red'
+  | 'teal'
+  | 'pink'
+  | 'indigo'
+  | 'gray';
 
 export interface EmptyStateProps {
   icon: string;
@@ -29,34 +29,33 @@ interface EmptyStateAction {
   onClick?: () => void;
   href?: string;
   icon?: string;
-  variant?: "primary" | "ghost";
+  variant?: 'primary' | 'ghost';
 }
 
 const ICON_SIZE: Record<EmptyStateSize, string> = {
-  sm: "h-12 w-12 text-[22px]",
-  md: "h-16 w-16 text-[28px]",
-  lg: "h-20 w-20 text-[34px]",
+  sm: 'h-12 w-12 text-[22px]',
+  md: 'h-16 w-16 text-[28px]',
+  lg: 'h-20 w-20 text-[34px]',
 };
 
 const TITLE_SIZE: Record<EmptyStateSize, string> = {
-  sm: "text-[14px]",
-  md: "text-[16px]",
-  lg: "text-[18px]",
+  sm: 'text-[14px]',
+  md: 'text-[16px]',
+  lg: 'text-[18px]',
 };
 
 const PADDING: Record<EmptyStateSize, string> = {
-  sm: "py-8  px-6",
-  md: "py-12 px-8",
-  lg: "py-16 px-10",
+  sm: 'py-8  px-6',
+  md: 'py-12 px-8',
+  lg: 'py-16 px-10',
 };
 
 function iconStyle(color: EmptyStateColor): React.CSSProperties {
-  if (color === "gray")
-    return { backgroundColor: "var(--border-light)", color: "var(--t3)" };
-  if (color === "blue")
+  if (color === 'gray') return { backgroundColor: 'var(--border-light)', color: 'var(--t3)' };
+  if (color === 'blue')
     return {
-      backgroundColor: "var(--color-primary-50)",
-      color: "var(--color-primary)",
+      backgroundColor: 'var(--color-primary-50)',
+      color: 'var(--color-primary)',
     };
   return {
     backgroundColor: `var(--${color}-bg)`,
@@ -69,8 +68,8 @@ export function EmptyState({
   title,
   description,
   actions,
-  color = "blue",
-  size = "md",
+  color = 'blue',
+  size = 'md',
   className,
   card = false,
 }: EmptyStateProps) {
@@ -79,37 +78,31 @@ export function EmptyState({
       style={
         card
           ? {
-              backgroundColor: "var(--surface)",
-              borderColor: "var(--border-light)",
+              backgroundColor: 'var(--surface)',
+              borderColor: 'var(--border-light)',
             }
           : undefined
       }
       className={cn(
-        "flex flex-col items-center justify-center text-center",
+        'flex flex-col items-center justify-center text-center',
         PADDING[size],
-        card && "rounded-2xl border shadow-card",
+        card && 'rounded-2xl border shadow-card',
         className,
       )}
     >
       <div
         style={iconStyle(color)}
-        className={cn(
-          "mb-4 flex items-center justify-center rounded-2xl",
-          ICON_SIZE[size],
-        )}
+        className={cn('mb-4 flex items-center justify-center rounded-2xl', ICON_SIZE[size])}
       >
         <i className={icon} />
       </div>
 
-      <p
-        style={{ color: "var(--t1)" }}
-        className={cn("font-bold", TITLE_SIZE[size])}
-      >
+      <p style={{ color: 'var(--t1)' }} className={cn('font-bold', TITLE_SIZE[size])}>
         {title}
       </p>
       {description && (
         <p
-          style={{ color: "var(--t2)" }}
+          style={{ color: 'var(--t2)' }}
           className="mt-2 max-w-[380px] text-[13px] leading-relaxed"
         >
           {description}
@@ -119,7 +112,7 @@ export function EmptyState({
       {actions && actions.length > 0 && (
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
           {actions.map((action, idx) => {
-            const variant = action.variant ?? (idx === 0 ? "primary" : "ghost");
+            const variant = action.variant ?? (idx === 0 ? 'primary' : 'ghost');
             if (action.href) {
               return (
                 <a key={action.label} href={action.href}>
@@ -131,12 +124,7 @@ export function EmptyState({
               );
             }
             return (
-              <Button
-                key={action.label}
-                variant={variant}
-                size="sm"
-                onClick={action.onClick}
-              >
+              <Button key={action.label} variant={variant} size="sm" onClick={action.onClick}>
                 {action.icon && <i className={action.icon} />}
                 {action.label}
               </Button>
@@ -150,8 +138,8 @@ export function EmptyState({
 
 export function EmptyTableRow({
   colSpan,
-  icon = "bi-inbox",
-  message = "No records found",
+  icon = 'bi-inbox',
+  message = 'No records found',
 }: {
   colSpan: number;
   icon?: string;
@@ -163,20 +151,17 @@ export function EmptyTableRow({
         <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
           <div
             style={{
-              backgroundColor: "var(--border-light)",
-              color: "var(--t3)",
+              backgroundColor: 'var(--border-light)',
+              color: 'var(--t3)',
             }}
             className="flex h-12 w-12 items-center justify-center rounded-xl text-[22px]"
           >
             <i className={icon} />
           </div>
-          <p
-            style={{ color: "var(--t2)" }}
-            className="text-[13px] font-semibold"
-          >
+          <p style={{ color: 'var(--t2)' }} className="text-[13px] font-semibold">
             {message}
           </p>
-          <p style={{ color: "var(--t3)" }} className="text-[12px]">
+          <p style={{ color: 'var(--t3)' }} className="text-[12px]">
             Try adjusting your filters or adding new data.
           </p>
         </div>
@@ -198,16 +183,16 @@ export function EmptySearch({
     <EmptyState
       icon="bi-search"
       color="gray"
-      title={query ? `No results for "${query}"` : "No results found"}
+      title={query ? `No results for "${query}"` : 'No results found'}
       description="Try different keywords, check your spelling, or clear the filters."
       actions={
         onClear
           ? [
               {
-                label: "Clear Search",
-                icon: "bi-x-circle",
+                label: 'Clear Search',
+                icon: 'bi-x-circle',
                 onClick: onClear,
-                variant: "ghost",
+                variant: 'ghost',
               },
             ]
           : undefined
@@ -230,13 +215,7 @@ export function EmptyNotifications({ className }: { className?: string }) {
   );
 }
 
-export function EmptyStudents({
-  onAdd,
-  onImport,
-}: {
-  onAdd?: () => void;
-  onImport?: () => void;
-}) {
+export function EmptyStudents({ onAdd, onImport }: { onAdd?: () => void; onImport?: () => void }) {
   return (
     <EmptyState
       card
@@ -246,29 +225,27 @@ export function EmptyStudents({
       title="No students enrolled yet"
       description="Start building your student directory by adding students one at a time or importing a CSV file."
       actions={[
-        { label: "Add Student", icon: "bi-person-plus-fill", onClick: onAdd },
+        { label: 'Add Student', icon: 'bi-person-plus-fill', onClick: onAdd },
         {
-          label: "Import CSV",
-          icon: "bi-upload",
+          label: 'Import CSV',
+          icon: 'bi-upload',
           onClick: onImport,
-          variant: "ghost",
+          variant: 'ghost',
         },
       ]}
     />
   );
 }
-export function EmptyTeachers({ onAdd }: { onAdd?: () => void }) {
+export function EmptyStaffs({ onAdd }: { onAdd?: () => void }) {
   return (
     <EmptyState
       card
       icon="bi-person-workspace"
       color="green"
       size="lg"
-      title="No teachers on record"
+      title="No Staff on record"
       description="Add your teaching staff to assign classes, track workload, and manage lesson schedules."
-      actions={[
-        { label: "Add Teacher", icon: "bi-person-plus-fill", onClick: onAdd },
-      ]}
+      actions={[{ label: 'Add Teacher', icon: 'bi-person-plus-fill', onClick: onAdd }]}
     />
   );
 }
@@ -281,9 +258,7 @@ export function EmptyParents({ onAdd }: { onAdd?: () => void }) {
       size="lg"
       title="No parents registered"
       description="Register parents to track ward information, communicate fee updates, and schedule meetings."
-      actions={[
-        { label: "Add Parent", icon: "bi-person-plus-fill", onClick: onAdd },
-      ]}
+      actions={[{ label: 'Add Parent', icon: 'bi-person-plus-fill', onClick: onAdd }]}
     />
   );
 }
@@ -296,9 +271,7 @@ export function EmptyAttendance({ onMark }: { onMark?: () => void }) {
       size="lg"
       title="No attendance recorded today"
       description="No check-ins have been logged. Start marking attendance for each class to track presence."
-      actions={[
-        { label: "Mark Attendance", icon: "bi-check2-square", onClick: onMark },
-      ]}
+      actions={[{ label: 'Mark Attendance', icon: 'bi-check2-square', onClick: onMark }]}
     />
   );
 }
@@ -313,8 +286,8 @@ export function EmptyClasses({ onCreate }: { onCreate?: () => void }) {
       description="Create classes and assign form teachers, subjects, and rooms to build your academic structure."
       actions={[
         {
-          label: "Create Class",
-          icon: "bi-plus-circle-fill",
+          label: 'Create Class',
+          icon: 'bi-plus-circle-fill',
           onClick: onCreate,
         },
       ]}
@@ -332,8 +305,8 @@ export function EmptyTimetable({ onCreate }: { onCreate?: () => void }) {
       description="Build your class timetable by assigning subjects, teachers, and time slots to each class."
       actions={[
         {
-          label: "Build Timetable",
-          icon: "bi-pencil-square",
+          label: 'Build Timetable',
+          icon: 'bi-pencil-square',
           onClick: onCreate,
         },
       ]}
@@ -351,11 +324,11 @@ export function EmptyExams({ onSchedule }: { onSchedule?: () => void }) {
       description="Schedule upcoming exams and upload results to track student academic performance by subject."
       actions={[
         {
-          label: "Schedule Exam",
-          icon: "bi-calendar-plus",
+          label: 'Schedule Exam',
+          icon: 'bi-calendar-plus',
           onClick: onSchedule,
         },
-        { label: "Upload Results", icon: "bi-upload", variant: "ghost" },
+        { label: 'Upload Results', icon: 'bi-upload', variant: 'ghost' },
       ]}
     />
   );
@@ -369,7 +342,7 @@ export function EmptyExamResults() {
       size="md"
       title="No results uploaded yet"
       description="Upload exam score sheets to generate subject-level performance summaries."
-      actions={[{ label: "Upload Results", icon: "bi-upload" }]}
+      actions={[{ label: 'Upload Results', icon: 'bi-upload' }]}
     />
   );
 }
@@ -384,11 +357,11 @@ export function EmptyFees({ onRecord }: { onRecord?: () => void }) {
       description="Record student fee payments to track collections, outstanding balances, and payment trends."
       actions={[
         {
-          label: "Record Payment",
-          icon: "bi-plus-circle-fill",
+          label: 'Record Payment',
+          icon: 'bi-plus-circle-fill',
           onClick: onRecord,
         },
-        { label: "Generate Invoice", icon: "bi-receipt", variant: "ghost" },
+        { label: 'Generate Invoice', icon: 'bi-receipt', variant: 'ghost' },
       ]}
     />
   );
@@ -402,9 +375,7 @@ export function EmptyLibrary({ onAdd }: { onAdd?: () => void }) {
       size="lg"
       title="Library catalog is empty"
       description="Add books to your library catalog to track copies, manage lending records, and identify overdue returns."
-      actions={[
-        { label: "Add Book", icon: "bi-plus-circle-fill", onClick: onAdd },
-      ]}
+      actions={[{ label: 'Add Book', icon: 'bi-plus-circle-fill', onClick: onAdd }]}
     />
   );
 }
@@ -439,9 +410,7 @@ export function EmptyHostel({ onAdd }: { onAdd?: () => void }) {
       size="lg"
       title="No hostel rooms configured"
       description="Set up blocks and rooms to manage boarding student accommodation and occupancy."
-      actions={[
-        { label: "Add Room", icon: "bi-plus-circle-fill", onClick: onAdd },
-      ]}
+      actions={[{ label: 'Add Room', icon: 'bi-plus-circle-fill', onClick: onAdd }]}
     />
   );
 }
@@ -454,17 +423,11 @@ export function EmptyTransport({ onAdd }: { onAdd?: () => void }) {
       size="lg"
       title="No bus routes set up"
       description="Add bus routes and assign drivers to manage student transportation and fee collection."
-      actions={[
-        { label: "Add Route", icon: "bi-plus-circle-fill", onClick: onAdd },
-      ]}
+      actions={[{ label: 'Add Route', icon: 'bi-plus-circle-fill', onClick: onAdd }]}
     />
   );
 }
-export function EmptyNotificationsPage({
-  onCreate,
-}: {
-  onCreate?: () => void;
-}) {
+export function EmptyNotificationsPage({ onCreate }: { onCreate?: () => void }) {
   return (
     <EmptyState
       card
@@ -475,8 +438,8 @@ export function EmptyNotificationsPage({
       description="Send school-wide announcements to students, parents, and staff. Track delivery and open rates here."
       actions={[
         {
-          label: "New Announcement",
-          icon: "bi-megaphone-fill",
+          label: 'New Announcement',
+          icon: 'bi-megaphone-fill',
           onClick: onCreate,
         },
       ]}
@@ -494,10 +457,10 @@ export function EmptyAnalytics() {
       description="Analytics will appear here once students, attendance, fees, and exam data have been recorded."
       actions={[
         {
-          label: "Go to Dashboard",
-          icon: "bi-speedometer2",
-          href: "/",
-          variant: "ghost",
+          label: 'Go to Dashboard',
+          icon: 'bi-speedometer2',
+          href: '/',
+          variant: 'ghost',
         },
       ]}
     />
@@ -511,9 +474,7 @@ export function EmptyMeetings() {
       size="sm"
       title="No meetings today"
       description="Schedule parent meetings to appear here."
-      actions={[
-        { label: "Schedule Meeting", icon: "bi-plus", variant: "ghost" },
-      ]}
+      actions={[{ label: 'Schedule Meeting', icon: 'bi-plus', variant: 'ghost' }]}
     />
   );
 }
@@ -527,10 +488,10 @@ export function EmptyEvents({ onAdd }: { onAdd?: () => void }) {
       description="Add events to the school calendar to keep everyone informed."
       actions={[
         {
-          label: "Add Event",
-          icon: "bi-plus",
+          label: 'Add Event',
+          icon: 'bi-plus',
           onClick: onAdd,
-          variant: "ghost",
+          variant: 'ghost',
         },
       ]}
     />
