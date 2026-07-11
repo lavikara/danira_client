@@ -5,11 +5,12 @@ import { usePathname } from 'next/navigation';
 import { NAV_SECTIONS } from '@/lib/nav-config';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useToastContext } from '@/contexts/toast-context';
 import { cn, abbreviate, capitalize } from '@/utils/helpers';
+import { postMethod } from '@/app/api/apiClient';
 import { LoadingSvg } from '@/components/ui/loading-svg';
-import { useLoggedInUser } from '@/store/userStore';
+import { useUserStore } from '@/store/userStore';
 
 export function Sidebar() {
   const { collapsed, toggleSidebar, mobileOpen, setMobileOpen } = useSidebar();
@@ -17,22 +18,30 @@ export function Sidebar() {
 
   const router = useRouter();
   const { error } = useToastContext();
-  const { user, isLoading, fetchLoggedInUser } = useLoggedInUser();
+
+  const apiCall = useRef(false);
+
+  const { user, isLoading, unAuthorised, fetchLoggedInUser } = useUserStore();
 
   useEffect(() => {
+    if (apiCall.current) return;
+    apiCall.current = true;
     fetchLoggedInUser({
       onError: (errorMessage) => {
         error('User not found', { description: errorMessage });
       },
     });
-  }, [fetchLoggedInUser, error]);
+  }, []);
+
+  useEffect(() => {
+    if (unAuthorised) {
+      handleLogout();
+      error('Invalid session', { description: 'session expired, please login again.' });
+    }
+  }, [unAuthorised]);
 
   const handleLogout = async () => {
-    const res = await fetch('/api/auth/logout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const logout = await res.json();
+    const logout = await postMethod('/api/auth/logout', null);
     if (logout.success) router.replace('/login');
   };
 
