@@ -75,7 +75,7 @@ export default function ClassesPage() {
                 {CLASSES.map((c, i) => (
                   <div
                     key={c.name}
-                    className="rounded-[12px] border-[1.5px] border-border-light p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-card"
+                    className="rounded-xl border-[1.5px] border-border-light p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-card"
                   >
                     <div className="mb-2.5 flex items-center justify-between">
                       <span className="text-[14px] font-bold text-t1">{c.name}</span>
@@ -110,7 +110,7 @@ export default function ClassesPage() {
               <Card>
                 <CardHeader title="Students by Level" />
                 <CardBody>
-                  <div className="h-[200px]">
+                  <div className="h-50">
                     <AppChart
                       type="doughnut"
                       data={{
