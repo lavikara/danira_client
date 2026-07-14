@@ -7,9 +7,21 @@ interface SchoolState {
   schoolDetails: SchoolWithInclude | null;
   groupDetails: SchoolGroups | null;
   schoolLoading: boolean;
-  fetchGroupDetails: (role: Role, options?: { onError?: (msg: string) => void }) => Promise<void>;
-  fetchGroupSchools: (role: Role, options?: { onError?: (msg: string) => void }) => Promise<void>;
-  fetchSchoolDetails: (role: Role, options?: { onError?: (msg: string) => void }) => Promise<void>;
+  fetchGroupDetails: (
+    role: Role,
+    groupId: string,
+    options?: { onError?: (msg: string) => void },
+  ) => Promise<void>;
+  fetchGroupSchools: (
+    role: Role,
+    groupId: string,
+    options?: { onError?: (msg: string) => void },
+  ) => Promise<void>;
+  fetchSchoolDetails: (
+    role: Role,
+    schoolId: string,
+    options?: { onError?: (msg: string) => void },
+  ) => Promise<void>;
 }
 
 export const useSchoolStore = create<SchoolState>((set) => ({
@@ -18,7 +30,7 @@ export const useSchoolStore = create<SchoolState>((set) => ({
   groupDetails: null,
   schoolLoading: true,
 
-  fetchSchoolDetails: async (role, options) => {
+  fetchSchoolDetails: async (role, schoolId, options) => {
     const permission = [
       'GROUPSCHOOLADMIN',
       'SCHOOLADMIN',
@@ -29,13 +41,15 @@ export const useSchoolStore = create<SchoolState>((set) => ({
     if (!permission.includes(role as string)) return;
     set({ schoolLoading: true });
     try {
-      const response = await getMethod('/api/school/single-school');
+      const url = `/api/single-school/${encodeURIComponent(schoolId)}/single-school`;
+      const response = await getMethod(url);
       if (response.error === 'Unauthorised') {
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
 
       const { data } = response;
+
       set({ schoolDetails: data, schoolLoading: false });
     } catch (err: any) {
       set({ schoolLoading: false });
@@ -46,19 +60,18 @@ export const useSchoolStore = create<SchoolState>((set) => ({
     }
   },
 
-  fetchGroupDetails: async (role, options) => {
+  fetchGroupDetails: async (role, groupId, options) => {
     if (role !== 'GROUPSCHOOLADMIN') return;
     set({ schoolLoading: true });
     try {
-      const response = await getMethod('/api/school/group-details');
-      if (response.error === 'Unauthorised') {
-        return;
-      }
+      const url = `/api/group-school/${encodeURIComponent(groupId)}/group-details`;
+      const response = await getMethod(url);
+
       if (!response.success) throw new Error('Failed to fetch data');
 
       const { data } = response;
 
-      set({ groupDetails: data, schoolLoading: false });
+      set({ groupDetails: data?.schoolGroups, schoolLoading: false });
     } catch (err: any) {
       set({ schoolLoading: false });
       const errorMsg = err.message || 'An error occured';
@@ -68,16 +81,16 @@ export const useSchoolStore = create<SchoolState>((set) => ({
     }
   },
 
-  fetchGroupSchools: async (role, options) => {
+  fetchGroupSchools: async (role, groupId, options) => {
     if (role !== 'GROUPSCHOOLADMIN') return;
     set({ schoolLoading: true });
     try {
-      const response = await getMethod('/api/school/group-schools');
+      const url = `/api/group-school/${encodeURIComponent(groupId)}/group-schools`;
+      const response = await getMethod(url);
 
       if (!response.success) throw new Error('Failed to fetch data');
 
       const { data } = response;
-
       set({ groupSchools: data, schoolLoading: false });
     } catch (err: any) {
       set({ schoolLoading: false });
