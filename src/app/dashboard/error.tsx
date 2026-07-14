@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import Link from "next/link";
+import { useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Error({
   error,
@@ -20,12 +20,12 @@ export default function Error({
         <i className="bi bi-exclamation-triangle-fill" />
       </div>
       <h1 className="text-[19px] font-bold text-t1">Something went wrong</h1>
-      <p className="mt-2 max-w-[400px] text-[13.5px] text-t2">
-        An unexpected error occurred while loading this page. You can try
-        again, or head back to the dashboard.
+      <p className="mt-2 max-w-100 text-[13.5px] text-t2">
+        An unexpected error occurred while loading this page. You can try again, or head back to the
+        dashboard.
       </p>
       {error?.message && (
-        <code className="mt-3 max-w-[420px] truncate rounded-md bg-border-light px-3 py-1.5 text-[11.5px] text-t3">
+        <code className="mt-3 max-w-105 truncate rounded-md bg-border-light px-3 py-1.5 text-[11.5px] text-t3">
           {error.message}
         </code>
       )}

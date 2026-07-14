@@ -37,7 +37,7 @@ import { useUserStore } from '@/store/userStore';
 import { formatToStringDate, getTimeOfDay, getCurrentTime, capitalize } from '@/utils/helpers';
 
 export default function DashboardPage() {
-  const { user, isLoading } = useUserStore();
+  const { user, data, isLoading } = useUserStore();
   const [time, setTime] = useState<string>();
   const apiCall = useRef(false);
 
@@ -45,6 +45,7 @@ export default function DashboardPage() {
 
   const {
     groupSchools,
+    schoolDetails,
     groupDetails,
     schoolLoading,
     fetchSchoolDetails,
@@ -62,31 +63,35 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    sessionStorage.removeItem('loginPageReloaded');
+  }, []);
+
+  useEffect(() => {
     if (!user?.role || apiCall.current) return;
     apiCall.current = true;
-    fetchGroupDetails(user.role as Role, {
-      onError: (errorMessage) => {
-        error('Unable to get school details', { description: errorMessage });
-      },
-    });
-    fetchGroupSchools(user.role as Role, {
-      onError: (errorMessage) => {
-        error('Unable to get school details', { description: errorMessage });
-      },
-    });
-    fetchSchoolDetails(user.role as Role, {
-      onError: (errorMessage) => {
-        error('Unable to get school details', { description: errorMessage });
-      },
-    });
+
+    const handleError = (errorMessage: string) => {
+      error('Unable to get school details', { description: errorMessage });
+    };
+    if (data?.groupId)
+      Promise.all([
+        fetchGroupDetails(user.role as Role, data?.groupId, { onError: handleError }),
+        fetchGroupSchools(user.role as Role, data?.groupId, { onError: handleError }),
+      ]);
+    if (!data?.groupId)
+      fetchSchoolDetails(user.role as Role, data?.schoolIds[0] as string, { onError: handleError });
   }, [user?.role]);
 
   return (
     <div className="min-w-0">
       <PageHeader
-        loading={isLoading}
+        loading={isLoading || schoolLoading}
         title={`Good ${getTimeOfDay()}, ${capitalize(`${user?.firstName}`)} 👋`}
-        subtitle={`${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`}
+        subtitle={
+          user?.role === 'GROUPSCHOOLADMIN'
+            ? `${groupDetails?.groupName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
+            : `${schoolDetails?.schools.schoolName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
+        }
         actions={
           <>
             <Button variant="ghost" size="sm">
@@ -170,7 +175,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader title="Gender Distribution" subtitle="Current enrollment" />
           <CardBody className="flex items-center gap-4">
-            <div className="h-[120px] w-[120px] shrink-0">
+            <div className="h-30 w-30 shrink-0">
               <AppChart
                 type="doughnut"
                 data={{
