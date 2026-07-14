@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginFormData } from '@/types/definitions';
 import { useToastContext } from '@/contexts/toast-context';
@@ -15,6 +15,14 @@ export default function LoginPage() {
 
   const router = useRouter();
   const { success, error } = useToastContext();
+
+  useEffect(() => {
+    const hasReloaded = sessionStorage.getItem('loginPageReloaded');
+    if (!hasReloaded) {
+      sessionStorage.setItem('loginPageReloaded', 'true');
+      window.location.reload();
+    }
+  }, []);
 
   const handleSubmit = async () => {
     setLoading(true);
