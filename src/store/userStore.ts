@@ -5,7 +5,7 @@ import { getMethod } from '@/app/api/apiClient';
 interface UserState {
   user: Users | null;
   data: (Admins & Staffs) | null;
-  isLoading: boolean;
+  userLoading: boolean;
   unAuthorised: boolean;
   fetchLoggedInUser: (options?: { onError?: (msg: string) => void }) => Promise<void>;
 }
@@ -13,11 +13,11 @@ interface UserState {
 export const useUserStore = create<UserState>((set) => ({
   user: null,
   data: null,
-  isLoading: true,
+  userLoading: true,
   unAuthorised: false,
 
   fetchLoggedInUser: async (options) => {
-    set({ isLoading: true });
+    set({ userLoading: true });
     try {
       const response = await getMethod('/api/user/me');
       if (response.error === 'Unauthorised') {
@@ -27,9 +27,9 @@ export const useUserStore = create<UserState>((set) => ({
 
       const { data } = response;
       const dataKey = Object.keys(data)[0] as keyof (Admins | Staffs);
-      set({ user: data[dataKey].users, data: data[dataKey], isLoading: false });
+      set({ user: data[dataKey].users, data: data[dataKey], userLoading: false });
     } catch (err: any) {
-      set({ isLoading: false });
+      set({ userLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
