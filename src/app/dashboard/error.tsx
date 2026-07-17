@@ -38,7 +38,7 @@ export default function Error({
           Try Again
         </button>
         <Link
-          href="/"
+          href="/dashboard"
           className="inline-flex items-center gap-1.5 rounded-[9px] border border-border bg-surface px-4 py-2 text-[13px] font-semibold text-t2 transition-all hover:border-primary hover:text-primary"
         >
           <i className="bi bi-house-fill" />
