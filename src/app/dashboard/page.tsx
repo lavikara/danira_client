@@ -37,16 +37,16 @@ import { useUserStore } from '@/store/userStore';
 import { formatToStringDate, getTimeOfDay, getCurrentTime, capitalize } from '@/utils/helpers';
 
 export default function DashboardPage() {
-  const { user, data, isLoading } = useUserStore();
+  const { user, data, userLoading } = useUserStore();
   const [time, setTime] = useState<string>();
   const apiCall = useRef(false);
 
   const { error } = useToastContext();
 
   const {
-    groupSchools,
+    groupSchoolSchools,
     schoolDetails,
-    groupDetails,
+    groupSchoolDetails,
     schoolLoading,
     fetchSchoolDetails,
     fetchGroupDetails,
@@ -73,23 +73,25 @@ export default function DashboardPage() {
     const handleError = (errorMessage: string) => {
       error('Unable to get school details', { description: errorMessage });
     };
-    if (data?.groupId)
+    if (data?.groupId) {
       Promise.all([
         fetchGroupDetails(user.role as Role, data?.groupId, { onError: handleError }),
         fetchGroupSchools(user.role as Role, data?.groupId, { onError: handleError }),
       ]);
-    if (!data?.groupId)
+    }
+    if (!data?.groupId) {
       fetchSchoolDetails(user.role as Role, data?.schoolIds[0] as string, { onError: handleError });
+    }
   }, [user?.role]);
 
   return (
     <div className="min-w-0">
       <PageHeader
-        loading={isLoading || schoolLoading}
+        loading={userLoading || schoolLoading}
         title={`Good ${getTimeOfDay()}, ${capitalize(`${user?.firstName}`)} 👋`}
         subtitle={
           user?.role === 'GROUPSCHOOLADMIN'
-            ? `${groupDetails?.groupName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
+            ? `${groupSchoolDetails?.groupName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
             : `${schoolDetails?.schools.schoolName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
         }
         actions={
