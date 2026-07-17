@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ schoolId: string }> },
 ) {
   const { schoolId } = await params;
-  const backendPath = `/school/${encodeURIComponent(schoolId)}/single-school`;
+  const backendPath = `/staff/${encodeURIComponent(schoolId)}/all`;
 
   return getServerRequest(backendPath, request.method, {
     Authorization: `Bearer ${await authHeader()}`,
