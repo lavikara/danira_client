@@ -83,7 +83,8 @@ type UserCondition =
   | 'SACKED'
   | 'LEAVE'
   | 'PENDING'
-  | 'TRANSFERED';
+  | 'TRANSFERED'
+  | StaffStatus;
 
 type Accomodation = 'ONCAMPUS' | 'OFFCAMPUS' | 'STAFFQUARTERS';
 
@@ -97,28 +98,44 @@ export type Admins = {
   groupId: string | null;
 };
 
-export type Staffs = {
+export interface Departments {
+  id: string;
+  name: string;
+  code: string | null;
+  description: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  schoolId: string;
+  headId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Staffs {
   id: string;
   userId: string;
   position: string;
   image: string | null;
-  depertment: string | null;
-  accomodation: Accomodation | null;
-  employmentStatus: StaffStatus;
-  schoolId: string | null;
-};
+  accomodation: string | null;
+  employmentStatus: string;
+  schoolId: string;
+  departmentId: string;
+  department: Departments;
+  users: Users;
+  subjects: Subjects[];
+  lessonCount?: number;
+}
 
-export type Users = {
-  email: string;
+export interface Users {
   id: string;
   username: string;
-  password: string;
+  email: string;
   firstName: string;
   lastName: string;
   designation: string | null;
   phoneNumber: string;
   country: string;
   state: string;
+  ratings: string;
   address: string;
   isVerified: boolean;
   gender: Gender;
@@ -126,7 +143,7 @@ export type Users = {
   status: UserCondition;
   createdAt: Date;
   updatedAt: Date;
-};
+}
 
 export type Schools = {
   id: string;
@@ -148,6 +165,20 @@ export type Schools = {
   groupId: string | null;
 };
 
+export interface Subjects {
+  id: string;
+  name: string;
+  description: string;
+  code: string;
+  createdAt: string;
+  updatedAt: string;
+  status: string;
+  examId: string | null;
+  testId: string | null;
+  reportCardId: string | null;
+  departmentId: string;
+}
+
 export type Students = {
   id: string;
   userId: string;
@@ -163,6 +194,58 @@ export type Students = {
   subjectId: string | null;
   departmentId: string | null;
 };
+
+export interface Dataset {
+  label: string;
+  data: number[];
+  backgroundColor: string;
+  borderColor: string;
+  borderWidth: number;
+}
+
+export interface BarChart {
+  labels: string[];
+  datasets: Dataset[];
+}
+
+export interface TopTeacherWorkloadItem {
+  staffId: string;
+  firstName: string;
+  lastName: string;
+  position: string;
+  schoolId: string;
+  studentCount: number;
+}
+
+export interface TopTeachersByWorkload {
+  chart: BarChart;
+  raw: TopTeacherWorkloadItem[];
+}
+
+export interface StaffAnalyticsResponse {
+  totalStaffs: number;
+  activeStaffs: number;
+  staffsOnLeave: number;
+  averageRating: number;
+  topTeachersByWorkload: TopTeachersByWorkload;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface StaffListResponse {
+  data: Staffs[];
+  meta: PaginationMeta;
+  timestamp: string;
+  success: boolean;
+  message: string;
+}
 
 export interface SchoolWithInclude {
   schools: Schools & { students: Students; staffs: Staffs };
