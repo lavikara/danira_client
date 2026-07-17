@@ -3,9 +3,9 @@ import { GroupSchools, SchoolWithInclude, SchoolGroups, Role } from '@/types/def
 import { getMethod } from '@/app/api/apiClient';
 
 interface SchoolState {
-  groupSchools: GroupSchools[] | null;
+  groupSchoolSchools: GroupSchools[] | null;
   schoolDetails: SchoolWithInclude | null;
-  groupDetails: SchoolGroups | null;
+  groupSchoolDetails: SchoolGroups | null;
   schoolLoading: boolean;
   fetchGroupDetails: (
     role: Role,
@@ -25,9 +25,9 @@ interface SchoolState {
 }
 
 export const useSchoolStore = create<SchoolState>((set) => ({
-  groupSchools: null,
+  groupSchoolSchools: null,
   schoolDetails: null,
-  groupDetails: null,
+  groupSchoolDetails: null,
   schoolLoading: true,
 
   fetchSchoolDetails: async (role, schoolId, options) => {
@@ -41,7 +41,7 @@ export const useSchoolStore = create<SchoolState>((set) => ({
     if (!permission.includes(role as string)) return;
     set({ schoolLoading: true });
     try {
-      const url = `/api/single-school/${encodeURIComponent(schoolId)}/single-school`;
+      const url = `/api/single-school/${encodeURIComponent(schoolId)}/school-details`;
       const response = await getMethod(url);
       if (response.error === 'Unauthorised') {
         return;
@@ -71,7 +71,7 @@ export const useSchoolStore = create<SchoolState>((set) => ({
 
       const { data } = response;
 
-      set({ groupDetails: data?.schoolGroups, schoolLoading: false });
+      set({ groupSchoolDetails: data?.schoolGroups, schoolLoading: false });
     } catch (err: any) {
       set({ schoolLoading: false });
       const errorMsg = err.message || 'An error occured';
@@ -91,7 +91,7 @@ export const useSchoolStore = create<SchoolState>((set) => ({
       if (!response.success) throw new Error('Failed to fetch data');
 
       const { data } = response;
-      set({ groupSchools: data, schoolLoading: false });
+      set({ groupSchoolSchools: data, schoolLoading: false });
     } catch (err: any) {
       set({ schoolLoading: false });
       const errorMsg = err.message || 'An error occured';
