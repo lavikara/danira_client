@@ -108,7 +108,7 @@ export const NAV_SECTIONS: NavSection[] = [
 export const PAGE_META: Record<string, { title: string; subtitle: string }> = {
   '/dashboard': { title: 'Dashboard', subtitle: 'EduAdmin Pro / Dashboard' },
   '/dashboard/students': { title: 'Students', subtitle: 'EduAdmin Pro / Students' },
-  '/dashboard/staffs': { title: 'Teachers', subtitle: 'EduAdmin Pro / Staffs' },
+  '/dashboard/staffs': { title: 'Staffs', subtitle: 'EduAdmin Pro / Staffs' },
   '/dashboard/parents': { title: 'Parents', subtitle: 'EduAdmin Pro / Parents' },
   '/dashboard/attendance': { title: 'Attendance', subtitle: 'EduAdmin Pro / Attendance' },
   '/dashboard/classes': { title: 'Classes', subtitle: 'EduAdmin Pro / Classes' },
