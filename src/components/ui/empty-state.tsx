@@ -101,10 +101,7 @@ export function EmptyState({
         {title}
       </p>
       {description && (
-        <p
-          style={{ color: 'var(--t2)' }}
-          className="mt-2 max-w-[380px] text-[13px] leading-relaxed"
-        >
+        <p style={{ color: 'var(--t2)' }} className="mt-2 max-w-95 text-[13px] leading-relaxed">
           {description}
         </p>
       )}
