@@ -30,28 +30,12 @@ import {
 } from '@/data/dashboard';
 import { RECENT_REGISTRATIONS } from '@/data/students';
 import Link from 'next/link';
-import { Role } from '@/types/definitions';
-import { useToastContext } from '@/contexts/toast-context';
-import { useSchoolStore } from '@/store/schoolStore';
 import { useUserStore } from '@/store/userStore';
 import { formatToStringDate, getTimeOfDay, getCurrentTime, capitalize } from '@/utils/helpers';
 
 export default function DashboardPage() {
   const { user, data, userLoading } = useUserStore();
   const [time, setTime] = useState<string>();
-  const apiCall = useRef(false);
-
-  const { error } = useToastContext();
-
-  const {
-    groupSchoolSchools,
-    schoolDetails,
-    groupSchoolDetails,
-    schoolLoading,
-    fetchSchoolDetails,
-    fetchGroupDetails,
-    fetchGroupSchools,
-  } = useSchoolStore();
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -66,33 +50,15 @@ export default function DashboardPage() {
     sessionStorage.removeItem('loginPageReloaded');
   }, []);
 
-  useEffect(() => {
-    if (!user?.role || apiCall.current) return;
-    apiCall.current = true;
-
-    const handleError = (errorMessage: string) => {
-      error('Unable to get school details', { description: errorMessage });
-    };
-    if (data?.groupId) {
-      Promise.all([
-        fetchGroupDetails(user.role as Role, data?.groupId, { onError: handleError }),
-        fetchGroupSchools(user.role as Role, data?.groupId, { onError: handleError }),
-      ]);
-    }
-    if (!data?.groupId) {
-      fetchSchoolDetails(user.role as Role, data?.schoolIds[0] as string, { onError: handleError });
-    }
-  }, [user?.role]);
-
   return (
     <div className="min-w-0">
       <PageHeader
-        loading={userLoading || schoolLoading}
+        loading={userLoading}
         title={`Good ${getTimeOfDay()}, ${capitalize(`${user?.firstName}`)} 👋`}
         subtitle={
           user?.role === 'GROUPSCHOOLADMIN'
-            ? `${groupSchoolDetails?.groupName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
-            : `${schoolDetails?.schools.schoolName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
+            ? `${data?.group.groupName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
+            : `${data?.schools[0].schoolName} ${formatToStringDate(Date.now(), false)}, ${time ? time : ''}`
         }
         actions={
           <>
