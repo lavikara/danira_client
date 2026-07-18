@@ -1,19 +1,24 @@
-import { cn } from "@/utils/helpers";
+import { cn } from '@/utils/helpers';
 
 export function Card({
   children,
+  id,
   className,
+  onClick,
 }: {
   children: React.ReactNode;
+  id?: string;
   className?: string;
+  onClick?: (id: string) => void;
 }) {
   return (
     <div
       style={{
-        backgroundColor: "var(--surface)",
-        borderColor: "var(--border-light)",
+        backgroundColor: 'var(--surface)',
+        borderColor: 'var(--border-light)',
       }}
-      className={cn("rounded-2xl border shadow-card", className)}
+      className={cn('rounded-2xl border shadow-card', className)}
+      onClick={() => onClick?.(id as string)}
     >
       {children}
     </div>
@@ -31,15 +36,15 @@ export function CardHeader({
 }) {
   return (
     <div
-      style={{ borderBottomColor: "var(--border-light)" }}
-      className="flex items-center justify-between border-b px-5 py-4"
+      style={{ borderBottomColor: 'var(--border-light)' }}
+      className="block sm:flex items-center justify-between border-b px-5 py-4"
     >
       <div>
-        <p style={{ color: "var(--t1)" }} className="text-[14.5px] font-bold">
+        <p style={{ color: 'var(--t1)' }} className="text-[14.5px] font-bold">
           {title}
         </p>
         {subtitle && (
-          <p style={{ color: "var(--t3)" }} className="mt-0.5 text-xs">
+          <p style={{ color: 'var(--t3)' }} className="mt-0.5 text-xs">
             {subtitle}
           </p>
         )}
@@ -56,5 +61,5 @@ export function CardBody({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <div className={cn("p-4 sm:p-5", className)}>{children}</div>;
+  return <div className={cn('p-4 sm:p-5', className)}>{children}</div>;
 }
