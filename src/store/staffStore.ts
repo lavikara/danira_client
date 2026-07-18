@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { StaffAnalyticsResponse, Staffs, Role } from '@/types/definitions';
+import { StaffAnalyticsResponse, Staffs, PaginationMeta, Role } from '@/types/definitions';
+import { defaultPaginationMeta } from '@/components/ui/table';
 import { getMethod } from '@/app/api/apiClient';
 
 interface StaffState {
@@ -7,10 +8,13 @@ interface StaffState {
   schoolStaffDetails: Staffs[];
   groupStaffDetails: Staffs[];
   groupStaffAnalytics: StaffAnalyticsResponse | null;
+  paginationMeta: PaginationMeta | null;
   staffLoading: boolean;
+  analyticsLoading: boolean;
   fetchAllSchoolStaff: (
     role: Role,
     schoolId: string,
+    query: { page: number; limit: number; search?: string | null },
     options?: { onError?: (msg: string) => void },
   ) => Promise<void>;
   fetchSchoolStaffAnalytics: (
@@ -26,6 +30,7 @@ interface StaffState {
   fetchAllGroupSchoolStaff: (
     role: Role,
     groupId: string,
+    query: { page: number | null; limit: number | null; search?: string | null },
     options?: { onError?: (msg: string) => void },
   ) => Promise<void>;
 }
@@ -35,25 +40,27 @@ export const useStaffStore = create<StaffState>((set) => ({
   schoolStaffDetails: [],
   groupStaffDetails: [],
   groupStaffAnalytics: null,
+  paginationMeta: defaultPaginationMeta,
   staffLoading: true,
+  analyticsLoading: true,
 
-  fetchAllSchoolStaff: async (role, schoolId, options) => {
+  fetchAllSchoolStaff: async (role, schoolId, query, options) => {
     const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
     if (!permission.includes(role as string)) return;
     set({ staffLoading: true });
     try {
-      const url = `/api/single-school/${encodeURIComponent(schoolId)}/all-staffs`;
+      const url = query.search
+        ? `/api/single-school/${encodeURIComponent(schoolId)}/all-staffs?page=${query.page}&limit=${query.limit}&search=${query.search}`
+        : `/api/single-school/${encodeURIComponent(schoolId)}/all-staffs?page=${query.page}&limit=${query.limit}`;
       const response = await getMethod(url);
       if (response.error === 'Unauthorised') {
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
 
-      const { data } = response;
-      set({ schoolStaffDetails: data as Staffs[] });
-      setTimeout(() => {
-        set({ staffLoading: false });
-      }, 500);
+      const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
+      const staffList = Array.isArray(data) ? (data as Staffs[]) : [];
+      set({ schoolStaffDetails: staffList, paginationMeta: response?.meta, staffLoading: false });
     } catch (err: any) {
       set({ staffLoading: false });
       const errorMsg = err.message || 'An error occured';
@@ -66,7 +73,7 @@ export const useStaffStore = create<StaffState>((set) => ({
   fetchSchoolStaffAnalytics: async (role, schoolId, options) => {
     const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
     if (!permission.includes(role as string)) return;
-    set({ staffLoading: true });
+    set({ analyticsLoading: true });
     try {
       const url = `/api/single-school/${encodeURIComponent(schoolId)}/staff-analytics`;
       const response = await getMethod(url);
@@ -75,9 +82,9 @@ export const useStaffStore = create<StaffState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
 
-      set({ schoolStaffAnalytics: response, staffLoading: false });
+      set({ schoolStaffAnalytics: response, analyticsLoading: false });
     } catch (err: any) {
-      set({ staffLoading: false });
+      set({ analyticsLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
@@ -85,19 +92,20 @@ export const useStaffStore = create<StaffState>((set) => ({
     }
   },
 
-  fetchAllGroupSchoolStaff: async (role, groupId, options) => {
+  fetchAllGroupSchoolStaff: async (role, groupId, query, options) => {
     if (role !== 'GROUPSCHOOLADMIN') return;
     set({ staffLoading: true });
     try {
-      const url = `/api/group-school/${encodeURIComponent(groupId)}/all-staffs`;
+      const url = query.search
+        ? `/api/group-school/${encodeURIComponent(groupId)}/all-staffs?page=${query.page}&limit=${query.limit}&search=${query.search}`
+        : `/api/group-school/${encodeURIComponent(groupId)}/all-staffs?page=${query.page}&limit=${query.limit}`;
+
       const response = await getMethod(url);
       if (!response.success) throw new Error('Failed to fetch data');
 
-      const { data } = response;
-      set({ groupStaffDetails: data as Staffs[] });
-      setTimeout(() => {
-        set({ staffLoading: false });
-      }, 500);
+      const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
+      const staffList = Array.isArray(data) ? (data as Staffs[]) : [];
+      set({ groupStaffDetails: staffList, paginationMeta: response?.meta, staffLoading: false });
     } catch (err: any) {
       set({ staffLoading: false });
       const errorMsg = err.message || 'An error occured';
@@ -110,7 +118,7 @@ export const useStaffStore = create<StaffState>((set) => ({
   fetchGroupStaffAnalytics: async (role, groupId, options) => {
     const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
     if (!permission.includes(role as string)) return;
-    set({ staffLoading: true });
+    set({ analyticsLoading: true });
     try {
       const url = `/api/group-school/${encodeURIComponent(groupId)}/group-staff-analytics`;
       const response = await getMethod(url);
@@ -119,9 +127,9 @@ export const useStaffStore = create<StaffState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
 
-      set({ groupStaffAnalytics: response, staffLoading: false });
+      set({ groupStaffAnalytics: response, analyticsLoading: false });
     } catch (err: any) {
-      set({ staffLoading: false });
+      set({ analyticsLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
