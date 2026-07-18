@@ -98,6 +98,16 @@ export type Admins = {
   groupId: string | null;
 };
 
+export interface LoggedInUserPayload<
+  TUser = Users,
+  TSchool = Schools,
+  TGroup = SchoolGroups,
+> extends Admins {
+  users: TUser;
+  schools: TSchool[];
+  group: TGroup;
+}
+
 export interface Departments {
   id: string;
   name: string;
@@ -231,8 +241,8 @@ export interface StaffAnalyticsResponse {
 }
 
 export interface PaginationMeta {
-  page: number;
-  limit: number;
+  page: number | null;
+  limit: number | null;
   total: number;
   totalPages: number;
   hasNextPage: boolean;
