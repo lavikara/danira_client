@@ -344,7 +344,7 @@ export default function StaffsPage() {
               }
               onPageChange={setPage}
               onLimitChange={setPageLimit}
-              limitOptions={[10, 20, 40, 80, 120, 200]}
+              limitOptions={[10, 20, 40, 80, 100]}
             />
           </Card>
 

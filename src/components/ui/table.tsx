@@ -100,7 +100,7 @@ export function Pagination({
   pagination,
   onPageChange,
   onLimitChange,
-  limitOptions = [10, 20, 40, 80, 120, 200],
+  limitOptions = [10, 20, 40, 80, 100],
   className,
 }: {
   pagination?: PaginationMeta | null;
@@ -140,7 +140,7 @@ export function Pagination({
 
     return pages;
   };
-
+  if (!limit) return;
   const startItem = total === 0 ? 0 : (currentPage - 1) * limit + 1;
   const endItem = total === 0 ? 0 : Math.min(currentPage * limit, total);
 
