@@ -47,7 +47,7 @@ export default function StaffsPage() {
     groupStaffAnalytics,
     paginationMeta,
     staffLoading,
-    analyticsLoading,
+    staffAnalyticsLoading,
     fetchSchoolStaffAnalytics,
     fetchGroupStaffAnalytics,
     fetchAllSchoolStaff,
@@ -216,15 +216,15 @@ export default function StaffsPage() {
         <>
           <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
-              loading={analyticsLoading}
+              loading={staffAnalyticsLoading || !stats}
               icon="bi bi-person-workspace"
               color="blue"
               value={showGroupData ? String(stats?.totalStaffs) : String(stats?.totalStaffs)}
-              label={singleSchoolId === '' ? `Total Group Staff` : `Total School Staff`}
+              label="Total Staff"
               compact
             />
             <StatCard
-              loading={analyticsLoading}
+              loading={staffAnalyticsLoading || !stats}
               icon="bi bi-person-check-fill"
               color="green"
               value={showGroupData ? String(stats?.activeStaffs) : String(stats?.activeStaffs)}
@@ -232,7 +232,7 @@ export default function StaffsPage() {
               compact
             />
             <StatCard
-              loading={analyticsLoading}
+              loading={staffAnalyticsLoading || !stats}
               icon="bi bi-clock-history"
               color="orange"
               value={showGroupData ? String(stats?.staffsOnLeave) : String(stats?.staffsOnLeave)}
@@ -240,15 +240,49 @@ export default function StaffsPage() {
               compact
             />
             <StatCard
-              loading={analyticsLoading}
+              loading={staffAnalyticsLoading || !stats}
               icon="bi bi-star-fill"
               color="purple"
               value={showGroupData ? String(stats?.averageRating) : String(stats?.averageRating)}
-              label={singleSchoolId === '' ? `Avg Group Rating` : `Avg School Rating`}
+              label="Avg Rating"
               compact
             />
           </div>
-
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-5">
+            <Card className="col-start-1 col-end-3">
+              <CardHeader title="Staff Workload" />
+              <CardBody>
+                {!staffAnalyticsLoading && (
+                  <AppChart
+                    type="bar"
+                    height={230}
+                    data={stats?.topTeachersByWorkload.chart as any}
+                  />
+                )}
+              </CardBody>
+            </Card>
+            <Card>
+              <CardHeader
+                title="Staff Recent Activity"
+                action={<Badge color="green">Live</Badge>}
+              />
+              <CardBody className="py-2">
+                {TEACHER_ACTIVITY.length === 0 ? (
+                  <EmptyRecentActivity />
+                ) : (
+                  <NotificationList
+                    items={TEACHER_ACTIVITY.map((a) => ({
+                      icon: a.icon,
+                      bg: 'var(--color-bg)',
+                      iconColor: a.color,
+                      text: a.text,
+                      time: a.time,
+                    }))}
+                  />
+                )}
+              </CardBody>
+            </Card>
+          </div>
           <Card>
             <CardHeader
               title="Staff Directory"
@@ -260,7 +294,7 @@ export default function StaffsPage() {
               action={
                 <SearchComponent
                   id="staff_search"
-                  placeholder="Staff Name"
+                  placeholder="Name, ID, Position, Email"
                   onSearchInput={setSearch}
                   className="w-full"
                 />
@@ -272,17 +306,18 @@ export default function StaffsPage() {
                 <TH>Teacher</TH>
                 <TH>Subject</TH>
                 <TH>Department</TH>
+                <TH>Position</TH>
                 <TH>Lessons/Wk</TH>
                 <TH>Rating</TH>
                 <TH>Status</TH>
                 <TH>Action</TH>
               </THead>
               {staffLoading ? (
-                <TableSkeleton rows={5} columns={8} />
+                <TableSkeleton rows={5} columns={9} />
               ) : (
                 <TBody>
                   {staffDetails.length === 0 ? (
-                    <EmptyTableRow colSpan={12} />
+                    <EmptyTableRow colSpan={9} />
                   ) : (
                     (staffDetails ?? []).map((staff, index) => {
                       const subjectNames = Array.isArray(staff.subjects)
@@ -308,6 +343,7 @@ export default function StaffsPage() {
                             <Tag>{subjectNames}</Tag>
                           </TD>
                           <TD className="font-semibold">{staff.department.name}</TD>
+                          <TD className="font-semibold">{staff.position}</TD>
                           <TD className="font-semibold">{staff.lessonCount || '_'}</TD>
                           <TD>
                             <div className="flex items-center gap-1">
@@ -347,42 +383,6 @@ export default function StaffsPage() {
               limitOptions={[10, 20, 40, 80, 100]}
             />
           </Card>
-
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-5">
-            <Card>
-              <CardHeader title="Staff Workload" />
-              <CardBody>
-                {!analyticsLoading && (
-                  <AppChart
-                    type="bar"
-                    height={230}
-                    data={stats?.topTeachersByWorkload.chart as any}
-                  />
-                )}
-              </CardBody>
-            </Card>
-            <Card>
-              <CardHeader
-                title="Staff Recent Activity"
-                action={<Badge color="green">Live</Badge>}
-              />
-              <CardBody className="py-2">
-                {TEACHER_ACTIVITY.length === 0 ? (
-                  <EmptyRecentActivity />
-                ) : (
-                  <NotificationList
-                    items={TEACHER_ACTIVITY.map((a) => ({
-                      icon: a.icon,
-                      bg: 'var(--color-bg)',
-                      iconColor: a.color,
-                      text: a.text,
-                      time: a.time,
-                    }))}
-                  />
-                )}
-              </CardBody>
-            </Card>
-          </div>
         </>
       )}
     </div>
