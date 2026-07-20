@@ -10,7 +10,7 @@ interface StaffState {
   groupStaffAnalytics: StaffAnalyticsResponse | null;
   paginationMeta: PaginationMeta | null;
   staffLoading: boolean;
-  analyticsLoading: boolean;
+  staffAnalyticsLoading: boolean;
   fetchAllSchoolStaff: (
     role: Role,
     schoolId: string,
@@ -42,12 +42,12 @@ export const useStaffStore = create<StaffState>((set) => ({
   groupStaffAnalytics: null,
   paginationMeta: defaultPaginationMeta,
   staffLoading: true,
-  analyticsLoading: true,
+  staffAnalyticsLoading: true,
 
   fetchAllSchoolStaff: async (role, schoolId, query, options) => {
+    set({ staffLoading: true });
     const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
     if (!permission.includes(role as string)) return;
-    set({ staffLoading: true });
     try {
       const url = query.search
         ? `/api/single-school/${encodeURIComponent(schoolId)}/all-staffs?page=${query.page}&limit=${query.limit}&search=${query.search}`
@@ -60,7 +60,8 @@ export const useStaffStore = create<StaffState>((set) => ({
 
       const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
       const staffList = Array.isArray(data) ? (data as Staffs[]) : [];
-      set({ schoolStaffDetails: staffList, paginationMeta: response?.meta, staffLoading: false });
+      set({ schoolStaffDetails: staffList, paginationMeta: response?.meta });
+      set({ staffLoading: false });
     } catch (err: any) {
       set({ staffLoading: false });
       const errorMsg = err.message || 'An error occured';
@@ -71,9 +72,9 @@ export const useStaffStore = create<StaffState>((set) => ({
   },
 
   fetchSchoolStaffAnalytics: async (role, schoolId, options) => {
+    set({ staffAnalyticsLoading: true });
     const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
     if (!permission.includes(role as string)) return;
-    set({ analyticsLoading: true });
     try {
       const url = `/api/single-school/${encodeURIComponent(schoolId)}/staff-analytics`;
       const response = await getMethod(url);
@@ -82,9 +83,10 @@ export const useStaffStore = create<StaffState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
 
-      set({ schoolStaffAnalytics: response, analyticsLoading: false });
+      set({ schoolStaffAnalytics: response });
+      set({ staffAnalyticsLoading: false });
     } catch (err: any) {
-      set({ analyticsLoading: false });
+      set({ staffAnalyticsLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
@@ -93,8 +95,8 @@ export const useStaffStore = create<StaffState>((set) => ({
   },
 
   fetchAllGroupSchoolStaff: async (role, groupId, query, options) => {
-    if (role !== 'GROUPSCHOOLADMIN') return;
     set({ staffLoading: true });
+    if (role !== 'GROUPSCHOOLADMIN') return;
     try {
       const url = query.search
         ? `/api/group-school/${encodeURIComponent(groupId)}/all-staffs?page=${query.page}&limit=${query.limit}&search=${query.search}`
@@ -105,7 +107,8 @@ export const useStaffStore = create<StaffState>((set) => ({
 
       const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
       const staffList = Array.isArray(data) ? (data as Staffs[]) : [];
-      set({ groupStaffDetails: staffList, paginationMeta: response?.meta, staffLoading: false });
+      set({ groupStaffDetails: staffList, paginationMeta: response?.meta });
+      set({ staffLoading: false });
     } catch (err: any) {
       set({ staffLoading: false });
       const errorMsg = err.message || 'An error occured';
@@ -116,9 +119,9 @@ export const useStaffStore = create<StaffState>((set) => ({
   },
 
   fetchGroupStaffAnalytics: async (role, groupId, options) => {
-    const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
-    if (!permission.includes(role as string)) return;
-    set({ analyticsLoading: true });
+    set({ staffAnalyticsLoading: true });
+    if (role !== 'GROUPSCHOOLADMIN') return;
+
     try {
       const url = `/api/group-school/${encodeURIComponent(groupId)}/group-staff-analytics`;
       const response = await getMethod(url);
@@ -127,9 +130,10 @@ export const useStaffStore = create<StaffState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
 
-      set({ groupStaffAnalytics: response, analyticsLoading: false });
+      set({ groupStaffAnalytics: response });
+      set({ staffAnalyticsLoading: false });
     } catch (err: any) {
-      set({ analyticsLoading: false });
+      set({ staffAnalyticsLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
