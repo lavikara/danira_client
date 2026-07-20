@@ -7,13 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ groupId: string }> },
 ) {
   const { groupId } = await params;
-  const { searchParams } = new URL(request.url);
-  const page = searchParams.get('page');
-  const limit = searchParams.get('limit');
-  const search = searchParams.get('search');
-  const backendPath = search
-    ? `/staff/${encodeURIComponent(groupId)}/all-group?page=${page}&limit=${limit}&search=${search}`
-    : `/staff/${encodeURIComponent(groupId)}/all-group?page=${page}&limit=${limit}`;
+  const backendPath = `/student/${encodeURIComponent(groupId)}/analytics-group`;
 
   return getServerRequest(backendPath, request.method, {
     Authorization: `Bearer ${await authHeader()}`,

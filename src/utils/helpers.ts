@@ -98,8 +98,6 @@ export const abbreviate = (str: string): string => {
     .join('');
 };
 
-
-
 export const formatToStringDate = (date: number | string, hideDay: boolean = true) => {
   if (!date) return '';
   let datetime = '';
@@ -153,4 +151,3 @@ export const getCurrentTime = (date: Date = new Date()): string => {
   const seconds = date.getSeconds().toString().padStart(2, '0');
   return `${hours}:${minutes}:${seconds}`;
 };
-

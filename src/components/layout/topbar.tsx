@@ -14,7 +14,7 @@ export function Topbar() {
   const pathname = usePathname();
   const meta = PAGE_META[pathname] ?? { title: 'EduAdmin Pro', subtitle: '' };
 
-  const { user, isLoading } = useUserStore();
+  const { user, userLoading } = useUserStore();
 
   return (
     <header
@@ -112,8 +112,8 @@ export function Topbar() {
         </button>
 
         {/* User chip */}
-        {isLoading ? (
-          <div className="w-full w-38!  h-13 flex justify-center items-center">
+        {userLoading ? (
+          <div className="w-38!  h-13 flex justify-center items-center">
             <LoadingSvg />
           </div>
         ) : (

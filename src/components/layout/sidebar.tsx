@@ -21,7 +21,7 @@ export function Sidebar() {
 
   const apiCall = useRef(false);
 
-  const { user, isLoading, unAuthorised, fetchLoggedInUser } = useUserStore();
+  const { user, userLoading, unAuthorised, fetchLoggedInUser } = useUserStore();
 
   useEffect(() => {
     if (apiCall.current) return;
@@ -171,7 +171,7 @@ export function Sidebar() {
 
         {/* ── User footer ── */}
         <div style={{ borderTopColor: 'var(--sidebar-border)' }} className="shrink-0 border-t p-2">
-          {isLoading ? (
+          {userLoading ? (
             <div className="w-full h-13 flex justify-center items-center">
               <LoadingSvg />
             </div>

@@ -98,6 +98,16 @@ export type Admins = {
   groupId: string | null;
 };
 
+export interface LoggedInUserPayload<
+  TUser = Users,
+  TSchool = Schools,
+  TGroup = SchoolGroups,
+> extends Admins {
+  users: TUser;
+  schools: TSchool[];
+  group: TGroup;
+}
+
 export interface Departments {
   id: string;
   name: string;
@@ -181,10 +191,13 @@ export interface Subjects {
 
 export type Students = {
   id: string;
+  studentId: string;
   userId: string;
   image: string | null;
   accomodation: Accomodation | null;
   classId: string;
+  fees: Fees[] | string;
+  attendances: Attendance[] | number;
   guardianId: string;
   schoolId: string | null;
   gradeYearId: string | null;
@@ -193,8 +206,143 @@ export type Students = {
   assignmentId: string | null;
   subjectId: string | null;
   departmentId: string | null;
+  users: Users;
+  class: Classes;
+  department: Departments;
+  subjects: Subjects[];
 };
 
+export interface Classes {
+  id: string;
+  name: string;
+  type: ClassType;
+  status: ClassCondition;
+  description: string;
+  population: number;
+  supervisorId: string;
+  supervisor: Staffs;
+  lessons: Lessons[];
+  students: Students[];
+  events: Events[];
+  announcements: Announcements[];
+  fees: Fees[];
+  gradeYearId: string;
+  gradeYear: GradeYears;
+  department: Departments;
+}
+
+export interface Lessons {
+  id: string;
+  name: string;
+  description: string;
+  day: Day;
+  status: Duration;
+  startTime: string;
+  endTime: string;
+  attendances: Attendance[];
+  subject: Subjects;
+  subjectId: string;
+  class: Classes;
+  classId: string;
+  staff: Staffs;
+  staffId: string;
+  assignmentId: string;
+  assignment: Assignments;
+}
+
+export interface Assignments {
+  id: string;
+  title: string;
+  startTime: string;
+  dueDate: string;
+  status: Duration;
+  lessons: Lessons[];
+  students: Students[];
+}
+
+export interface Attendance {
+  id: string;
+  date: string;
+  attendance: AttendanceStatus;
+  status: Duration;
+  studentId: string;
+  student: Students;
+  lessonId: string;
+  lesson: Lessons;
+}
+
+export interface Fees {
+  id: string;
+  name: string;
+  description: string;
+  receipt: string;
+  amount: number;
+  paid: number;
+  outstanding: number;
+  category: FeeCategory;
+  status: FeeStatus;
+  studentId: string;
+  student: Students;
+  schoolId: string;
+  school: Schools;
+  classId: string;
+  class: Classes;
+  feeStructureId: string;
+  feeStructure: FeeStructures;
+}
+
+export interface FeeStructures {
+  id: string;
+  name: string;
+  description: string;
+  category: FeeCategory;
+  amount: number;
+  classType: ClassType;
+  schoolId: string;
+  school: Schools;
+  fees: Fees[];
+}
+export interface Events {
+  id: string;
+  title: string;
+  description: string;
+  status: Duration;
+  date: string;
+  duration: string;
+  class: Classes;
+  classId: string;
+}
+
+export interface Announcements {
+  id: string;
+  title: string;
+  description: string;
+  status: AnnouncementStatus;
+  date: string;
+  class: Classes;
+  classId: string;
+}
+
+export interface GradeYears {
+  id: string;
+  level: string;
+  start: string;
+  end: string;
+  students: Students[];
+  classes: Classes[];
+  terms: Terms[];
+}
+
+export interface Terms {
+  id: string;
+  name: string;
+  start: string;
+  end: string;
+  status: Duration;
+  type: TermType;
+  gradeYearId: string;
+  gradeYear: GradeYears;
+}
 export interface Dataset {
   label: string;
   data: number[];
@@ -217,7 +365,7 @@ export interface TopTeacherWorkloadItem {
   studentCount: number;
 }
 
-export interface TopTeachersByWorkload {
+export interface BarChart {
   chart: BarChart;
   raw: TopTeacherWorkloadItem[];
 }
@@ -227,12 +375,21 @@ export interface StaffAnalyticsResponse {
   activeStaffs: number;
   staffsOnLeave: number;
   averageRating: number;
-  topTeachersByWorkload: TopTeachersByWorkload;
+  topTeachersByWorkload: BarChart;
+}
+
+export interface StudentAnalyticsResponse {
+  totalStudents: number;
+  activeStudents: number;
+  newIntakes: number;
+  outstandingFees: number;
+  studentsByDepartment: BarChart;
+  studentsByGender: BarChart;
 }
 
 export interface PaginationMeta {
-  page: number;
-  limit: number;
+  page: number | null;
+  limit: number | null;
   total: number;
   totalPages: number;
   hasNextPage: boolean;
@@ -241,6 +398,14 @@ export interface PaginationMeta {
 
 export interface StaffListResponse {
   data: Staffs[];
+  meta: PaginationMeta;
+  timestamp: string;
+  success: boolean;
+  message: string;
+}
+
+export interface StudentListResponse {
+  data: Students[];
   meta: PaginationMeta;
   timestamp: string;
   success: boolean;
@@ -262,9 +427,34 @@ export type SchoolGroups = {
   updatedAt: Date;
 };
 
-type SchoolType = 'PRIMARY' | 'SECONDARY' | 'TERTIARY';
+export type SchoolType = 'PRIMARY' | 'SECONDARY' | 'TERTIARY';
 
-type SchoolStatus = 'ACTIVE' | 'BLOCKED' | 'PENDING' | 'APPROVED' | 'REJECTED';
+export type FeeStatus = 'PARTIAL' | 'PAID' | 'UNPAID';
+
+export type ClassType = 'PRIMARY' | 'SECONDARY' | 'TERTIARY';
+
+export type FeeCategory = 'COMPULSORY' | 'ABSENT';
+
+export type AttendanceStatus = 'PRESENT' | 'OPTIONAL';
+
+export type TermType = 'FIRSTTERM' | 'SECONDTERM' | 'THIRDTERM';
+
+export type Duration = 'UPCOMING' | 'STARTED' | 'ONGOING' | 'ENDED';
+
+export type AnnouncementStatus = 'PUBLISHED' | 'EXPIRED' | 'PENDING';
+
+export type ClassCondition = 'ACTIVE' | 'DELETED' | 'CLOSED' | 'SUSPENDED';
+
+export type SchoolStatus = 'ACTIVE' | 'BLOCKED' | 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type Day =
+  | 'MONDAY'
+  | 'TUESDAY'
+  | 'WEDNESDAY'
+  | 'THURSDAY'
+  | 'FRIDAY'
+  | 'SATURDAY'
+  | 'SUNDAY';
 
 export type RelationKeys =
   | 'admins'

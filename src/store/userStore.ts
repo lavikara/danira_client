@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { Users, Staffs, Admins } from '@/types/definitions';
+import { Users, Staffs, Admins, LoggedInUserPayload } from '@/types/definitions';
 import { getMethod } from '@/app/api/apiClient';
 
 interface UserState {
   user: Users | null;
-  data: (Admins & Staffs) | null;
+  data: LoggedInUserPayload | null;
   userLoading: boolean;
   unAuthorised: boolean;
   fetchLoggedInUser: (options?: { onError?: (msg: string) => void }) => Promise<void>;
