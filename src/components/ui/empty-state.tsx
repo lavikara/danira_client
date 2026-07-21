@@ -253,8 +253,8 @@ export function EmptyParents({ onAdd }: { onAdd?: () => void }) {
       icon="bi-heart"
       color="pink"
       size="lg"
-      title="No parents registered"
-      description="Register parents to track ward information, communicate fee updates, and schedule meetings."
+      title="No guardians registered"
+      description="Register guardians to track ward information, communicate fee updates, and schedule meetings."
       actions={[{ label: 'Add Parent', icon: 'bi-person-plus-fill', onClick: onAdd }]}
     />
   );
@@ -288,6 +288,19 @@ export function EmptyClasses({ onCreate }: { onCreate?: () => void }) {
           onClick: onCreate,
         },
       ]}
+    />
+  );
+}
+export function EmptySubjects({ onAdd }: { onAdd?: () => void }) {
+  return (
+    <EmptyState
+      card
+      icon="bi-book-half"
+      color="indigo"
+      size="lg"
+      title="No subjects added yet"
+      description="Add subjects and assign departments, teachers, and classes to build your academic curriculum."
+      actions={[{ label: 'Add Subject', icon: 'bi-plus-circle-fill', onClick: onAdd }]}
     />
   );
 }
@@ -432,7 +445,7 @@ export function EmptyNotificationsPage({ onCreate }: { onCreate?: () => void }) 
       color="blue"
       size="lg"
       title="No announcements sent yet"
-      description="Send school-wide announcements to students, parents, and staff. Track delivery and open rates here."
+      description="Send school-wide announcements to students, guardians, and staff. Track delivery and open rates here."
       actions={[
         {
           label: 'New Announcement',
