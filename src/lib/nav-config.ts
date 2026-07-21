@@ -32,7 +32,7 @@ export const NAV_SECTIONS: NavSection[] = [
         href: '/dashboard/staffs',
         icon: 'bi-person-workspace',
       },
-      { key: 'parents', label: 'Parents', href: '/dashboard/parents', icon: 'bi-heart' },
+      { key: 'guardians', label: 'Guardians', href: '/dashboard/guardians', icon: 'bi-heart' },
     ],
   },
   {
@@ -49,6 +49,12 @@ export const NAV_SECTIONS: NavSection[] = [
         label: 'Classes',
         href: '/dashboard/classes',
         icon: 'bi-journal-bookmark',
+      },
+      {
+        key: 'subjects',
+        label: 'Subjects',
+        href: '/dashboard/subjects',
+        icon: 'bi-book-half',
       },
       { key: 'timetable', label: 'Timetable', href: '/dashboard/timetable', icon: 'bi-clock' },
       {
@@ -109,9 +115,10 @@ export const PAGE_META: Record<string, { title: string; subtitle: string }> = {
   '/dashboard': { title: 'Dashboard', subtitle: 'EduAdmin Pro / Dashboard' },
   '/dashboard/students': { title: 'Students', subtitle: 'EduAdmin Pro / Students' },
   '/dashboard/staffs': { title: 'Staffs', subtitle: 'EduAdmin Pro / Staffs' },
-  '/dashboard/parents': { title: 'Parents', subtitle: 'EduAdmin Pro / Parents' },
+  '/dashboard/guardians': { title: 'Guardians', subtitle: 'EduAdmin Pro / Guardians' },
   '/dashboard/attendance': { title: 'Attendance', subtitle: 'EduAdmin Pro / Attendance' },
   '/dashboard/classes': { title: 'Classes', subtitle: 'EduAdmin Pro / Classes' },
+  '/dashboard/subjects': { title: 'Subjects', subtitle: 'EduAdmin Pro / Subjects' },
   '/dashboard/timetable': { title: 'Timetable', subtitle: 'EduAdmin Pro / Timetable' },
   '/dashboard/exams': {
     title: 'Exams & Results',
