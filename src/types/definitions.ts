@@ -218,7 +218,12 @@ export interface Classes {
   type: ClassType;
   status: ClassCondition;
   description: string;
+  subjectCount: number;
   population: number;
+  compulsoryFeesAmount: {
+    amount: number;
+    currency: string;
+  };
   supervisorId: string;
   supervisor: Staffs;
   lessons: Lessons[];
@@ -385,6 +390,14 @@ export interface StudentAnalyticsResponse {
   outstandingFees: number;
   studentsByDepartment: BarChart;
   studentsByGender: BarChart;
+}
+
+export interface ClassAnalyticsResponse {
+  averageAttendance: number;
+  averageClassSize: number;
+  averagePerformance: number;
+  totalClasses: number;
+  topClassesByPopulation: BarChart;
 }
 
 export interface PaginationMeta {

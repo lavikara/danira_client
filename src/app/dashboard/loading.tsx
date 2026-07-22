@@ -12,7 +12,7 @@ export default function Loading() {
         </div>
       </div>
 
-      <div className="mb-5 grid grid-cols-2 gap-[15px] sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mb-5 grid grid-cols-2 gap-3.75 sm:grid-cols-3 lg:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-32.5 rounded-2xl border border-border-light bg-surface p-4">
             <div className="h-11 w-11 rounded-[11px] bg-border-light" />

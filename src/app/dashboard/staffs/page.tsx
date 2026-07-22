@@ -286,11 +286,7 @@ export default function StaffsPage() {
           <Card>
             <CardHeader
               title="Staff Directory"
-              subtitle={
-                showGroupData
-                  ? `${String(stats?.totalStaffs)} staff members`
-                  : `${String(stats?.totalStaffs)} staff members`
-              }
+              subtitle={String(`${paginationMeta?.total} staff members`)}
               action={
                 <SearchComponent
                   id="staff_search"

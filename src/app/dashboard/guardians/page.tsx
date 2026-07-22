@@ -21,7 +21,7 @@ export default function ParentsPage() {
   return (
     <div className="min-w-0">
       <PageHeader
-        title="Parent Management"
+        title="Guardian Management"
         subtitle="Parent directory, communication and ward information"
         actions={
           <>
@@ -80,7 +80,7 @@ export default function ParentsPage() {
             <Card>
               <CardHeader
                 title="Parent Directory"
-                subtitle="986 registered parents"
+                subtitle="986 registered guardians"
                 action={
                   <div className="relative w-40 sm:w-50">
                     <i className="bi bi-search absolute top-1/2 left-3 -translate-y-1/2 text-[14px] text-t3" />

@@ -63,3 +63,19 @@ export function CardBody({
 }) {
   return <div className={cn('p-4 sm:p-5', className)}>{children}</div>;
 }
+
+export function CardLoading({ length = 4 }: { length?: number }) {
+  return (
+    <div className="animate-pulse">
+      <div className="mb-5 grid grid-cols-2 gap-3.75 sm:grid-cols-3 lg:grid-cols-4">
+        {Array.from({ length }).map((_, i) => (
+          <div key={i} className="h-32.5 rounded-2xl border border-border-light bg-surface p-4">
+            <div className="h-11 w-11 rounded-[11px] bg-border-light" />
+            <div className="mt-4 h-5 w-16 rounded-md bg-border-light" />
+            <div className="mt-2 h-3 w-20 rounded-md bg-border-light" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
