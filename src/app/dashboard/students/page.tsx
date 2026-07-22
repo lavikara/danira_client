@@ -59,14 +59,14 @@ export default function StudentsPage() {
   } = useStudentStore();
 
   const stats = showGroupData ? groupStudentAnalytics : schoolStudentAnalytics;
-  const schoolDetails = showGroupData ? groupStudentDetails : schoolStudentDetails;
+  const studentDetails = showGroupData ? groupStudentDetails : schoolStudentDetails;
 
   useEffect(() => {
     if (!user?.role || apiCall.current) return;
     apiCall.current = true;
 
     const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
+      error('Unable to get student details', { description: errorMessage });
     };
 
     if (data?.groupId) {
@@ -95,7 +95,7 @@ export default function StudentsPage() {
 
   const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
     const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
+      error('Unable to get student details', { description: errorMessage });
     };
 
     if (data?.groupId && singleSchoolId === '') {
@@ -128,7 +128,7 @@ export default function StudentsPage() {
     setSingleSchoolId(id);
 
     const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
+      error('Unable to get student details', { description: errorMessage });
     };
     query.current = { page: 1, limit: 20, search: null };
     Promise.all([
@@ -150,7 +150,7 @@ export default function StudentsPage() {
     setSingleSchoolId('');
 
     const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
+      error('Unable to get student details', { description: errorMessage });
     };
     Promise.all([
       fetchAllGroupSchoolStudent(user?.role as Role, data?.groupId as string, query.current, {
@@ -320,14 +320,10 @@ export default function StudentsPage() {
           <Card>
             <CardHeader
               title="All Students"
-              subtitle={
-                showGroupData
-                  ? `${String(stats?.totalStudents)} students.`
-                  : `${String(stats?.totalStudents)} students.`
-              }
+              subtitle={String(`${paginationMeta?.total} students`)}
               action={
                 <SearchComponent
-                  id="staff_search"
+                  id="student_search"
                   placeholder="Name, ID, Class, Email"
                   onSearchInput={setSearch}
                   className="w-full"
@@ -353,10 +349,10 @@ export default function StudentsPage() {
                 <TableSkeleton rows={5} columns={10} />
               ) : (
                 <TBody>
-                  {schoolDetails.length === 0 ? (
+                  {studentDetails.length === 0 ? (
                     <EmptyTableRow colSpan={10} />
                   ) : (
-                    (schoolDetails ?? []).map((student, index) => {
+                    (studentDetails ?? []).map((student, index) => {
                       const rowNumber = (query.current.page - 1) * query.current.limit + index + 1;
                       return (
                         <TR key={student.id}>
