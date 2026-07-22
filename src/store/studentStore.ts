@@ -105,8 +105,8 @@ export const useStudentStore = create<StudentState>((set) => ({
       if (!response.success) throw new Error('Failed to fetch data');
 
       const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
-      const staffList = Array.isArray(data) ? (data as Students[]) : [];
-      set({ groupStudentDetails: staffList, paginationMeta: response?.meta });
+      const studentList = Array.isArray(data) ? (data as Students[]) : [];
+      set({ groupStudentDetails: studentList, paginationMeta: response?.meta });
       set({ studentLoading: false });
     } catch (err: any) {
       set({ studentLoading: false });
