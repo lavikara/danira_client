@@ -28,6 +28,7 @@ import { PaginationMeta, Role } from '@/types/definitions';
 import { useToastContext } from '@/contexts/toast-context';
 import { useUserStore } from '@/store/userStore';
 import { useStaffStore } from '@/store/staffStore';
+import { truncate } from '@/utils/helpers';
 import { AVATAR_COLORS } from '@/utils/helpers';
 
 export default function StaffsPage() {
@@ -249,16 +250,14 @@ export default function StaffsPage() {
             />
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-5">
-            <Card className="col-start-1 col-end-3">
+            <Card className="lg:col-start-1 lg:col-end-3">
               <CardHeader title="Staff Workload" />
               <CardBody>
-                {!staffAnalyticsLoading && (
-                  <AppChart
-                    type="bar"
-                    height={230}
-                    data={stats?.topTeachersByWorkload.chart as any}
-                  />
-                )}
+                <div className="h-50">
+                  {!staffAnalyticsLoading && (
+                    <AppChart type="bar" data={stats?.topTeachersByWorkload.chart as any} />
+                  )}
+                </div>
               </CardBody>
             </Card>
             <Card>
@@ -336,11 +335,15 @@ export default function StaffsPage() {
                             />
                           </TD>
                           <TD>
-                            <Tag>{subjectNames}</Tag>
+                            <Tag>
+                              <span className="truncate">
+                                {truncate(staff.lessons.subjectName, 20)}
+                              </span>
+                            </Tag>
                           </TD>
                           <TD className="font-semibold">{staff.department.name}</TD>
                           <TD className="font-semibold">{staff.position}</TD>
-                          <TD className="font-semibold">{staff.lessonCount || '_'}</TD>
+                          <TD className="font-semibold">{staff.lessons.lessonCount || '_'}</TD>
                           <TD>
                             <div className="flex items-center gap-1">
                               <i className="bi bi-star-fill text-[13px] text-orange" />
