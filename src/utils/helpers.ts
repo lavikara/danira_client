@@ -151,3 +151,16 @@ export const getCurrentTime = (date: Date = new Date()): string => {
   const seconds = date.getSeconds().toString().padStart(2, '0');
   return `${hours}:${minutes}:${seconds}`;
 };
+
+export const truncate = (text: string, length: number) => {
+  if (!text) return 'Nill';
+  if (text.length > length) {
+    return text.slice(0, length) + '...';
+  } else {
+    return text;
+  }
+};
+
+export const abbrstringArr = (labels: string[], length: number): string[] => {
+  return labels.map((item: string) => item.slice(0, length));
+};
