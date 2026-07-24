@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { StatCard } from '@/components/ui/stat-card';
 import { Card, CardHeader, CardBody, CardLoading } from '@/components/ui/card';
 import { Pagination } from '@/components/ui/table';
-import { Tag } from '@/components/ui/badge';
 import { AppChart } from '@/components/charts/app-chart';
-import { SUBJECTS_OFFERED } from '@/data/classes';
 import { SearchComponent } from '@/components/ui/search-component';
 import { avatarColor, initials } from '@/utils/helpers';
 import { PaginationMeta, Role } from '@/types/definitions';
@@ -19,7 +17,6 @@ import { useUserStore } from '@/store/userStore';
 import { useClassStore } from '@/store/classStore';
 
 export default function ClassesPage() {
-  const [isEmpty, setIsEmpty] = useState(false);
   const [viewSchools, setViewSchools] = useState(false);
   const [showGroupData, setShowGroupData] = useState(true);
   const [singleSchoolId, setSingleSchoolId] = useState('');
@@ -173,7 +170,7 @@ export default function ClassesPage() {
     <div className="min-w-0">
       <PageHeader
         title="Class Management"
-        subtitle={showGroupData ? `${data?.group?.groupName} Students` : `${schoolName} Students`}
+        subtitle={showGroupData ? `${data?.group?.groupName} Classes` : `${schoolName} Classes`}
         actions={
           <>
             {data?.groupId && (
@@ -250,13 +247,11 @@ export default function ClassesPage() {
           <Card className="mb-5">
             <CardHeader title="Students per Class" />
             <CardBody>
-              {!classAnalyticsLoading && (
-                <AppChart
-                  type="bar"
-                  height={230}
-                  data={stats?.topClassesByPopulation.chart as any}
-                />
-              )}
+              <div className="h-50">
+                {!classAnalyticsLoading && (
+                  <AppChart type="bar" data={stats?.topClassesByPopulation.chart as any} />
+                )}
+              </div>
             </CardBody>
           </Card>
 
@@ -310,11 +305,13 @@ export default function ClassesPage() {
                           <i className="bi bi-book" /> {classes.subjectCount} subj.
                         </span>
                         <span className="font-bold text-primary">
+                          <i className="bi bi-cash-stack text-t2" />{' '}
                           {formatAmount(
                             classes.compulsoryFeesAmount.amount,
                             2,
                             classes.compulsoryFeesAmount.currency,
                           )}
+                          <span className="font-normal text-[12px] text-t2"> fees</span>
                         </span>
                       </div>
                     </div>
