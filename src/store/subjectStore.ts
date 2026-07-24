@@ -1,34 +1,34 @@
 import { create } from 'zustand';
-import { StudentAnalyticsResponse, Students, PaginationMeta, Role } from '@/types/definitions';
+import { SubjectAnalyticsResponse, PaginationMeta, Role, Subjects } from '@/types/definitions';
 import { defaultPaginationMeta } from '@/components/ui/table';
 import { getMethod } from '@/app/api/apiClient';
 import { abbrstringArr } from '@/utils/helpers';
 
-interface StudentState {
-  schoolStudentAnalytics: StudentAnalyticsResponse | null;
-  schoolStudentDetails: Students[];
-  groupStudentDetails: Students[];
-  groupStudentAnalytics: StudentAnalyticsResponse | null;
+interface SubjectState {
+  schoolSubjectAnalytics: SubjectAnalyticsResponse | null;
+  schoolSubjectDetails: Subjects[];
+  groupSubjectDetails: Subjects[];
+  groupSubjectAnalytics: SubjectAnalyticsResponse | null;
   paginationMeta: PaginationMeta | null;
-  studentLoading: boolean;
-  studentAnalyticsLoading: boolean;
-  fetchAllSchoolStudent: (
+  subjectLoading: boolean;
+  subjectAnalyticsLoading: boolean;
+  fetchAllSchoolSubject: (
     role: Role,
     schoolId: string,
     query: { page: number; limit: number; search?: string | null },
     options?: { onError?: (msg: string) => void },
   ) => Promise<void>;
-  fetchSchoolStudentAnalytics: (
+  fetchSchoolSubjectAnalytics: (
     role: Role,
     schoolId: string,
     options?: { onError?: (msg: string) => void },
   ) => Promise<void>;
-  fetchGroupStudentAnalytics: (
+  fetchGroupSubjectAnalytics: (
     role: Role,
     groupId: string,
     options?: { onError?: (msg: string) => void },
   ) => Promise<void>;
-  fetchAllGroupSchoolStudent: (
+  fetchAllGroupSchoolSubject: (
     role: Role,
     groupId: string,
     query: { page: number | null; limit: number | null; search?: string | null },
@@ -36,23 +36,23 @@ interface StudentState {
   ) => Promise<void>;
 }
 
-export const useStudentStore = create<StudentState>((set) => ({
-  schoolStudentAnalytics: null,
-  schoolStudentDetails: [],
-  groupStudentDetails: [],
-  groupStudentAnalytics: null,
+export const useSubjectStore = create<SubjectState>((set) => ({
+  schoolSubjectAnalytics: null,
+  schoolSubjectDetails: [],
+  groupSubjectDetails: [],
+  groupSubjectAnalytics: null,
   paginationMeta: defaultPaginationMeta,
-  studentLoading: true,
-  studentAnalyticsLoading: true,
+  subjectLoading: true,
+  subjectAnalyticsLoading: true,
 
-  fetchAllSchoolStudent: async (role, schoolId, query, options) => {
-    set({ studentLoading: true });
+  fetchAllSchoolSubject: async (role, schoolId, query, options) => {
+    set({ subjectLoading: true });
     const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
     if (!permission.includes(role as string)) return;
     try {
       const url = query.search
-        ? `/api/single-school/${encodeURIComponent(schoolId)}/all-students?page=${query.page}&limit=${query.limit}&search=${query.search}`
-        : `/api/single-school/${encodeURIComponent(schoolId)}/all-students?page=${query.page}&limit=${query.limit}`;
+        ? `/api/single-school/${encodeURIComponent(schoolId)}/all-subjects?page=${query.page}&limit=${query.limit}&search=${query.search}`
+        : `/api/single-school/${encodeURIComponent(schoolId)}/all-subjects?page=${query.page}&limit=${query.limit}`;
       const response = await getMethod(url);
       if (response.error === 'Unauthorised') {
         return;
@@ -60,11 +60,11 @@ export const useStudentStore = create<StudentState>((set) => ({
       if (!response.success) throw new Error('Failed to fetch data');
 
       const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
-      const studentList = Array.isArray(data) ? (data as Students[]) : [];
-      set({ schoolStudentDetails: studentList, paginationMeta: response?.meta });
-      set({ studentLoading: false });
+      const subjectList = Array.isArray(data) ? (data as Subjects[]) : [];
+      set({ schoolSubjectDetails: subjectList, paginationMeta: response?.meta });
+      set({ subjectLoading: false });
     } catch (err: any) {
-      set({ studentLoading: false });
+      set({ subjectLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
@@ -72,22 +72,22 @@ export const useStudentStore = create<StudentState>((set) => ({
     }
   },
 
-  fetchSchoolStudentAnalytics: async (role, schoolId, options) => {
-    set({ studentAnalyticsLoading: true });
+  fetchSchoolSubjectAnalytics: async (role, schoolId, options) => {
+    set({ subjectAnalyticsLoading: true });
     const permission = ['GROUPSCHOOLADMIN', 'SCHOOLADMIN', 'SUBSCHOOLADMIN', 'SCHOOLSTAFF'];
     if (!permission.includes(role as string)) return;
     try {
-      const url = `/api/single-school/${encodeURIComponent(schoolId)}/student-analytics`;
+      const url = `/api/single-school/${encodeURIComponent(schoolId)}/subjects-analytics`;
       const response = await getMethod(url);
       if (response.error === 'Unauthorised') {
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
-      const labels = response.studentsByDepartment.chart.labels;
-      response.studentsByDepartment.chart.labels = abbrstringArr(labels, 4);
-      set({ schoolStudentAnalytics: response, studentAnalyticsLoading: false });
+      const labels = response.subjectByStudentChart.chart.labels;
+      response.subjectByStudentChart.chart.labels = abbrstringArr(labels, 6);
+      set({ schoolSubjectAnalytics: response, subjectAnalyticsLoading: false });
     } catch (err: any) {
-      set({ studentAnalyticsLoading: false });
+      set({ subjectAnalyticsLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
@@ -95,23 +95,23 @@ export const useStudentStore = create<StudentState>((set) => ({
     }
   },
 
-  fetchAllGroupSchoolStudent: async (role, groupId, query, options) => {
-    set({ studentLoading: true });
+  fetchAllGroupSchoolSubject: async (role, groupId, query, options) => {
+    set({ subjectLoading: true });
     if (role !== 'GROUPSCHOOLADMIN') return;
     try {
       const url = query.search
-        ? `/api/group-school/${encodeURIComponent(groupId)}/all-students?page=${query.page}&limit=${query.limit}&search=${query.search}`
-        : `/api/group-school/${encodeURIComponent(groupId)}/all-students?page=${query.page}&limit=${query.limit}`;
+        ? `/api/group-school/${encodeURIComponent(groupId)}/all-subjects?page=${query.page}&limit=${query.limit}&search=${query.search}`
+        : `/api/group-school/${encodeURIComponent(groupId)}/all-subjects?page=${query.page}&limit=${query.limit}`;
 
       const response = await getMethod(url);
       if (!response.success) throw new Error('Failed to fetch data');
 
       const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
-      const studentList = Array.isArray(data) ? (data as Students[]) : [];
-      set({ groupStudentDetails: studentList, paginationMeta: response?.meta });
-      set({ studentLoading: false });
+      const subjectList = Array.isArray(data) ? (data as Subjects[]) : [];
+      set({ groupSubjectDetails: subjectList, paginationMeta: response?.meta });
+      set({ subjectLoading: false });
     } catch (err: any) {
-      set({ studentLoading: false });
+      set({ subjectLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);
@@ -119,22 +119,23 @@ export const useStudentStore = create<StudentState>((set) => ({
     }
   },
 
-  fetchGroupStudentAnalytics: async (role, groupId, options) => {
-    set({ studentAnalyticsLoading: true });
+  fetchGroupSubjectAnalytics: async (role, groupId, options) => {
+    set({ subjectAnalyticsLoading: true });
     const permission = ['GROUPSCHOOLADMIN'];
     if (!permission.includes(role as string)) return;
     try {
-      const url = `/api/group-school/${encodeURIComponent(groupId)}/group-student-analytics`;
+      const url = `/api/group-school/${encodeURIComponent(groupId)}/group-subjects-analytics`;
       const response = await getMethod(url);
       if (response.error === 'Unauthorised') {
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
-      const labels = response.studentsByDepartment.chart.labels;
-      response.studentsByDepartment.chart.labels = abbrstringArr(labels, 4);
-      set({ groupStudentAnalytics: response, studentAnalyticsLoading: false });
+      const labels = response.subjectByStudentChart.chart.labels;
+      response.subjectByStudentChart.chart.labels = abbrstringArr(labels, 6);
+
+      set({ groupSubjectAnalytics: response, subjectAnalyticsLoading: false });
     } catch (err: any) {
-      set({ studentAnalyticsLoading: false });
+      set({ subjectAnalyticsLoading: false });
       const errorMsg = err.message || 'An error occured';
       if (options?.onError) {
         options.onError(errorMsg);

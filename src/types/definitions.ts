@@ -115,6 +115,7 @@ export interface Departments {
   description: string | null;
   status: 'ACTIVE' | 'INACTIVE';
   schoolId: string;
+  school: Schools;
   headId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -132,7 +133,10 @@ export interface Staffs {
   department: Departments;
   users: Users;
   subjects: Subjects[];
-  lessonCount?: number;
+  lessons: {
+    lessonCount: number;
+    subjectName: string;
+  };
 }
 
 export interface Users {
@@ -179,7 +183,10 @@ export interface Subjects {
   id: string;
   name: string;
   description: string;
+  category: string;
   code: string;
+  subjectTeacher: string;
+  averageScore: number;
   createdAt: string;
   updatedAt: string;
   status: string;
@@ -187,6 +194,8 @@ export interface Subjects {
   testId: string | null;
   reportCardId: string | null;
   departmentId: string;
+  studentClassCount: { classes: number; students: number };
+  department: Departments;
 }
 
 export type Students = {
@@ -398,6 +407,15 @@ export interface ClassAnalyticsResponse {
   averagePerformance: number;
   totalClasses: number;
   topClassesByPopulation: BarChart;
+}
+
+export interface SubjectAnalyticsResponse {
+  coreSubjects: number;
+  electiveSubjects: number;
+  totalSubjects: number;
+  mixedSubjects: number;
+  subjectByDepartmentChart: BarChart;
+  subjectByStudentChart: BarChart;
 }
 
 export interface PaginationMeta {

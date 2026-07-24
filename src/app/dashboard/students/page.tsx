@@ -256,169 +256,143 @@ export default function StudentsPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-5">
-            <Card className="col-start-1 col-end-3">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 mb-5">
+            <Card className="lg:col-start-1 lg:col-end-4">
               <CardHeader title="Students in Department" />
               <CardBody>
-                {!studentAnalyticsLoading && (
-                  <AppChart
-                    type="bar"
-                    height={230}
-                    data={stats?.studentsByDepartment.chart as any}
-                  />
-                )}
+                <div className="h-50">
+                  {!studentAnalyticsLoading && (
+                    <AppChart type="bar" data={stats?.studentsByDepartment.chart as any} />
+                  )}
+                </div>
               </CardBody>
             </Card>
             <Card>
               <CardHeader title="Gender Distribution" subtitle="Current enrollment" />
               <CardBody className="flex items-center gap-4">
-                <div className="h-30 w-full shrink-0">
+                <div className="h-50 w-full shrink-0">
                   {!studentAnalyticsLoading && (
                     <div>
                       <AppChart
                         type="doughnut"
                         data={stats?.studentsByGender.chart as any}
-                        options={{ cutout: '70%' }}
+                        options={{
+                          cutout: '70%',
+                        }}
                       />
-                      <div className="flex justify-center gap-6 mt-4">
-                        <div className="flex items-center gap-1">
-                          <div
-                            className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
-                            style={{
-                              backgroundColor: String(
-                                stats?.studentsByGender.chart.datasets[0].backgroundColor[1],
-                              ),
-                            }}
-                          />
-                          <span className="flex-1 text-[12px] text-t2">Female</span>
-                          <strong className="text-[13px]">
-                            {stats?.studentsByGender.chart.datasets[0].data[1]}
-                          </strong>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div
-                            className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
-                            style={{
-                              backgroundColor: String(
-                                stats?.studentsByGender.chart.datasets[0].backgroundColor[0],
-                              ),
-                            }}
-                          />
-                          <span className="flex-1 text-[12px] text-t2">Male</span>
-                          <strong className="text-[13px]">
-                            {stats?.studentsByGender.chart.datasets[0].data[0]}
-                          </strong>
-                        </div>
-                      </div>
                     </div>
                   )}
                 </div>
               </CardBody>
             </Card>
           </div>
-
-          <Card>
-            <CardHeader
-              title="All Students"
-              subtitle={String(`${paginationMeta?.total} students`)}
-              action={
-                <SearchComponent
-                  id="student_search"
-                  placeholder="Name, ID, Class, Email"
-                  onSearchInput={setSearch}
-                  className="w-full"
-                />
-              }
-            />
-            <Table>
-              <THead>
-                <TH>#</TH>
-                <TH>
-                  <input type="checkbox" />
-                </TH>
-                <TH>Student</TH>
-                <TH>Adm. No.</TH>
-                <TH>Class</TH>
-                <TH>Gender</TH>
-                <TH>Attendance</TH>
-                <TH>Fees</TH>
-                <TH>Status</TH>
-                <TH>Action</TH>
-              </THead>
-              {studentLoading ? (
-                <TableSkeleton rows={5} columns={10} />
-              ) : (
-                <TBody>
-                  {studentDetails.length === 0 ? (
-                    <EmptyTableRow colSpan={10} />
-                  ) : (
-                    (studentDetails ?? []).map((student, index) => {
-                      const rowNumber = (query.current.page - 1) * query.current.limit + index + 1;
-                      return (
-                        <TR key={student.id}>
-                          <TD className="w-10 font-semibold text-t3">{rowNumber}</TD>
-                          <TD>
-                            <input type="checkbox" />
-                          </TD>
-                          <TD>
-                            <NameCell
-                              name={`${student.users.firstName} ${student.users.lastName}`}
-                              sub={student.studentId}
-                              index={index}
-                            />
-                          </TD>
-                          <TD className="text-xs text-t2 whitespace-nowrap">{student.studentId}</TD>
-                          <TD>
-                            <Tag>{student.class.name}</Tag>
-                          </TD>
-                          <TD>
-                            <Badge color={student.users.gender === 'FEMALE' ? 'pink' : 'purple'}>
-                              {student.users.gender}
-                            </Badge>
-                          </TD>
-                          <TD className="min-w-27.5">
-                            <StatBar
-                              pct={student.attendances as number}
-                              color={attendanceColor(student.attendances as number)}
-                            />
-                          </TD>
-                          <TD>
-                            <Badge
-                              color={
-                                student.fees === 'PAID'
-                                  ? 'green'
-                                  : student.fees === 'PARTIAL'
-                                    ? 'orange'
-                                    : 'red'
-                              }
-                            >
-                              {student.fees as string}
-                            </Badge>
-                          </TD>
-                          <TD>
-                            <Badge color={student.users.status === 'ACTIVE' ? 'green' : 'red'}>
-                              {student.users.status}
-                            </Badge>
-                          </TD>
-                          <TD>
-                            <ActionButtons />
-                          </TD>
-                        </TR>
-                      );
-                    })
-                  )}
-                </TBody>
-              )}
-            </Table>
-            <Pagination
-              pagination={
-                { ...(paginationMeta ?? {}), limit: query.current.limit } as PaginationMeta
-              }
-              onPageChange={setPage}
-              onLimitChange={setPageLimit}
-              limitOptions={[10, 20, 40, 80, 100]}
-            />
-          </Card>
+          <div>
+            <Card>
+              <CardHeader
+                title="All Students"
+                subtitle={String(`${paginationMeta?.total} students`)}
+                action={
+                  <SearchComponent
+                    id="student_search"
+                    placeholder="Name, ID, Class, Email"
+                    onSearchInput={setSearch}
+                    className="w-full"
+                  />
+                }
+              />
+              <Table>
+                <THead>
+                  <TH>#</TH>
+                  <TH>
+                    <input type="checkbox" />
+                  </TH>
+                  <TH>Student</TH>
+                  <TH>Adm. No.</TH>
+                  <TH>Class</TH>
+                  <TH>Gender</TH>
+                  <TH>Attendance</TH>
+                  <TH>Fees</TH>
+                  <TH>Status</TH>
+                  <TH>Action</TH>
+                </THead>
+                {studentLoading ? (
+                  <TableSkeleton rows={5} columns={10} />
+                ) : (
+                  <TBody>
+                    {studentDetails.length === 0 ? (
+                      <EmptyTableRow colSpan={10} />
+                    ) : (
+                      (studentDetails ?? []).map((student, index) => {
+                        const rowNumber =
+                          (query.current.page - 1) * query.current.limit + index + 1;
+                        return (
+                          <TR key={student.id}>
+                            <TD className="w-10 font-semibold text-t3">{rowNumber}</TD>
+                            <TD>
+                              <input type="checkbox" />
+                            </TD>
+                            <TD>
+                              <NameCell
+                                name={`${student.users.firstName} ${student.users.lastName}`}
+                                sub={student.studentId}
+                                index={index}
+                              />
+                            </TD>
+                            <TD className="text-xs text-t2 whitespace-nowrap">
+                              {student.studentId}
+                            </TD>
+                            <TD>
+                              <Tag>{student.class.name}</Tag>
+                            </TD>
+                            <TD>
+                              <Badge color={student.users.gender === 'FEMALE' ? 'pink' : 'purple'}>
+                                {student.users.gender}
+                              </Badge>
+                            </TD>
+                            <TD className="min-w-27.5">
+                              <StatBar
+                                pct={student.attendances as number}
+                                color={attendanceColor(student.attendances as number)}
+                              />
+                            </TD>
+                            <TD>
+                              <Badge
+                                color={
+                                  student.fees === 'PAID'
+                                    ? 'green'
+                                    : student.fees === 'PARTIAL'
+                                      ? 'orange'
+                                      : 'red'
+                                }
+                              >
+                                {student.fees as string}
+                              </Badge>
+                            </TD>
+                            <TD>
+                              <Badge color={student.users.status === 'ACTIVE' ? 'green' : 'red'}>
+                                {student.users.status}
+                              </Badge>
+                            </TD>
+                            <TD>
+                              <ActionButtons />
+                            </TD>
+                          </TR>
+                        );
+                      })
+                    )}
+                  </TBody>
+                )}
+              </Table>
+              <Pagination
+                pagination={
+                  { ...(paginationMeta ?? {}), limit: query.current.limit } as PaginationMeta
+                }
+                onPageChange={setPage}
+                onLimitChange={setPageLimit}
+                limitOptions={[10, 20, 40, 80, 100]}
+              />
+            </Card>
+          </div>
         </>
       )}
     </div>

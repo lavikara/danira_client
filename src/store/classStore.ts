@@ -1,11 +1,5 @@
 import { create } from 'zustand';
-import {
-  ClassAnalyticsResponse,
-  Students,
-  PaginationMeta,
-  Role,
-  Classes,
-} from '@/types/definitions';
+import { ClassAnalyticsResponse, PaginationMeta, Role, Classes } from '@/types/definitions';
 import { defaultPaginationMeta } from '@/components/ui/table';
 import { getMethod } from '@/app/api/apiClient';
 
