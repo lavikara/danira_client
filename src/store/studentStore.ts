@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { StudentAnalyticsResponse, Students, PaginationMeta, Role } from '@/types/definitions';
 import { defaultPaginationMeta } from '@/components/ui/table';
 import { getMethod } from '@/app/api/apiClient';
-import { abbrstringArr } from '@/utils/helpers';
+import { abbrStringArr } from '@/utils/helpers';
 
 interface StudentState {
   schoolStudentAnalytics: StudentAnalyticsResponse | null;
@@ -84,7 +84,7 @@ export const useStudentStore = create<StudentState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
       const labels = response.studentsByDepartment.chart.labels;
-      response.studentsByDepartment.chart.labels = abbrstringArr(labels, 4);
+      response.studentsByDepartment.chart.labels = abbrStringArr(labels, 4);
       set({ schoolStudentAnalytics: response, studentAnalyticsLoading: false });
     } catch (err: any) {
       set({ studentAnalyticsLoading: false });
@@ -131,7 +131,7 @@ export const useStudentStore = create<StudentState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
       const labels = response.studentsByDepartment.chart.labels;
-      response.studentsByDepartment.chart.labels = abbrstringArr(labels, 4);
+      response.studentsByDepartment.chart.labels = abbrStringArr(labels, 4);
       set({ groupStudentAnalytics: response, studentAnalyticsLoading: false });
     } catch (err: any) {
       set({ studentAnalyticsLoading: false });
