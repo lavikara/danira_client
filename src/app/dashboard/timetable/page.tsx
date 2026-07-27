@@ -1,185 +1,289 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { PageHeader } from "@/components/ui/page-header";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardBody } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AppChart } from "@/components/charts/app-chart";
-import { EmptyTimetable } from "@/components/ui/empty-state";
-import {
-  TIMETABLE_DAYS, TIMETABLE_SLOTS, SUBJECT_COLORS,
-  SUBJECT_TEACHERS, TODAY_SCHEDULE, ROOM_UTILIZATION,
-} from "@/data/timetable";
+import { useState, useEffect, useRef } from 'react';
+import { PageHeader } from '@/components/ui/page-header';
+import { Button } from '@/components/ui/button';
+import { avatarColor, initials } from '@/utils/helpers';
+import Link from 'next/link';
+import { StatCard } from '@/components/ui/stat-card';
+import { Pagination } from '@/components/ui/table';
+import { Card, CardHeader, CardBody, CardLoading } from '@/components/ui/card';
+import { SearchComponent } from '@/components/ui/search-component';
+import { SelectSchool } from '@/components/ui/select-school';
+import { PaginationMeta, Role } from '@/types/definitions';
+import { useToastContext } from '@/contexts/toast-context';
+import { useUserStore } from '@/store/userStore';
+import { useTimetablesStore } from '@/store/timetableStore';
 
 export default function TimetablePage() {
-  const [isEmpty, setIsEmpty] = useState(false);
+  const [viewSchools, setViewSchools] = useState(false);
+  const [showGroupData, setShowGroupData] = useState(true);
+  const [singleSchoolId, setSingleSchoolId] = useState('');
+  const [schoolName, setSchoolName] = useState('');
+  const apiCall = useRef(false);
+  const query = useRef({ page: 1, limit: 20, search: null as string | null });
+
+  const { error } = useToastContext();
+  const { user, data } = useUserStore();
+  const {
+    schoolTimetableDetails,
+    groupTimetableDetails,
+    groupTimetableAnalytics,
+    schoolTimetableAnalytics,
+    paginationMeta,
+    timetableLoading,
+    timetableAnalyticsLoading,
+    fetchAllSchoolTimetable,
+    fetchAllGroupSchoolTimetable,
+    fetchSchoolTimetableAnalytics,
+    fetchGroupTimetableAnalytics,
+  } = useTimetablesStore();
+
+  const stats = showGroupData ? groupTimetableAnalytics : schoolTimetableAnalytics;
+  const timetableDetails = showGroupData ? groupTimetableDetails : schoolTimetableDetails;
+
+  useEffect(() => {
+    if (!user?.role || apiCall.current) return;
+    apiCall.current = true;
+
+    const handleError = (errorMessage: string) => {
+      error('Unable to get timetable details', { description: errorMessage });
+    };
+
+    if (data?.groupId) {
+      setShowGroupData(true);
+      Promise.all([
+        fetchAllGroupSchoolTimetable(user?.role as Role, data.groupId, query.current, {
+          onError: handleError,
+        }),
+        fetchGroupTimetableAnalytics(user?.role as Role, data.groupId, { onError: handleError }),
+      ]);
+      return;
+    }
+
+    setShowGroupData(false);
+    setSchoolName(data?.schools[0].schoolName as string);
+
+    Promise.all([
+      fetchAllSchoolTimetable(user?.role as Role, data?.schoolIds[0] as string, query.current, {
+        onError: handleError,
+      }),
+      fetchSchoolTimetableAnalytics(user?.role as Role, data?.schoolIds[0] as string, {
+        onError: handleError,
+      }),
+    ]);
+  }, [user?.role]);
+
+  const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
+    const handleError = (errorMessage: string) => {
+      error('Unable to get timetable details', { description: errorMessage });
+    };
+
+    if (data?.groupId && singleSchoolId === '') {
+      fetchAllGroupSchoolTimetable(user?.role as Role, data?.groupId as string, query, {
+        onError: handleError,
+      });
+      return;
+    }
+
+    if (singleSchoolId === '') {
+      fetchAllSchoolTimetable(user?.role as Role, data?.schoolIds[0] as string, query, {
+        onError: handleError,
+      });
+      return;
+    }
+
+    if (singleSchoolId !== '') {
+      fetchAllSchoolTimetable(user?.role as Role, singleSchoolId, query, { onError: handleError });
+      return;
+    }
+  };
+
+  const getSchoolDetails = (id: string) => {
+    if (id === singleSchoolId) {
+      setViewSchools(false);
+      return;
+    }
+
+    setShowGroupData(false);
+    setSingleSchoolId(id);
+
+    const handleError = (errorMessage: string) => {
+      error('Unable to get timetable details', { description: errorMessage });
+    };
+    query.current = { page: 1, limit: 20, search: null };
+    Promise.all([
+      fetchAllSchoolTimetable(user?.role as Role, id, query.current, {
+        onError: handleError,
+      }),
+      fetchSchoolTimetableAnalytics(user?.role as Role, id, {
+        onError: handleError,
+      }),
+    ]);
+    const school = data?.schools.find((school) => school.id === id);
+    setSchoolName(school?.schoolName as string);
+    setViewSchools(false);
+  };
+
+  const getGroupDetails = () => {
+    query.current = { page: 1, limit: 20, search: null };
+    setShowGroupData(true);
+    setSingleSchoolId('');
+
+    const handleError = (errorMessage: string) => {
+      error('Unable to get timetable details', { description: errorMessage });
+    };
+    fetchAllGroupSchoolTimetable(user?.role as Role, data?.groupId as string, query.current, {
+      onError: handleError,
+    });
+    Promise.all([
+      fetchAllGroupSchoolTimetable(user?.role as Role, data?.groupId as string, query.current, {
+        onError: handleError,
+      }),
+      fetchGroupTimetableAnalytics(user?.role as Role, data?.groupId as string, {
+        onError: handleError,
+      }),
+    ]);
+  };
+
+  const selectSchool = () => {
+    setViewSchools((view) => !view);
+  };
+
+  const setPage = (page: number) => {
+    query.current.page = page;
+    updateTableData(query.current);
+  };
+
+  const setPageLimit = (limit: number) => {
+    query.current.limit = limit;
+    query.current.page = 1;
+    updateTableData(query.current);
+  };
+
+  const setSearch = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
+    query.current.search = value;
+    query.current.page = 1;
+    updateTableData(query.current);
+  };
 
   return (
     <div className="min-w-0">
       <PageHeader
         title="Timetable"
-        subtitle="SS 3A weekly schedule"
+        subtitle={showGroupData ? `${data?.group?.groupName} Subjects` : `${schoolName} Timetables`}
         actions={
           <>
-            <Button variant="ghost" size="sm" onClick={() => setIsEmpty(v => !v)}>
-              <i className="bi bi-eye" />{isEmpty ? "Show Data" : "Preview Empty"}
+            {data?.groupId && (
+              <div>
+                {singleSchoolId !== '' && (
+                  <Button variant="ghost" size="sm" className="mr-2" onClick={getGroupDetails}>
+                    Group Info
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" onClick={selectSchool}>
+                  Select School
+                </Button>
+              </div>
+            )}
+            <Button variant="primary" size="sm">
+              <i className="bi bi-pencil-square" />
+              Edit
             </Button>
-            <select
-              style={{ borderColor: "var(--border)", backgroundColor: "var(--surface)", color: "var(--t1)" }}
-              className="rounded-[9px] border-[1.5px] px-3 py-2 text-[13px] outline-none focus:border-primary"
-            >
-              <option>SS 3A</option><option>SS 3B</option><option>SS 2A</option>
-            </select>
-            <Button variant="primary" size="sm"><i className="bi bi-pencil-square" />Edit</Button>
           </>
         }
       />
 
-      {isEmpty ? (
-        <EmptyTimetable />
+      {viewSchools ? (
+        <SelectSchool schools={data?.schools} getSchoolDetails={getSchoolDetails} />
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr]">
-          <Card>
-            <CardHeader title="Weekly Timetable" subtitle="SS 3A • Room A-101" />
-            <div className="overflow-x-auto p-4">
-              <table className="w-full min-w-[580px] border-collapse">
-                <thead>
-                  <tr>
-                    <th
-                      style={{ borderBottomColor: "var(--border-light)", color: "var(--t3)" }}
-                      className="w-[80px] border-b-2 p-2 text-left text-[10px] font-bold uppercase"
-                    >
-                      Time
-                    </th>
-                    {TIMETABLE_DAYS.map((d) => (
-                      <th
-                        key={d}
-                        style={{ borderBottomColor: "var(--border-light)", color: "var(--t3)" }}
-                        className="border-b-2 p-2 text-left text-[10px] font-bold uppercase"
-                      >
-                        {d}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {TIMETABLE_SLOTS.map((slot, idx) => (
-                    <tr
-                      key={idx}
-                      style={{ borderBottomColor: "var(--border-light)" }}
-                      className="border-b last:border-b-0"
-                    >
-                      <td
-                        style={{ color: "var(--t3)" }}
-                        className="p-2 text-[11px] font-semibold whitespace-nowrap"
-                      >
-                        {slot.time}
-                      </td>
-
-                      {slot.subjects === null ? (
-                        <td
-                          colSpan={5}
-                          style={{ backgroundColor: "var(--surface-2)", color: "var(--t3)" }}
-                          className="p-1.5 text-center text-[10px] font-bold tracking-wide uppercase"
-                        >
-                          Break
-                        </td>
-                      ) : (
-                        slot.subjects.map((subj, j) => {
-                          const colors = SUBJECT_COLORS[subj] ?? {
-                            accent: "var(--t3)",
-                            bgVar: "var(--surface-2)",
-                          };
-                          return (
-                            <td key={j} className="p-1">
-                              <div
-                                style={{
-                                  backgroundColor: colors.bgVar,
-                                  borderLeft: `3px solid ${colors.accent}`,
-                                }}
-                                className="rounded-lg px-2 py-1.5"
-                              >
-                                <div
-                                  style={{ color: colors.accent }}
-                                  className="text-[11px] font-bold leading-tight"
-                                >
-                                  {subj}
-                                </div>
-                                <div
-                                  style={{ color: "var(--t3)" }}
-                                  className="mt-0.5 text-[10px]"
-                                >
-                                  {SUBJECT_TEACHERS[subj]}
-                                </div>
-                              </div>
-                            </td>
-                          );
-                        })
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-
-          <div className="flex flex-col gap-4">
+        <>
+          <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatCard
+              loading={timetableAnalyticsLoading || !stats}
+              icon="<bi bi-pencil"
+              color="blue"
+              value={showGroupData ? String(stats?.totalLessons) : String(stats?.totalLessons)}
+              label="Total Lessons"
+              compact
+            />
+            <StatCard
+              loading={timetableAnalyticsLoading || !stats}
+              icon="bi bi-stopwatch"
+              color="green"
+              value={showGroupData ? String(stats?.totalPeriod) : String(stats?.totalPeriod)}
+              label="Total Periods"
+              compact
+            />
+          </div>
+          <div className="grid grid-cols-1 gap-4">
             <Card>
-              <CardHeader title="Today's Schedule" subtitle="Wed, 14 May" />
-              <CardBody className="py-2">
-                {TODAY_SCHEDULE.length === 0 ? (
-                  <div style={{ color: "var(--t3)" }} className="py-6 text-center text-[13px]">
-                    No classes scheduled today.
-                  </div>
-                ) : (
-                  TODAY_SCHEDULE.map((s, i) => {
-                    const colors = SUBJECT_COLORS[s.subject];
-                    return (
-                      <div
-                        key={i}
-                        style={{ borderBottomColor: "var(--border-light)" }}
-                        className="flex gap-3 border-b py-2.5 last:border-b-0"
-                      >
-                        <div
-                          style={{ color: colors?.accent ?? "var(--color-primary)" }}
-                          className="w-[48px] shrink-0 text-[12px] font-bold"
-                        >
-                          {s.time}
-                        </div>
-                        <div>
-                          <div
-                            style={{ color: colors?.accent ?? "var(--t1)" }}
-                            className="text-[13px] font-semibold"
-                          >
-                            {s.subject}
-                          </div>
-                          <div style={{ color: "var(--t3)" }} className="mt-0.5 text-[11px]">
-                            {s.teacher} · {s.cls} · {s.room}
-                          </div>
-                        </div>
+              <CardHeader
+                title="All Timetables"
+                subtitle={String(`${paginationMeta?.total} timetables`)}
+                action={
+                  <SearchComponent
+                    id="timetable_search"
+                    placeholder="Class Name, Term"
+                    onSearchInput={setSearch}
+                    className="w-full"
+                  />
+                }
+              />
+              {timetableLoading ? (
+                <CardLoading />
+              ) : (
+                <CardBody className="grid grid-cols-1 gap-3 sm:grid-cols-4 ">
+                  {timetableDetails.map((timetable, index) => (
+                    <Link
+                      href={{
+                        pathname: `timetable/${timetable.class.name}`,
+                        query: { id: `${timetable.id}`, schoolId: `${timetable.schoolId}` },
+                      }}
+                      key={timetable.id}
+                      className="rounded-xl border-[1.5px] border-border-light p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-card cursor-pointer"
+                    >
+                      <div className="mb-2.5 flex items-center justify-between">
+                        <span className="text-[14px] font-bold text-t1 truncate">
+                          {timetable.class.name}
+                        </span>
+                        <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-bold text-primary">
+                          {timetable.class.type}
+                        </span>
                       </div>
-                    );
-                  })
-                )}
-              </CardBody>
-            </Card>
-
-            <Card>
-              <CardHeader title="Room Utilization" action={<Badge color="blue">This week</Badge>} />
-              <CardBody>
-                <AppChart
-                  type="bar"
-                  height={160}
-                  data={{
-                    labels: ROOM_UTILIZATION.labels,
-                    datasets: [{ data: ROOM_UTILIZATION.data, backgroundColor: "#2563EB", borderRadius: 6 }],
-                  }}
-                />
-              </CardBody>
+                      <div className="mb-3 flex items-center gap-2">
+                        <div
+                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white"
+                          style={{ backgroundColor: avatarColor(index) }}
+                        >
+                          {initials(`${timetable.term.type}`)}
+                        </div>
+                        <span className="truncate text-[12px] text-t2">{timetable.term.name}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-t2">
+                        <span>
+                          <i className="bi bi-pencil"></i> {timetable.totalLessons} lessons
+                        </span>
+                        <span>
+                          <i className="bi bi-stopwatch"></i> {timetable.totalPeriods} periods.
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </CardBody>
+              )}
+              <Pagination
+                pagination={
+                  { ...(paginationMeta ?? {}), limit: query.current.limit } as PaginationMeta
+                }
+                onPageChange={setPage}
+                onLimitChange={setPageLimit}
+                limitOptions={[10, 20, 40, 80, 100]}
+              />
             </Card>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

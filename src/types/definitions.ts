@@ -221,6 +221,21 @@ export type Students = {
   subjects: Subjects[];
 };
 
+export type Timetables = {
+  id: string;
+  name: string;
+  status: Duration;
+  schoolId: string;
+  totalLessons: number;
+  totalPeriods: number;
+  classId: string | null;
+  gradeYearId: string | null;
+  termId: string | null;
+  class: Classes;
+  gradeYear: GradeYears;
+  term: Terms;
+  lessons: Lessons;
+};
 export interface Classes {
   id: string;
   name: string;
@@ -291,6 +306,7 @@ export interface Fees {
   description: string;
   receipt: string;
   amount: number;
+  currency: Currency;
   paid: number;
   outstanding: number;
   category: FeeCategory;
@@ -418,6 +434,11 @@ export interface SubjectAnalyticsResponse {
   subjectByStudentChart: BarChart;
 }
 
+export interface TimetableAnalyticsResponse {
+  totalLessons: number;
+  totalPeriod: number;
+}
+
 export interface PaginationMeta {
   page: number | null;
   limit: number | null;
@@ -477,6 +498,8 @@ export type AnnouncementStatus = 'PUBLISHED' | 'EXPIRED' | 'PENDING';
 export type ClassCondition = 'ACTIVE' | 'DELETED' | 'CLOSED' | 'SUSPENDED';
 
 export type SchoolStatus = 'ACTIVE' | 'BLOCKED' | 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type Currency = 'NGN' | 'USD' | 'KES' | 'GBP' | 'GHS' | 'EUR' | 'ZAR' | 'CAD';
 
 export type Day =
   | 'MONDAY'

@@ -7,7 +7,10 @@ export async function GET(
   { params }: { params: Promise<{ schoolId: string }> },
 ) {
   const { schoolId } = await params;
-  const backendPath = `/subject/${encodeURIComponent(schoolId)}/analytics`;
+  const { searchParams } = new URL(request.url);
+  const timetableId = searchParams.get('timetableId');
+
+  const backendPath = `/timetable/${schoolId}/get-timetable/${timetableId}`;
 
   return getServerRequest(backendPath, request.method, {
     Authorization: `Bearer ${await authHeader()}`,

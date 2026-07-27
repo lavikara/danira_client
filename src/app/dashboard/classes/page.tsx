@@ -8,9 +8,8 @@ import { Card, CardHeader, CardBody, CardLoading } from '@/components/ui/card';
 import { Pagination } from '@/components/ui/table';
 import { AppChart } from '@/components/charts/app-chart';
 import { SearchComponent } from '@/components/ui/search-component';
-import { avatarColor, initials } from '@/utils/helpers';
+import { formatAmount, avatarColor, initials } from '@/utils/helpers';
 import { PaginationMeta, Role } from '@/types/definitions';
-import { formatAmount } from '@/utils/helpers';
 import { SelectSchool } from '@/components/ui/select-school';
 import { useToastContext } from '@/contexts/toast-context';
 import { useUserStore } from '@/store/userStore';
@@ -48,7 +47,7 @@ export default function ClassesPage() {
     apiCall.current = true;
 
     const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
+      error('Unable to get class details', { description: errorMessage });
     };
 
     if (data?.groupId) {
@@ -77,7 +76,7 @@ export default function ClassesPage() {
 
   const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
     const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
+      error('Unable to get class details', { description: errorMessage });
     };
 
     if (data?.groupId && singleSchoolId === '') {
@@ -110,7 +109,7 @@ export default function ClassesPage() {
     setSingleSchoolId(id);
 
     const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
+      error('Unable to get class details', { description: errorMessage });
     };
     query.current = { page: 1, limit: 20, search: null };
     Promise.all([
@@ -132,7 +131,7 @@ export default function ClassesPage() {
     setSingleSchoolId('');
 
     const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
+      error('Unable to get class details', { description: errorMessage });
     };
     Promise.all([
       fetchAllGroupSchoolClass(user?.role as Role, data?.groupId as string, query.current, {
@@ -186,7 +185,7 @@ export default function ClassesPage() {
               </div>
             )}
             <Button variant="primary" size="sm">
-              <i className="bi bi-plus-circle-fill" />
+              <i className="bi bi-plus-circle" />
               Create Class
             </Button>
           </>
@@ -200,7 +199,7 @@ export default function ClassesPage() {
           <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
               loading={classAnalyticsLoading || !stats}
-              icon="bi bi-journal-bookmark-fill"
+              icon="bi bi-journal-bookmark"
               color="blue"
               value={showGroupData ? String(stats?.totalClasses) : String(stats?.totalClasses)}
               label="Total Classes"
@@ -208,7 +207,7 @@ export default function ClassesPage() {
             />
             <StatCard
               loading={classAnalyticsLoading || !stats}
-              icon="bi bi-people-fill"
+              icon="bi bi-people"
               color="green"
               value={
                 showGroupData
@@ -245,7 +244,7 @@ export default function ClassesPage() {
           </div>
 
           <Card className="mb-5">
-            <CardHeader title="Students per Class" />
+            <CardHeader title="classs per Class" />
             <CardBody>
               <div className="h-50">
                 {!classAnalyticsLoading && (
@@ -263,7 +262,7 @@ export default function ClassesPage() {
                 action={
                   <SearchComponent
                     id="class_search"
-                    placeholder="Class Name, Supervisor Name"
+                    placeholder="Class Name, Supervisor"
                     onSearchInput={setSearch}
                     className="w-full"
                   />
@@ -288,14 +287,19 @@ export default function ClassesPage() {
                       </div>
                       <div className="mb-3 flex items-center gap-2">
                         <div
-                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white"
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white"
                           style={{ backgroundColor: avatarColor(index) }}
                         >
                           {initials(
                             `${classes.supervisor.users.firstName} ${classes.supervisor.users.lastName}`,
                           )}
                         </div>
-                        <span className="truncate text-[12px] text-t2">{`${classes.supervisor.users.firstName} ${classes.supervisor.users.lastName}`}</span>
+                        <div>
+                          <div className="truncate text-[12px] text-t2">
+                            {`${classes.supervisor.users.firstName} ${classes.supervisor.users.lastName}`}
+                          </div>
+                          <div className="text-primary font-bold text-[9px]">Supervisor</div>
+                        </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-t2">
                         <span>

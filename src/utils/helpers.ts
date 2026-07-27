@@ -161,6 +161,6 @@ export const truncate = (text: string, length: number) => {
   }
 };
 
-export const abbrstringArr = (labels: string[], length: number): string[] => {
+export const abbrStringArr = (labels: string[], length: number): string[] => {
   return labels.map((item: string) => item.slice(0, length));
 };

@@ -4,10 +4,10 @@ import authHeader from '../../../authHeader';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ schoolId: string }> },
+  { params }: { params: Promise<{ groupId: string }> },
 ) {
-  const { schoolId } = await params;
-  const backendPath = `/subject/${encodeURIComponent(schoolId)}/analytics`;
+  const { groupId } = await params;
+  const backendPath = `/timetable/${encodeURIComponent(groupId)}/analytics-group`;
 
   return getServerRequest(backendPath, request.method, {
     Authorization: `Bearer ${await authHeader()}`,

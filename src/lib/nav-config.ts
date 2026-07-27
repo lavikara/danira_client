@@ -1,7 +1,7 @@
 export interface NavItem {
   key: string;
   label: string;
-  href: string;
+  href: string[];
   icon: string;
   badge?: string;
 }
@@ -11,10 +11,12 @@ export interface NavSection {
   items: NavItem[];
 }
 
-export const NAV_SECTIONS: NavSection[] = [
+export const getSidebarItems = (dynamicRoute: string = '') => [
   {
     label: 'Overview',
-    items: [{ key: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: 'bi-speedometer2' }],
+    items: [
+      { key: 'dashboard', label: 'Dashboard', href: ['/dashboard'], icon: 'bi-speedometer2' },
+    ],
   },
   {
     label: 'People',
@@ -22,17 +24,17 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         key: 'students',
         label: 'Students',
-        href: '/dashboard/students',
+        href: ['/dashboard/students'],
         icon: 'bi-people',
         badge: '1,248',
       },
       {
         key: 'staffs',
         label: 'Staffs',
-        href: '/dashboard/staffs',
+        href: ['/dashboard/staffs'],
         icon: 'bi-person-workspace',
       },
-      { key: 'guardians', label: 'Guardians', href: '/dashboard/guardians', icon: 'bi-heart' },
+      { key: 'guardians', label: 'Guardians', href: ['/dashboard/guardians'], icon: 'bi-heart' },
     ],
   },
   {
@@ -41,26 +43,31 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         key: 'attendance',
         label: 'Attendance',
-        href: '/dashboard/attendance',
+        href: ['/dashboard/attendance'],
         icon: 'bi-calendar-check',
       },
       {
         key: 'classes',
         label: 'Classes',
-        href: '/dashboard/classes',
+        href: ['/dashboard/classes'],
         icon: 'bi-journal-bookmark',
       },
       {
         key: 'subjects',
         label: 'Subjects',
-        href: '/dashboard/subjects',
+        href: ['/dashboard/subjects'],
         icon: 'bi-book-half',
       },
-      { key: 'timetable', label: 'Timetable', href: '/dashboard/timetable', icon: 'bi-clock' },
+      {
+        key: 'timetable',
+        label: 'Timetable',
+        href: ['/dashboard/timetable', `/dashboard/timetable/${dynamicRoute}`],
+        icon: 'bi-clock',
+      },
       {
         key: 'exams',
         label: 'Exams & Results',
-        href: '/dashboard/exams',
+        href: ['/dashboard/exams'],
         icon: 'bi-award',
       },
     ],
@@ -71,7 +78,7 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         key: 'fees',
         label: 'Fees & Payments',
-        href: '/dashboard/fees',
+        href: ['/dashboard/fees'],
         icon: 'bi-credit-card',
         badge: '12',
       },
@@ -80,12 +87,12 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     label: 'Resources',
     items: [
-      { key: 'library', label: 'Library', href: '/dashboard/library', icon: 'bi-book' },
-      { key: 'hostel', label: 'Hostel', href: '/dashboard/hostel', icon: 'bi-building' },
+      { key: 'library', label: 'Library', href: ['/dashboard/library'], icon: 'bi-book' },
+      { key: 'hostel', label: 'Hostel', href: ['/dashboard/hostel'], icon: 'bi-building' },
       {
         key: 'transport',
         label: 'Transport',
-        href: '/dashboard/transport',
+        href: ['/dashboard/transport'],
         icon: 'bi-bus-front',
       },
     ],
@@ -96,48 +103,17 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         key: 'notifications',
         label: 'Notifications',
-        href: '/dashboard/notifications',
+        href: ['/dashboard/notifications'],
         icon: 'bi-bell',
         badge: '5',
       },
       {
         key: 'analytics',
         label: 'Reports & Analytics',
-        href: '/dashboard/analytics',
+        href: ['/dashboard/analytics'],
         icon: 'bi-bar-chart-line',
       },
-      { key: 'settings', label: 'Settings', href: '/dashboard/settings', icon: 'bi-gear' },
+      { key: 'settings', label: 'Settings', href: ['/dashboard/settings'], icon: 'bi-gear' },
     ],
   },
 ];
-
-export const PAGE_META: Record<string, { title: string; subtitle: string }> = {
-  '/dashboard': { title: 'Dashboard', subtitle: 'EduAdmin Pro / Dashboard' },
-  '/dashboard/students': { title: 'Students', subtitle: 'EduAdmin Pro / Students' },
-  '/dashboard/staffs': { title: 'Staffs', subtitle: 'EduAdmin Pro / Staffs' },
-  '/dashboard/guardians': { title: 'Guardians', subtitle: 'EduAdmin Pro / Guardians' },
-  '/dashboard/attendance': { title: 'Attendance', subtitle: 'EduAdmin Pro / Attendance' },
-  '/dashboard/classes': { title: 'Classes', subtitle: 'EduAdmin Pro / Classes' },
-  '/dashboard/subjects': { title: 'Subjects', subtitle: 'EduAdmin Pro / Subjects' },
-  '/dashboard/timetable': { title: 'Timetable', subtitle: 'EduAdmin Pro / Timetable' },
-  '/dashboard/exams': {
-    title: 'Exams & Results',
-    subtitle: 'EduAdmin Pro / Exams & Results',
-  },
-  '/dashboard/fees': {
-    title: 'Fees & Payments',
-    subtitle: 'EduAdmin Pro / Fees & Payments',
-  },
-  '/dashboard/library': { title: 'Library', subtitle: 'EduAdmin Pro / Library' },
-  '/dashboard/hostel': { title: 'Hostel', subtitle: 'EduAdmin Pro / Hostel' },
-  '/dashboard/transport': { title: 'Transport', subtitle: 'EduAdmin Pro / Transport' },
-  '/dashboard/notifications': {
-    title: 'Notifications',
-    subtitle: 'EduAdmin Pro / Notifications',
-  },
-  '/dashboard/analytics': {
-    title: 'Reports & Analytics',
-    subtitle: 'EduAdmin Pro / Reports & Analytics',
-  },
-  '/dashboard/settings': { title: 'Settings', subtitle: 'EduAdmin Pro / Settings' },
-};

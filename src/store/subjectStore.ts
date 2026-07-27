@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { SubjectAnalyticsResponse, PaginationMeta, Role, Subjects } from '@/types/definitions';
 import { defaultPaginationMeta } from '@/components/ui/table';
 import { getMethod } from '@/app/api/apiClient';
-import { abbrstringArr } from '@/utils/helpers';
+import { abbrStringArr } from '@/utils/helpers';
 
 interface SubjectState {
   schoolSubjectAnalytics: SubjectAnalyticsResponse | null;
@@ -84,7 +84,7 @@ export const useSubjectStore = create<SubjectState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
       const labels = response.subjectByStudentChart.chart.labels;
-      response.subjectByStudentChart.chart.labels = abbrstringArr(labels, 6);
+      response.subjectByStudentChart.chart.labels = abbrStringArr(labels, 6);
       set({ schoolSubjectAnalytics: response, subjectAnalyticsLoading: false });
     } catch (err: any) {
       set({ subjectAnalyticsLoading: false });
@@ -131,7 +131,7 @@ export const useSubjectStore = create<SubjectState>((set) => ({
       }
       if (!response.success) throw new Error('Failed to fetch data');
       const labels = response.subjectByStudentChart.chart.labels;
-      response.subjectByStudentChart.chart.labels = abbrstringArr(labels, 6);
+      response.subjectByStudentChart.chart.labels = abbrStringArr(labels, 6);
 
       set({ groupSubjectAnalytics: response, subjectAnalyticsLoading: false });
     } catch (err: any) {
