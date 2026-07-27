@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { NAV_SECTIONS } from '@/lib/nav-config';
+import { usePathname, useParams } from 'next/navigation';
+import { getSidebarItems } from '@/lib/nav-config';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
@@ -15,12 +15,15 @@ import { useUserStore } from '@/store/userStore';
 export function Sidebar() {
   const { collapsed, toggleSidebar, mobileOpen, setMobileOpen } = useSidebar();
   const pathname = usePathname();
+  const params = useParams();
 
   const router = useRouter();
   const { error } = useToastContext();
 
   const apiCall = useRef(false);
 
+  const currentClass = params.slug;
+  const navSection = getSidebarItems(currentClass as string);
   const { user, userLoading, unAuthorised, fetchLoggedInUser } = useUserStore();
 
   useEffect(() => {
@@ -105,7 +108,7 @@ export function Sidebar() {
 
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-3">
-          {NAV_SECTIONS.map((section) => (
+          {navSection.map((section) => (
             <div key={section.label} className="mb-1">
               <div
                 style={{ color: 'var(--sidebar-label)' }}
@@ -118,11 +121,11 @@ export function Sidebar() {
               </div>
 
               {section.items.map((item) => {
-                const active = pathname === item.href;
+                const active = item.href.includes(pathname);
                 return (
                   <Link
                     key={item.key}
-                    href={item.href}
+                    href={item.href[0]}
                     title={item.label}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
