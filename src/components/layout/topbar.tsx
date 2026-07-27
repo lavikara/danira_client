@@ -1,18 +1,19 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { PAGE_META } from '@/lib/nav-config';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { useTheme } from '@/contexts/theme-context';
 import { useUserStore } from '@/store/userStore';
 import { LoadingSvg } from '@/components/ui/loading-svg';
-import { cn, abbreviate, capitalize } from '@/utils/helpers';
+import { cn, abbreviate, capitalize, truncate } from '@/utils/helpers';
 
 export function Topbar() {
   const { collapsed, setMobileOpen } = useSidebar();
   const { theme, toggleTheme, mounted } = useTheme();
   const pathname = usePathname();
-  const meta = PAGE_META[pathname] ?? { title: 'EduAdmin Pro', subtitle: '' };
+
+  const meta = `EduAdmin Pro`;
+  const metaSub = pathname.slice(1);
 
   const { user, userLoading } = useUserStore();
 
@@ -43,10 +44,10 @@ export function Topbar() {
       {/* Page title */}
       <div className="min-w-0">
         <h2 style={{ color: 'var(--t1)' }} className="truncate text-[15px] font-bold leading-tight">
-          {meta.title}
+          {meta}
         </h2>
         <span style={{ color: 'var(--t3)' }} className="hidden text-[11.5px] sm:block">
-          {meta.subtitle}
+          {truncate(decodeURIComponent(metaSub), 30)}
         </span>
       </div>
 
