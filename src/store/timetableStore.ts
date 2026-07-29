@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { TimetableAnalyticsResponse, PaginationMeta, Role, Timetables } from '@/types/definitions';
 import { defaultPaginationMeta } from '@/components/ui/table';
-import { transformPeriods, RawPeriod } from '@/utils/parseTimetablePeriod';
+import { transformPeriods } from '@/utils/parseTimetablePeriod';
 import { getMethod } from '@/app/api/apiClient';
 import { TransformResult } from '@/utils/parseTimetablePeriod';
+import { getTimezone } from '@/utils/helpers';
 
 interface TimetableState {
   schoolTimetableAnalytics: TimetableAnalyticsResponse | null;
@@ -67,7 +68,9 @@ export const useTimetablesStore = create<TimetableState>((set) => ({
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
-      const periods = transformPeriods(response?.data.periods);
+      const periods = transformPeriods(response?.data.periods, {
+        timezone: getTimezone(),
+      });
       set({ timetableDetails: response.data, timetablePeriods: periods, timetableLoading: false });
     } catch (err: any) {
       set({ timetableLoading: false });
