@@ -1,9 +1,9 @@
 export interface RawPeriod {
   id: string;
-  name: string; // still present for ASSEMBLY/BREAK rows where lesson is null
+  name: string;
   day: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
-  startTime: string; // ISO UTC
-  endTime: string; // ISO UTC
+  startTime: string;
+  endTime: string;
   periodType: 'TEACHING' | 'ASSEMBLY' | 'BREAK' | string;
   lesson: {
     id: string;
@@ -26,10 +26,9 @@ export interface RawPeriod {
       id: string;
       name: string;
     };
-  } | null; // null for ASSEMBLY / non-teaching periods
+  } | null;
 }
 
-// ---------- Target shapes ----------
 export interface SlotEntry {
   subject: string;
   teacher: string;
@@ -37,7 +36,7 @@ export interface SlotEntry {
 
 export interface TimetableSlot {
   time: string;
-  subjects: (SlotEntry | null)[] | null; // outer null => BREAK row; inner null => no class that day/period
+  subjects: SlotEntry[] | null;
 }
 
 export interface SubjectColor {
@@ -56,7 +55,6 @@ export interface TodayScheduleEntry {
 export interface TransformResult {
   TIMETABLE_SLOTS: TimetableSlot[];
   SUBJECT_COLORS: Record<string, SubjectColor>;
-  /** Every distinct teacher who teaches this subject to this class, in first-seen order. A subject can have more than one (main + "2nd subject" staff). */
   SUBJECT_TEACHERS: Record<string, string[]>;
   TODAY_SCHEDULE: TodayScheduleEntry[];
   DAYS: string[];
@@ -187,9 +185,11 @@ export function transformPeriods(
   const TIMETABLE_SLOTS: TimetableSlot[] = [];
   for (let i = 0; i < orderedWindows.length; i++) {
     const win = orderedWindows[i];
-    const subjectsForRow: (SlotEntry | null)[] = DAY_ORDER.map((day) => {
+    const subjectsForRow: SlotEntry[] = DAY_ORDER.map((day) => {
       const match = byDay[day].find((p) => p.startTime === win.start && p.endTime === win.end);
-      return match ? { subject: getSubject(match), teacher: getTeacherName(match) } : null;
+      return match
+        ? { subject: getSubject(match), teacher: getTeacherName(match) }
+        : { subject: 'Free Period', teacher: '-' };
     });
     TIMETABLE_SLOTS.push({ time: formatRange(win.start, win.end, tz), subjects: subjectsForRow });
 
