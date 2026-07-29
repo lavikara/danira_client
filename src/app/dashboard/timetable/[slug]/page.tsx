@@ -18,7 +18,7 @@ export default function TimetablePage() {
   const schoolId = searchParams.get('schoolId');
 
   const { error } = useToastContext();
-  const { user, data } = useUserStore();
+  const { user } = useUserStore();
   const apiCall = useRef(false);
   const { timetableLoading, timetablePeriods, timetableDetails, fetchTimetableById } =
     useTimetablesStore();
