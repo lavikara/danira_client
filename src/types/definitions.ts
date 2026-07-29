@@ -226,6 +226,7 @@ export type Timetables = {
   name: string;
   status: Duration;
   schoolId: string;
+  periods: TimetablePeriods[];
   totalLessons: number;
   totalPeriods: number;
   classId: string | null;
@@ -235,6 +236,21 @@ export type Timetables = {
   gradeYear: GradeYears;
   term: Terms;
   lessons: Lessons;
+};
+
+export type TimetablePeriods = {
+  id: string;
+  name: string;
+  day: Day;
+  startTime: string;
+  endTime: string;
+  periodType: PeriodType;
+  timetableId: String;
+  timetable: Timetables;
+  lessonId: string;
+  lesson: Lessons;
+  createdAt: string;
+  updatedAt: string;
 };
 export interface Classes {
   id: string;
@@ -478,6 +494,20 @@ export type SchoolGroups = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type PeriodType =
+  | 'TEACHING'
+  | 'LECTURE'
+  | 'STUDY'
+  | 'BREAK'
+  | 'BREAKFAST'
+  | 'LUNCH'
+  | 'DINNER'
+  | 'ASSEMBLY'
+  | 'RELIGIOUS'
+  | 'CoCURRICULAR'
+  | 'TEST'
+  | 'EXAM';
 
 export type SchoolType = 'PRIMARY' | 'SECONDARY' | 'TERTIARY';
 

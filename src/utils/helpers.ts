@@ -164,3 +164,8 @@ export const truncate = (text: string, length: number) => {
 export const abbrStringArr = (labels: string[], length: number): string[] => {
   return labels.map((item: string) => item.slice(0, length));
 };
+
+export const getTimezone = () => {
+  const timeZone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return timeZone;
+};

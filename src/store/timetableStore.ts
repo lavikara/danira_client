@@ -1,13 +1,17 @@
 import { create } from 'zustand';
 import { TimetableAnalyticsResponse, PaginationMeta, Role, Timetables } from '@/types/definitions';
 import { defaultPaginationMeta } from '@/components/ui/table';
+import { transformPeriods } from '@/utils/parseTimetablePeriod';
 import { getMethod } from '@/app/api/apiClient';
+import { TransformResult } from '@/utils/parseTimetablePeriod';
+import { getTimezone } from '@/utils/helpers';
 
 interface TimetableState {
   schoolTimetableAnalytics: TimetableAnalyticsResponse | null;
   groupTimetableAnalytics: TimetableAnalyticsResponse | null;
   schoolTimetableDetails: Timetables[];
   groupTimetableDetails: Timetables[];
+  timetablePeriods: TransformResult | null;
   timetableDetails: Timetables | null;
   paginationMeta: PaginationMeta | null;
   timetableLoading: boolean;
@@ -47,6 +51,7 @@ export const useTimetablesStore = create<TimetableState>((set) => ({
   schoolTimetableDetails: [],
   groupTimetableDetails: [],
   timetableDetails: null,
+  timetablePeriods: null,
   groupTimetableAnalytics: null,
   paginationMeta: defaultPaginationMeta,
   timetableLoading: true,
@@ -63,7 +68,10 @@ export const useTimetablesStore = create<TimetableState>((set) => ({
         return;
       }
       if (!response.success) throw new Error('Failed to fetch data');
-      set({ timetableDetails: response, timetableLoading: false });
+      const periods = transformPeriods(response?.data.periods, {
+        timezone: getTimezone(),
+      });
+      set({ timetableDetails: response.data, timetablePeriods: periods, timetableLoading: false });
     } catch (err: any) {
       set({ timetableLoading: false });
       const errorMsg = err.message || 'An error occured';
