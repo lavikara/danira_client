@@ -99,7 +99,7 @@ export default function AttendancePage() {
   }, [user?.role]);
 
   useEffect(() => {
-    if (data?.groupId) {
+    if (data?.groupId && singleSchoolId === '') {
       fetchGroupAttendanceAnalytics(
         user?.role as Role,
         data?.groupId as string,
@@ -249,11 +249,6 @@ export default function AttendancePage() {
                 </Button>
               </div>
             )}
-            <input
-              type="date"
-              defaultValue="2025-05-14"
-              className="rounded-[9px] border-[1.5px] border-border bg-surface px-3 py-2 text-[13px] text-t1 outline-none focus:border-primary"
-            />
             <Button variant="primary" size="sm">
               <i className="bi bi-check2-square" />
               Mark Attendance
