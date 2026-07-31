@@ -21,11 +21,11 @@ export function AuthShell({
       {/* Blobs */}
       <div
         aria-hidden
-        className="pointer-events-none fixed -top-32 -left-32 h-[480px] w-[480px] rounded-full opacity-[0.06] blur-[100px] bg-primary"
+        className="pointer-events-none fixed -top-32 -left-32 h-120 w-120 rounded-full opacity-[0.06] blur-[100px] bg-primary"
       />
       <div
         aria-hidden
-        className="pointer-events-none fixed -right-32 -bottom-32 h-[400px] w-[400px] rounded-full opacity-[0.04] blur-[100px] bg-purple"
+        className="pointer-events-none fixed -right-32 -bottom-32 h-120 w-120 rounded-full opacity-[0.04] blur-[100px] bg-purple"
       />
 
       {/* Fixed top bar */}
@@ -40,7 +40,7 @@ export function AuthShell({
           href="/login"
           className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
         >
-          <div className="flex h-[34px] w-[34px] items-center justify-center rounded-[9px] bg-primary text-[16px] text-white shadow-[0_2px_10px_rgba(37,99,235,.4)]">
+          <div className="flex h-8.5 w-8.5 items-center justify-center rounded-[9px] bg-primary text-[16px] text-white shadow-[0_2px_10px_rgba(37,99,235,.4)]">
             <i className="bi bi-mortarboard-fill" />
           </div>
           <span style={{ color: 'var(--t1)' }} className="text-[15px] font-bold tracking-tight">
@@ -70,7 +70,7 @@ export function AuthShell({
 
       {/* Content */}
       <div className="flex min-h-screen flex-col items-center justify-center px-4 pb-12 pt-24">
-        <div className="w-full max-w-[460px]">
+        <div className="w-full max-w-115">
           <div className="mb-5 text-center">
             <h1
               style={{ color: 'var(--t1)' }}
@@ -251,6 +251,7 @@ export function AuthSelectInput({
         <i
           style={{
             color: 'var(--t3)',
+            pointerEvents: 'none',
           }}
           className={
             hint
@@ -345,7 +346,7 @@ export function AuthPageToast({ title, subtitle, message, cta }: AuthPageToastPr
   return (
     <AuthShell title={title} subtitle={subtitle}>
       <div className="flex flex-col items-center gap-5 py-2">
-        <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-green/10">
+        <div className="flex h-18 w-18 items-center justify-center rounded-full bg-green/10">
           <i className="bi bi-check2-circle text-[38px] text-green" />
         </div>
         <div className="w-full rounded-[9px] border border-dashed border-green/30 bg-green/5 px-4 py-3 text-center">
