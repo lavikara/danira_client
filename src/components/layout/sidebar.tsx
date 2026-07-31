@@ -53,7 +53,7 @@ export function Sidebar() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-150 bg-black/40 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-150 bg-black/40 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -70,7 +70,7 @@ export function Sidebar() {
           /* No overflow-hidden here — it was clipping the toggle button */
           'transition-[width,transform] duration-300 ease-in-out',
           collapsed ? 'w-17' : 'w-65',
-          'md:translate-x-0',
+          'lg:translate-x-0',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
@@ -238,7 +238,7 @@ export function Sidebar() {
         }}
         className={cn(
           'fixed top-8.5 z-201 -translate-y-1/2',
-          'hidden md:flex',
+          'hidden lg:flex',
           'h-7 w-7 items-center justify-center cursor-pointer',
           'rounded-full border-2 shadow-md',
           'transition-[left] duration-300 ease-in-out',

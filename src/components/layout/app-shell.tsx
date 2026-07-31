@@ -16,7 +16,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main
         className={cn(
           'mt-17 min-h-[calc(100vh-68px)] p-4 transition-[margin-left] duration-300 sm:p-6',
-          collapsed ? 'md:ml-17' : 'md:ml-65',
+          collapsed ? 'lg:ml-17' : 'lg:ml-65',
         )}
       >
         <div className="animate-fade-up">{children}</div>

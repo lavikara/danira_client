@@ -138,6 +138,16 @@ export const formatToStringDate = (date: number | string, hideDay: boolean = tru
   return datetime;
 };
 
+export const formatClock = (iso: string, tz: string): string | null => {
+  if (!iso) return null;
+  return new Date(iso).toLocaleTimeString('en-GB', {
+    timeZone: tz,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+};
+
 export const getTimeOfDay = (date: Date = new Date()): string => {
   const hour = date.getHours();
   if (hour < 12) return 'morning';

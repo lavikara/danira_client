@@ -94,7 +94,7 @@ export function StatCard({
       >
         {loading ? <LoadingSvg /> : value}
       </div>
-      <div style={{ color: 'var(--t2)' }} className="mt-1.5 text-xs font-medium">
+      <div style={{ color: 'var(--t2)' }} className="mt-1.5 text-xs font-medium truncate">
         {label}
       </div>
 

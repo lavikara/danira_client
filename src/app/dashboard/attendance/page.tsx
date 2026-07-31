@@ -1,43 +1,254 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { StatCard } from '@/components/ui/stat-card';
 import { Card, CardHeader, CardBody } from '@/components/ui/card';
 import { Badge, Tag } from '@/components/ui/badge';
 import { NameCell } from '@/components/ui/avatar';
-import { StatBar } from '@/components/ui/progress-bar';
-import { Table, THead, TH, TBody, TR, TD } from '@/components/ui/table';
+import { Table, THead, TH, TBody, TR, TD, Pagination, TableSkeleton } from '@/components/ui/table';
 import { AppChart } from '@/components/charts/app-chart';
-import { EmptyAttendance, EmptyTableRow } from '@/components/ui/empty-state';
-import { ATTENDANCE_BY_CLASS, ATTENDANCE_REGISTER, ATTENDANCE_TREND_30D } from '@/data/attendance';
-
-function classColor(pct: number) {
-  if (pct >= 90) return 'var(--color-green)';
-  if (pct >= 82) return 'var(--color-orange)';
-  return 'var(--color-red)';
-}
+import { SelectInput } from '@/components/ui/select-input';
+import { EmptyTableRow } from '@/components/ui/empty-state';
+import { PaginationMeta, Role } from '@/types/definitions';
+import { formatToStringDate, formatClock, getTimezone } from '@/utils/helpers';
+import { SearchComponent } from '@/components/ui/search-component';
+import { SelectSchool } from '@/components/ui/select-school';
+import { useToastContext } from '@/contexts/toast-context';
+import { useUserStore } from '@/store/userStore';
+import { useAttendanceStore } from '@/store/attendanceStore';
 
 export default function AttendancePage() {
-  const [isEmpty, setIsEmpty] = useState(false);
+  const [viewSchools, setViewSchools] = useState(false);
+  const [showGroupData, setShowGroupData] = useState(true);
+  const [tableDataList, setTableDataList] = useState(['Staffs', 'Students']);
+  const [singleSchoolId, setSingleSchoolId] = useState('');
+  const [schoolName, setSchoolName] = useState('');
+  const apiCall = useRef(false);
+  const selectTable = useRef('Staffs');
+  const query = useRef({ page: 1, limit: 20, search: null as string | null });
+
+  const { error } = useToastContext();
+  const { user, data } = useUserStore();
+  const {
+    schoolAttendanceAnalytics,
+    schoolAttendanceDetails,
+    groupAttendanceDetails,
+    groupAttendanceAnalytics,
+    paginationMeta,
+    attendanceLoading,
+    attendanceAnalyticsLoading,
+    fetchAllSchoolAttendance,
+    fetchSchoolAttendanceAnalytics,
+    fetchAllGroupSchoolAttendance,
+    fetchGroupAttendanceAnalytics,
+  } = useAttendanceStore();
+
+  const stats = showGroupData ? groupAttendanceAnalytics : schoolAttendanceAnalytics;
+  const attendanceDetails = showGroupData ? groupAttendanceDetails : schoolAttendanceDetails;
+
+  const handleError = (errorMessage: string) => {
+    error('Unable to get attendance details', { description: errorMessage });
+  };
+
+  useEffect(() => {
+    if (!user?.role || apiCall.current) return;
+    apiCall.current = true;
+
+    if (data?.groupId) {
+      setShowGroupData(true);
+      Promise.all([
+        fetchAllGroupSchoolAttendance(
+          user?.role as Role,
+          data.groupId,
+          query.current,
+          selectTable.current,
+          {
+            onError: handleError,
+          },
+        ),
+        fetchGroupAttendanceAnalytics(user?.role as Role, data.groupId, selectTable.current, {
+          onError: handleError,
+        }),
+      ]);
+      return;
+    }
+
+    setShowGroupData(false);
+    setSchoolName(data?.schools[0].schoolName as string);
+    Promise.all([
+      fetchAllSchoolAttendance(
+        user?.role as Role,
+        data?.schoolIds[0] as string,
+        query.current,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      ),
+      fetchSchoolAttendanceAnalytics(
+        user?.role as Role,
+        data?.schoolIds[0] as string,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      ),
+    ]);
+  }, [user?.role]);
+
+  useEffect(() => {
+    if (data?.groupId && singleSchoolId === '') {
+      fetchGroupAttendanceAnalytics(
+        user?.role as Role,
+        data?.groupId as string,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      );
+      return;
+    }
+    fetchSchoolAttendanceAnalytics(user?.role as Role, singleSchoolId, selectTable.current, {
+      onError: handleError,
+    });
+  }, [selectTable.current]);
+
+  const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
+    if (data?.groupId && singleSchoolId === '') {
+      fetchAllGroupSchoolAttendance(
+        user?.role as Role,
+        data?.groupId as string,
+        query,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      );
+      return;
+    }
+
+    if (singleSchoolId === '') {
+      fetchAllSchoolAttendance(
+        user?.role as Role,
+        data?.schoolIds[0] as string,
+        query,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      );
+      return;
+    }
+
+    if (singleSchoolId !== '') {
+      fetchAllSchoolAttendance(user?.role as Role, singleSchoolId, query, selectTable.current, {
+        onError: handleError,
+      });
+      return;
+    }
+  };
+
+  const getSchoolDetails = (id: string) => {
+    if (id === singleSchoolId) {
+      setViewSchools(false);
+      return;
+    }
+
+    setShowGroupData(false);
+    setSingleSchoolId(id);
+
+    query.current = { page: 1, limit: 20, search: null };
+    Promise.all([
+      fetchAllSchoolAttendance(user?.role as Role, id, query.current, selectTable.current, {
+        onError: handleError,
+      }),
+      fetchSchoolAttendanceAnalytics(user?.role as Role, id, selectTable.current, {
+        onError: handleError,
+      }),
+    ]);
+    const school = data?.schools.find((school) => school.id === id);
+    setSchoolName(school?.schoolName as string);
+    setViewSchools(false);
+  };
+
+  const getGroupDetails = () => {
+    query.current = { page: 1, limit: 20, search: null };
+    setShowGroupData(true);
+    setSingleSchoolId('');
+
+    Promise.all([
+      fetchAllGroupSchoolAttendance(
+        user?.role as Role,
+        data?.groupId as string,
+        query.current,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      ),
+      fetchGroupAttendanceAnalytics(
+        user?.role as Role,
+        data?.groupId as string,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      ),
+    ]);
+  };
+
+  const selectSchool = () => {
+    setViewSchools((view) => !view);
+  };
+
+  const setPage = (page: number) => {
+    query.current.page = page;
+    updateTableData(query.current);
+  };
+
+  const setPageLimit = (limit: number) => {
+    query.current.limit = limit;
+    query.current.page = 1;
+    updateTableData(query.current);
+  };
+
+  const setSearch = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
+    query.current.search = value;
+    query.current.page = 1;
+    updateTableData(query.current);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
+    selectTable.current = value;
+    query.current.page = 1;
+    updateTableData(query.current);
+  };
 
   return (
     <div className="min-w-0">
       <PageHeader
-        title="Attendance Tracking"
-        subtitle="Today, Wednesday 14 May 2025"
+        title="Attendance"
+        subtitle={
+          showGroupData ? `${data?.group?.groupName} Attendance` : `${schoolName} Attendance`
+        }
         actions={
           <>
-            <Button variant="ghost" size="sm" onClick={() => setIsEmpty((v) => !v)}>
-              <i className="bi bi-eye" />
-              {isEmpty ? 'Show Data' : 'Preview Empty'}
-            </Button>
-            <input
-              type="date"
-              defaultValue="2025-05-14"
-              className="rounded-[9px] border-[1.5px] border-border bg-surface px-3 py-2 text-[13px] text-t1 outline-none focus:border-primary"
-            />
+            {data?.groupId && (
+              <div>
+                {singleSchoolId !== '' && (
+                  <Button variant="ghost" size="sm" className="mr-2" onClick={getGroupDetails}>
+                    Group Info
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" onClick={selectSchool}>
+                  Select School
+                </Button>
+              </div>
+            )}
             <Button variant="primary" size="sm">
               <i className="bi bi-check2-square" />
               Mark Attendance
@@ -46,143 +257,207 @@ export default function AttendancePage() {
         }
       />
 
-      {isEmpty ? (
-        <EmptyAttendance />
+      {viewSchools ? (
+        <SelectSchool schools={data?.schools} getSchoolDetails={getSchoolDetails} />
       ) : (
         <>
           <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
+              loading={attendanceAnalyticsLoading || !stats}
               icon="bi bi-people-fill"
               color="blue"
-              value="1,141"
-              label="Present Today"
+              value={showGroupData ? String(stats?.presentToday) : String(stats?.presentToday)}
+              label={`${selectTable.current} Present Today`}
               compact
             />
             <StatCard
+              loading={attendanceAnalyticsLoading || !stats}
               icon="bi bi-person-x-fill"
               color="red"
-              value="68"
-              label="Absent Today"
+              value={showGroupData ? String(stats?.absentToday) : String(stats?.absentToday)}
+              label={`${selectTable.current} Absent Today`}
               compact
             />
             <StatCard
+              loading={attendanceAnalyticsLoading || !stats}
               icon="bi bi-clock-history"
               color="orange"
-              value="39"
-              label="Late Arrivals"
+              value={showGroupData ? String(stats?.lateToday) : String(stats?.lateToday)}
+              label={`${selectTable.current} Late Arrivals`}
               compact
             />
             <StatCard
+              loading={attendanceAnalyticsLoading || !stats}
               icon="bi bi-graph-up"
               color="green"
-              value="91.4%"
-              label="Overall Rate"
+              value={
+                showGroupData
+                  ? `${String(stats?.thirtyDayAttendanceRate)}%`
+                  : ` ${String(stats?.thirtyDayAttendanceRate)}%`
+              }
+              label={`${selectTable.current} 30-Day Attendance`}
               compact
             />
           </div>
 
-          <div className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="mb-5 grid grid-cols-1 gap-4 xl:grid-cols-2">
             <Card>
-              <CardHeader title="Attendance by Class" subtitle="Today's snapshot" />
+              <CardHeader title="30-Day Trend" subtitle="School-wide average" />
               <CardBody>
-                <div className="flex flex-col gap-3">
-                  {ATTENDANCE_BY_CLASS.map((c) => (
-                    <div key={c.name} className="flex items-center gap-3">
-                      <span className="w-13.5 shrink-0 text-[12px] font-semibold text-t2">
-                        {c.name}
-                      </span>
-                      <StatBar pct={c.pct} color={classColor(c.pct)} />
-                    </div>
-                  ))}
+                <div className="h-50">
+                  {!attendanceAnalyticsLoading && (
+                    <AppChart type="line" data={stats?.thirtyDaysTrend.chart as any} />
+                  )}
                 </div>
               </CardBody>
             </Card>
             <Card>
-              <CardHeader title="30-Day Trend" subtitle="School-wide average" />
+              <CardHeader title="Attendance by Department" subtitle="Today's snapshot" />
               <CardBody>
-                <AppChart
-                  type="line"
-                  height={210}
-                  data={{
-                    labels: Array.from({ length: 30 }, (_, i) => i + 1),
-                    datasets: [
-                      {
-                        data: ATTENDANCE_TREND_30D,
-                        borderColor: '#2563EB',
-                        backgroundColor: 'rgba(37,99,235,.08)',
-                        fill: true,
-                        tension: 0.35,
-                        borderWidth: 2,
-                        pointRadius: 0,
-                      },
-                    ],
-                  }}
-                  options={{ scales: { y: { min: 75, max: 100 } } }}
-                />
+                <div className="h-50">
+                  {!attendanceAnalyticsLoading && (
+                    <AppChart type="bar" data={stats?.attendanceByDepartment.chart as any} />
+                  )}
+                </div>
               </CardBody>
             </Card>
           </div>
 
           <Card>
             <CardHeader
-              title="Live Attendance Register"
+              title={`${selectTable.current} Attendance Register`}
               subtitle="Real-time check-ins"
               action={
                 <>
-                  <select className="rounded-[9px] border-[1.5px] border-border bg-surface px-2.5 py-1.5 text-[12px] outline-none focus:border-primary">
-                    <option>All Classes</option>
-                  </select>
-                  <Button variant="ghost" size="sm">
-                    <i className="bi bi-download" />
-                    Export
-                  </Button>
+                  <SelectInput
+                    id="country"
+                    defaultOption="Switch Tables"
+                    list={tableDataList}
+                    value={selectTable.current}
+                    onChange={handleInputChange}
+                  />
+                  <SearchComponent
+                    id="attendance_search"
+                    placeholder="Name, ID, Status"
+                    onSearchInput={setSearch}
+                    className="w-full"
+                  />
                 </>
               }
             />
             <Table>
               <THead>
-                <TH>Student</TH>
-                <TH>Adm. No.</TH>
-                <TH>Class</TH>
+                <TH>#</TH>
+                <TH>Name</TH>
+                <TH>ID No.</TH>
+                <TH>Position</TH>
+                <TH>{selectTable.current === 'Staffs' ? 'Employment' : 'Lesson'}</TH>
                 <TH>Time In</TH>
+                <TH>Time Out</TH>
                 <TH>Status</TH>
               </THead>
-              <TBody>
-                {ATTENDANCE_REGISTER.length === 0 ? (
-                  <EmptyTableRow
-                    colSpan={5}
-                    icon="bi-calendar-x"
-                    message="No attendance recorded yet"
-                  />
-                ) : (
-                  ATTENDANCE_REGISTER.map((r, i) => (
-                    <TR key={r.id}>
-                      <TD>
-                        <NameCell name={r.name} index={i} />
-                      </TD>
-                      <TD className="text-xs text-t2 whitespace-nowrap">{r.id}</TD>
-                      <TD>
-                        <Tag>{r.cls}</Tag>
-                      </TD>
-                      <TD className="font-medium text-t2 whitespace-nowrap">{r.timeIn}</TD>
-                      <TD>
-                        <Badge
-                          color={
-                            r.status === 'Present'
-                              ? 'green'
-                              : r.status === 'Late'
-                                ? 'orange'
-                                : 'red'
-                          }
-                        >
-                          {r.status}
-                        </Badge>
-                      </TD>
-                    </TR>
-                  ))
-                )}
-              </TBody>
-            </Table>
+              {attendanceLoading ? (
+                <TableSkeleton rows={5} columns={8} />
+              ) : (
+                <TBody>
+                  {attendanceDetails.length === 0 ? (
+                    <EmptyTableRow
+                      colSpan={8}
+                      icon="bi-calendar-x"
+                      message="No attendance recorded"
+                    />
+                  ) : (
+                    (attendanceDetails ?? []).map((attendance, index) => {
+                      const rowNumber = (query.current.page - 1) * query.current.limit + index + 1;
+                      return (
+                        <TR key={attendance.id}>
+                          <TD className="w-10 font-semibold text-t3">{rowNumber}</TD>
+                          <TD>
+                            <NameCell
+                              name={
+                                selectTable.current === 'Staffs'
+                                  ? `${attendance.staff?.users.firstName} ${attendance.staff?.users.lastName}`
+                                  : `${attendance.student?.users.firstName} ${attendance.student?.users.lastName}`
+                              }
+                              index={index}
+                            />
+                          </TD>
+                          <TD className="text-xs text-t2 whitespace-nowrap">
+                            {selectTable.current === 'Staffs'
+                              ? `${attendance.staff?.staffId}`
+                              : `${attendance.student?.studentId}`}
+                          </TD>
+                          <TD>
+                            <Tag>
+                              {selectTable.current === 'Staffs'
+                                ? `${attendance.staff?.position}`
+                                : `${attendance.student?.position}`}
+                            </Tag>
+                          </TD>
+                          <TD className="truncate">
+                            <div className="font-semibold whitespace-nowrap">
+                              {selectTable.current === 'Staffs'
+                                ? `${attendance?.staff?.employmentStatus}`
+                                : `${attendance?.lesson?.name}`}
+                            </div>
+                            <div className="mt-0.5 text-[11.5px] text-t3">
+                              {selectTable.current === 'Staffs'
+                                ? `${attendance?.staff?.users?.status}`
+                                : `${attendance?.lesson?.class.name}`}
+                            </div>
+                          </TD>
+                          <TD className="font-medium text-t2 whitespace-nowrap">
+                            <div className="font-semibold whitespace-nowrap">
+                              {formatClock(attendance.clockIn, getTimezone())}
+                            </div>
+                            <div className="mt-0.5 text-[11.5px] text-t3">
+                              {formatToStringDate(attendance.clockIn, false)}
+                            </div>
+                          </TD>
+                          <TD className="font-medium text-t2 whitespace-nowrap">
+                            <div className="font-semibold whitespace-nowrap">
+                              {formatClock(attendance.clockOut, getTimezone())}
+                            </div>
+                            <div className="mt-0.5 text-[11.5px] text-t3">
+                              {formatToStringDate(attendance.clockOut, false)}
+                            </div>
+                          </TD>
+                          <TD>
+                            <Badge
+                              color={
+                                selectTable.current === 'Staffs'
+                                  ? attendance?.status === 'PRESENT'
+                                    ? 'green'
+                                    : attendance?.status === 'LATE'
+                                      ? 'yellow'
+                                      : 'red'
+                                  : attendance?.attendance === 'PRESENT'
+                                    ? 'green'
+                                    : attendance?.attendance === 'LATE'
+                                      ? 'yellow'
+                                      : 'red'
+                              }
+                            >
+                              {selectTable.current === 'Staffs'
+                                ? `${attendance?.status}`
+                                : `${attendance?.attendance}`}
+                            </Badge>
+                          </TD>
+                        </TR>
+                      );
+                    })
+                  )}
+                </TBody>
+              )}
+            </Table>{' '}
+            <Pagination
+              pagination={
+                { ...(paginationMeta ?? {}), limit: query.current.limit } as PaginationMeta
+              }
+              onPageChange={setPage}
+              onLimitChange={setPageLimit}
+              limitOptions={[10, 20, 40, 80, 100]}
+            />
           </Card>
         </>
       )}

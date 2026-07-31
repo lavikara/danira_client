@@ -11,6 +11,7 @@ import { SearchComponent } from '@/components/ui/search-component';
 import { formatAmount, avatarColor, initials } from '@/utils/helpers';
 import { PaginationMeta, Role } from '@/types/definitions';
 import { SelectSchool } from '@/components/ui/select-school';
+import { EmptySearch } from '@/components/ui/empty-state';
 import { useToastContext } from '@/contexts/toast-context';
 import { useUserStore } from '@/store/userStore';
 import { useClassStore } from '@/store/classStore';
@@ -42,13 +43,13 @@ export default function ClassesPage() {
   const stats = showGroupData ? groupClassAnalytics : schoolClassAnalytics;
   const classDetails = showGroupData ? groupClassDetails : schoolClassDetails;
 
+  const handleError = (errorMessage: string) => {
+    error('Unable to get class details', { description: errorMessage });
+  };
+
   useEffect(() => {
     if (!user?.role || apiCall.current) return;
     apiCall.current = true;
-
-    const handleError = (errorMessage: string) => {
-      error('Unable to get class details', { description: errorMessage });
-    };
 
     if (data?.groupId) {
       setShowGroupData(true);
@@ -75,10 +76,6 @@ export default function ClassesPage() {
   }, [user?.role]);
 
   const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
-    const handleError = (errorMessage: string) => {
-      error('Unable to get class details', { description: errorMessage });
-    };
-
     if (data?.groupId && singleSchoolId === '') {
       fetchAllGroupSchoolClass(user?.role as Role, data?.groupId as string, query, {
         onError: handleError,
@@ -108,9 +105,6 @@ export default function ClassesPage() {
     setShowGroupData(false);
     setSingleSchoolId(id);
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get class details', { description: errorMessage });
-    };
     query.current = { page: 1, limit: 20, search: null };
     Promise.all([
       fetchAllSchoolClass(user?.role as Role, id, query.current, {
@@ -130,9 +124,6 @@ export default function ClassesPage() {
     setShowGroupData(true);
     setSingleSchoolId('');
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get class details', { description: errorMessage });
-    };
     Promise.all([
       fetchAllGroupSchoolClass(user?.role as Role, data?.groupId as string, query.current, {
         onError: handleError,
@@ -272,54 +263,58 @@ export default function ClassesPage() {
                 <CardLoading />
               ) : (
                 <CardBody className="grid grid-cols-1 gap-3 sm:grid-cols-4 ">
-                  {classDetails.map((classes, index) => (
-                    <div
-                      key={classes.id}
-                      className="rounded-xl border-[1.5px] border-border-light p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-card cursor-pointer"
-                    >
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[14px] font-bold text-t1 truncate">
-                          {classes.name}
-                        </span>
-                        <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-bold text-primary">
-                          {classes.department.name}
-                        </span>
-                      </div>
-                      <div className="mb-3 flex items-center gap-2">
-                        <div
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white"
-                          style={{ backgroundColor: avatarColor(index) }}
-                        >
-                          {initials(
-                            `${classes.supervisor.users.firstName} ${classes.supervisor.users.lastName}`,
-                          )}
+                  {classDetails.length === 0 ? (
+                    <EmptySearch className="col-start-1 col-end-5" />
+                  ) : (
+                    classDetails.map((classes, index) => (
+                      <div
+                        key={classes.id}
+                        className="rounded-xl border-[1.5px] border-border-light p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-card cursor-pointer"
+                      >
+                        <div className="mb-2.5 flex items-center justify-between">
+                          <span className="text-[14px] font-bold text-t1 truncate">
+                            {classes.name}
+                          </span>
+                          <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-bold text-primary">
+                            {classes.department.name}
+                          </span>
                         </div>
-                        <div>
-                          <div className="truncate text-[12px] text-t2">
-                            {`${classes.supervisor.users.firstName} ${classes.supervisor.users.lastName}`}
+                        <div className="mb-3 flex items-center gap-2">
+                          <div
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white"
+                            style={{ backgroundColor: avatarColor(index) }}
+                          >
+                            {initials(
+                              `${classes.supervisor.users.firstName} ${classes.supervisor.users.lastName}`,
+                            )}
                           </div>
-                          <div className="text-primary font-bold text-[9px]">Supervisor</div>
+                          <div>
+                            <div className="truncate text-[12px] text-t2">
+                              {`${classes.supervisor.users.firstName} ${classes.supervisor.users.lastName}`}
+                            </div>
+                            <div className="text-primary font-bold text-[9px]">Supervisor</div>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-t2">
+                          <span>
+                            <i className="bi bi-people" /> {classes.population}
+                          </span>
+                          <span>
+                            <i className="bi bi-book" /> {classes.subjectCount} subj.
+                          </span>
+                          <span className="font-bold text-primary">
+                            <i className="bi bi-cash-stack text-t2" />{' '}
+                            {formatAmount(
+                              classes.compulsoryFeesAmount.amount,
+                              2,
+                              classes.compulsoryFeesAmount.currency,
+                            )}
+                            <span className="font-normal text-[12px] text-t2"> fees</span>
+                          </span>
                         </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-t2">
-                        <span>
-                          <i className="bi bi-people" /> {classes.population}
-                        </span>
-                        <span>
-                          <i className="bi bi-book" /> {classes.subjectCount} subj.
-                        </span>
-                        <span className="font-bold text-primary">
-                          <i className="bi bi-cash-stack text-t2" />{' '}
-                          {formatAmount(
-                            classes.compulsoryFeesAmount.amount,
-                            2,
-                            classes.compulsoryFeesAmount.currency,
-                          )}
-                          <span className="font-normal text-[12px] text-t2"> fees</span>
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </CardBody>
               )}
               <Pagination

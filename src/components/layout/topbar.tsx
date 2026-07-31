@@ -28,13 +28,13 @@ export function Topbar() {
         'fixed top-0 right-0 left-0 z-100 flex h-17 items-center gap-3.5',
         'border-b px-4 sm:px-6',
         'transition-[left] duration-300 ease-in-out',
-        collapsed ? 'md:left-17' : 'md:left-65',
+        collapsed ? 'lg:left-17' : 'lg:left-65',
       )}
     >
       {/* Mobile hamburger */}
       <button
         style={{ color: 'var(--t2)' }}
-        className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-surface-2 hover:text-t1! md:hidden"
+        className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-surface-2 hover:text-t1! lg:hidden"
         onClick={() => setMobileOpen(true)}
         aria-label="Open menu"
       >
