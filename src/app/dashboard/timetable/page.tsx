@@ -12,6 +12,7 @@ import { SearchComponent } from '@/components/ui/search-component';
 import { SelectSchool } from '@/components/ui/select-school';
 import { PaginationMeta, Role } from '@/types/definitions';
 import { useToastContext } from '@/contexts/toast-context';
+import { EmptySearch } from '@/components/ui/empty-state';
 import { useUserStore } from '@/store/userStore';
 import { useTimetablesStore } from '@/store/timetableStore';
 
@@ -42,13 +43,13 @@ export default function TimetablePage() {
   const stats = showGroupData ? groupTimetableAnalytics : schoolTimetableAnalytics;
   const timetableDetails = showGroupData ? groupTimetableDetails : schoolTimetableDetails;
 
+  const handleError = (errorMessage: string) => {
+    error('Unable to get timetable details', { description: errorMessage });
+  };
+
   useEffect(() => {
     if (!user?.role || apiCall.current) return;
     apiCall.current = true;
-
-    const handleError = (errorMessage: string) => {
-      error('Unable to get timetable details', { description: errorMessage });
-    };
 
     if (data?.groupId) {
       setShowGroupData(true);
@@ -75,10 +76,6 @@ export default function TimetablePage() {
   }, [user?.role]);
 
   const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
-    const handleError = (errorMessage: string) => {
-      error('Unable to get timetable details', { description: errorMessage });
-    };
-
     if (data?.groupId && singleSchoolId === '') {
       fetchAllGroupSchoolTimetable(user?.role as Role, data?.groupId as string, query, {
         onError: handleError,
@@ -108,9 +105,6 @@ export default function TimetablePage() {
     setShowGroupData(false);
     setSingleSchoolId(id);
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get timetable details', { description: errorMessage });
-    };
     query.current = { page: 1, limit: 20, search: null };
     Promise.all([
       fetchAllSchoolTimetable(user?.role as Role, id, query.current, {
@@ -130,9 +124,6 @@ export default function TimetablePage() {
     setShowGroupData(true);
     setSingleSchoolId('');
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get timetable details', { description: errorMessage });
-    };
     fetchAllGroupSchoolTimetable(user?.role as Role, data?.groupId as string, query.current, {
       onError: handleError,
     });
@@ -235,42 +226,48 @@ export default function TimetablePage() {
                 <CardLoading />
               ) : (
                 <CardBody className="grid grid-cols-1 gap-3 sm:grid-cols-4 ">
-                  {timetableDetails.map((timetable, index) => (
-                    <Link
-                      href={{
-                        pathname: `timetable/${timetable.class.name}`,
-                        query: { id: `${timetable.id}`, schoolId: `${timetable.schoolId}` },
-                      }}
-                      key={timetable.id}
-                      className="rounded-xl border-[1.5px] border-border-light p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-card cursor-pointer"
-                    >
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <span className="text-[14px] font-bold text-t1 truncate">
-                          {timetable.class.name}
-                        </span>
-                        <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-bold text-primary">
-                          {timetable.class.type}
-                        </span>
-                      </div>
-                      <div className="mb-3 flex items-center gap-2">
-                        <div
-                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white"
-                          style={{ backgroundColor: avatarColor(index) }}
-                        >
-                          {initials(`${timetable.term.type}`)}
+                  {timetableDetails.length === 0 ? (
+                    <EmptySearch className="col-start-1 col-end-5" />
+                  ) : (
+                    timetableDetails.map((timetable, index) => (
+                      <Link
+                        href={{
+                          pathname: `timetable/${timetable.class.name}`,
+                          query: { id: `${timetable.id}`, schoolId: `${timetable.schoolId}` },
+                        }}
+                        key={timetable.id}
+                        className="rounded-xl border-[1.5px] border-border-light p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-card cursor-pointer"
+                      >
+                        <div className="mb-2.5 flex items-center justify-between">
+                          <span className="text-[14px] font-bold text-t1 truncate">
+                            {timetable.class.name}
+                          </span>
+                          <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-bold text-primary">
+                            {timetable.class.type}
+                          </span>
                         </div>
-                        <span className="truncate text-[12px] text-t2">{timetable.term.name}</span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-t2">
-                        <span>
-                          <i className="bi bi-pencil"></i> {timetable.totalLessons} lessons
-                        </span>
-                        <span>
-                          <i className="bi bi-stopwatch"></i> {timetable.totalPeriods} periods.
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
+                        <div className="mb-3 flex items-center gap-2">
+                          <div
+                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[9px] font-bold text-white"
+                            style={{ backgroundColor: avatarColor(index) }}
+                          >
+                            {initials(`${timetable.term.type}`)}
+                          </div>
+                          <span className="truncate text-[12px] text-t2">
+                            {timetable.term.name}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-t2">
+                          <span>
+                            <i className="bi bi-pencil"></i> {timetable.totalLessons} lessons
+                          </span>
+                          <span>
+                            <i className="bi bi-stopwatch"></i> {timetable.totalPeriods} periods.
+                          </span>
+                        </div>
+                      </Link>
+                    ))
+                  )}
                 </CardBody>
               )}
               <Pagination

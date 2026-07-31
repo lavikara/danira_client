@@ -58,13 +58,13 @@ export default function StaffsPage() {
   const stats = showGroupData ? groupStaffAnalytics : schoolStaffAnalytics;
   const staffDetails = showGroupData ? groupStaffDetails : schoolStaffDetails;
 
+  const handleError = (errorMessage: string) => {
+    error('Unable to get staff details', { description: errorMessage });
+  };
+
   useEffect(() => {
     if (!user?.role || apiCall.current) return;
     apiCall.current = true;
-
-    const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
-    };
 
     if (data?.groupId) {
       setShowGroupData(true);
@@ -91,10 +91,6 @@ export default function StaffsPage() {
   }, [user?.role]);
 
   const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
-    const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
-    };
-
     if (data?.groupId && singleSchoolId === '') {
       fetchAllGroupSchoolStaff(user?.role as Role, data?.groupId as string, query, {
         onError: handleError,
@@ -124,9 +120,6 @@ export default function StaffsPage() {
     setShowGroupData(false);
     setSingleSchoolId(id);
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
-    };
     query.current = { page: 1, limit: 20, search: null };
     Promise.all([
       fetchAllSchoolStaff(user?.role as Role, id, query.current, {
@@ -146,9 +139,6 @@ export default function StaffsPage() {
     setShowGroupData(true);
     setSingleSchoolId('');
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get staff details', { description: errorMessage });
-    };
     Promise.all([
       fetchAllGroupSchoolStaff(user?.role as Role, data?.groupId as string, query.current, {
         onError: handleError,

@@ -43,13 +43,13 @@ export default function SubjectsPage() {
   const stats = showGroupData ? groupSubjectAnalytics : schoolSubjectAnalytics;
   const subjectDetails = showGroupData ? groupSubjectDetails : schoolSubjectDetails;
 
+  const handleError = (errorMessage: string) => {
+    error('Unable to get subject details', { description: errorMessage });
+  };
+
   useEffect(() => {
     if (!user?.role || apiCall.current) return;
     apiCall.current = true;
-
-    const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
-    };
 
     if (data?.groupId) {
       setShowGroupData(true);
@@ -76,10 +76,6 @@ export default function SubjectsPage() {
   }, [user?.role]);
 
   const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
-    const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
-    };
-
     if (data?.groupId && singleSchoolId === '') {
       fetchAllGroupSchoolSubject(user?.role as Role, data?.groupId as string, query, {
         onError: handleError,
@@ -109,9 +105,6 @@ export default function SubjectsPage() {
     setShowGroupData(false);
     setSingleSchoolId(id);
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
-    };
     query.current = { page: 1, limit: 20, search: null };
     Promise.all([
       fetchAllSchoolSubject(user?.role as Role, id, query.current, {
@@ -131,9 +124,6 @@ export default function SubjectsPage() {
     setShowGroupData(true);
     setSingleSchoolId('');
 
-    const handleError = (errorMessage: string) => {
-      error('Unable to get student details', { description: errorMessage });
-    };
     Promise.all([
       fetchAllGroupSchoolSubject(user?.role as Role, data?.groupId as string, query.current, {
         onError: handleError,
