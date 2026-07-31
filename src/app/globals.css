@@ -25,6 +25,7 @@
   --color-primary-700: #1d4ed8;
   --color-purple: #8b5cf6;
   --color-green: #10b981;
+  --color-yellow: #eab308;
   --color-orange: #f59e0b;
   --color-red: #ef4444;
   --color-teal: #06b6d4;
@@ -44,6 +45,8 @@
   /* Status chip bg/text: also runtime-switched in .dark */
   --color-green-bg: var(--green-bg);
   --color-green-text: var(--green-text);
+  --color-yellow-bg: var(--yellow-bg);
+  --color-yellow-text: var(--yellow-text);
   --color-orange-bg: var(--orange-bg);
   --color-orange-text: var(--orange-text);
   --color-red-bg: var(--red-bg);
@@ -89,6 +92,8 @@
   /* Status chips */
   --green-bg: #ecfdf5;
   --green-text: #065f46;
+  --yellow-bg: #fefce8;
+  --yellow-text: #854d0e;
   --orange-bg: #fffbeb;
   --orange-text: #92400e;
   --red-bg: #fef2f2;
@@ -118,6 +123,7 @@
   --sky-chip-bg: rgba(2, 132, 199, 0.15);
   --amber-chip-bg: rgba(217, 119, 6, 0.15);
   --cyan-chip-bg: rgba(14, 165, 233, 0.15);
+  --yellow-chip-bg: rgba(234, 179, 8, 0.15);
 
   /* toast */
   --edu-primary: #2563eb;
@@ -187,6 +193,8 @@
   /* Status chips — boosted contrast for dark */
   --green-bg: #052e16;
   --green-text: #4ade80;
+  --yellow-bg: #292100;
+  --yellow-text: #fde047;
   --orange-bg: #2d1b00;
   --orange-text: #fbbf24;
   --red-bg: #2d0909;
@@ -216,6 +224,7 @@
   --sky-chip-bg: rgba(2, 132, 199, 0.15);
   --amber-chip-bg: rgba(217, 119, 6, 0.15);
   --cyan-chip-bg: rgba(14, 165, 233, 0.15);
+  --yellow-chip-bg: rgba(234, 179, 8, 0.15);
 
   /* toast */
   --toast-bg: #1e293b;
