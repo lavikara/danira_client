@@ -131,6 +131,7 @@ export interface Staffs {
   schoolId: string;
   departmentId: string;
   department: Departments;
+  staffId: string;
   users: Users;
   subjects: Subjects[];
   lessons: {
@@ -215,6 +216,7 @@ export type Students = {
   assignmentId: string | null;
   subjectId: string | null;
   departmentId: string | null;
+  position: string;
   users: Users;
   class: Classes;
   department: Departments;
@@ -308,12 +310,15 @@ export interface Assignments {
 export interface Attendance {
   id: string;
   date: string;
+  status: AttendanceStatus;
   attendance: AttendanceStatus;
-  status: Duration;
   studentId: string;
   student: Students;
   lessonId: string;
   lesson: Lessons;
+  staff: Staffs;
+  clockIn: string;
+  clockOut: string;
 }
 
 export interface Fees {
@@ -395,6 +400,7 @@ export interface Dataset {
   backgroundColor: string;
   borderColor: string;
   borderWidth: number;
+  borderRadius?: number;
 }
 
 export interface BarChart {
@@ -448,6 +454,16 @@ export interface SubjectAnalyticsResponse {
   mixedSubjects: number;
   subjectByDepartmentChart: BarChart;
   subjectByStudentChart: BarChart;
+}
+
+export interface AttendanceAnalyticsResponse {
+  absentToday: number;
+  attendanceRate: number;
+  lateToday: number;
+  presentToday: number;
+  thirtyDayAttendanceRate: number;
+  thirtyDaysTrend: BarChart;
+  attendanceByDepartment: BarChart;
 }
 
 export interface TimetableAnalyticsResponse {
@@ -517,7 +533,7 @@ export type ClassType = 'PRIMARY' | 'SECONDARY' | 'TERTIARY';
 
 export type FeeCategory = 'COMPULSORY' | 'ABSENT';
 
-export type AttendanceStatus = 'PRESENT' | 'OPTIONAL';
+export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 
 export type TermType = 'FIRSTTERM' | 'SECONDTERM' | 'THIRDTERM';
 
