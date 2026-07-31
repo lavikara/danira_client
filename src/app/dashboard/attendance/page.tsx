@@ -98,23 +98,6 @@ export default function AttendancePage() {
     ]);
   }, [user?.role]);
 
-  useEffect(() => {
-    if (data?.groupId && singleSchoolId === '') {
-      fetchGroupAttendanceAnalytics(
-        user?.role as Role,
-        data?.groupId as string,
-        selectTable.current,
-        {
-          onError: handleError,
-        },
-      );
-      return;
-    }
-    fetchSchoolAttendanceAnalytics(user?.role as Role, singleSchoolId, selectTable.current, {
-      onError: handleError,
-    });
-  }, [selectTable.current]);
-
   const updateTableData = (query: { page: number; limit: number; search: string | null }) => {
     if (data?.groupId && singleSchoolId === '') {
       fetchAllGroupSchoolAttendance(
@@ -199,6 +182,39 @@ export default function AttendancePage() {
     ]);
   };
 
+  const updateAnalytics = () => {
+    if (data?.groupId && singleSchoolId === '') {
+      fetchGroupAttendanceAnalytics(
+        user?.role as Role,
+        data?.groupId as string,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      );
+      return;
+    }
+
+    if (singleSchoolId === '') {
+      fetchSchoolAttendanceAnalytics(
+        user?.role as Role,
+        data?.schoolIds[0] as string,
+        selectTable.current,
+        {
+          onError: handleError,
+        },
+      );
+      return;
+    }
+
+    if (singleSchoolId !== '') {
+      fetchSchoolAttendanceAnalytics(user?.role as Role, singleSchoolId, selectTable.current, {
+        onError: handleError,
+      });
+      return;
+    }
+  };
+
   const selectSchool = () => {
     setViewSchools((view) => !view);
   };
@@ -226,6 +242,7 @@ export default function AttendancePage() {
     selectTable.current = value;
     query.current.page = 1;
     updateTableData(query.current);
+    updateAnalytics();
   };
 
   return (
