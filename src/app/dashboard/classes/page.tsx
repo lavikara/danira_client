@@ -139,6 +139,7 @@ export default function ClassesPage() {
   };
 
   const setPage = (page: number) => {
+    if (page === query.current.page) return;
     query.current.page = page;
     updateTableData(query.current);
   };
