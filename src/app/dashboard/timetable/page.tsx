@@ -142,6 +142,7 @@ export default function TimetablePage() {
   };
 
   const setPage = (page: number) => {
+    if (page === query.current.page) return;
     query.current.page = page;
     updateTableData(query.current);
   };

@@ -154,6 +154,7 @@ export default function StaffsPage() {
   };
 
   const setPage = (page: number) => {
+    if (page === query.current.page) return;
     query.current.page = page;
     updateTableData(query.current);
   };
@@ -305,12 +306,6 @@ export default function StaffsPage() {
                     <EmptyTableRow colSpan={9} />
                   ) : (
                     (staffDetails ?? []).map((staff, index) => {
-                      const subjectNames = Array.isArray(staff.subjects)
-                        ? staff.subjects
-                            .map((subject) => subject?.name)
-                            .filter(Boolean)
-                            .join(', ')
-                        : '—';
                       const rating = staff.users?.ratings ?? '0';
                       const status = staff.users?.status;
                       const rowNumber = (query.current.page - 1) * query.current.limit + index + 1;
@@ -326,9 +321,7 @@ export default function StaffsPage() {
                           </TD>
                           <TD>
                             <Tag>
-                              <span className="truncate">
-                                {truncate(staff.lessons.subjectName, 20)}
-                              </span>
+                              <span>{truncate(staff.lessons.subjectName, 20)}</span>
                             </Tag>
                           </TD>
                           <TD className="font-semibold">{staff.department.name}</TD>
