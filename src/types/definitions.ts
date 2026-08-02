@@ -247,7 +247,7 @@ export type TimetablePeriods = {
   startTime: string;
   endTime: string;
   periodType: PeriodType;
-  timetableId: String;
+  timetableId: string;
   timetable: Timetables;
   lessonId: string;
   lesson: Lessons;
@@ -374,6 +374,35 @@ export interface Announcements {
   classId: string;
 }
 
+export interface Notifications {
+  id: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  priority: NotificationPriority;
+  schoolId: string;
+  school: Schools;
+  entityType: NotificationEntityType;
+  entityId: string;
+  actionUrl: string;
+  createdAt: string;
+  icon: string;
+  bgColor: string;
+  iconColor: string;
+  recipients: NotificationRecipients[];
+}
+
+export interface NotificationRecipients {
+  id: string;
+  notificationId: string;
+  notification: Notifications;
+  userId: string;
+  user: Users;
+  isRead: boolean;
+  readAt: string;
+  createdAt: string;
+}
+
 export interface GradeYears {
   id: string;
   level: string;
@@ -428,6 +457,13 @@ export interface StaffAnalyticsResponse {
   staffsOnLeave: number;
   averageRating: number;
   topTeachersByWorkload: BarChart;
+}
+
+export interface NotificationAnalyticsResponse {
+  unreadCount: number;
+  avgOpenRateLast30Days: number;
+  last30DaysTotal: number;
+  totalReach: number;
 }
 
 export interface StudentAnalyticsResponse {
@@ -546,6 +582,27 @@ export type ClassCondition = 'ACTIVE' | 'DELETED' | 'CLOSED' | 'SUSPENDED';
 export type SchoolStatus = 'ACTIVE' | 'BLOCKED' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export type Currency = 'NGN' | 'USD' | 'KES' | 'GBP' | 'GHS' | 'EUR' | 'ZAR' | 'CAD';
+
+export type NotificationType =
+  | 'ANNOUNCEMENT'
+  | 'FEE_REMINDER'
+  | 'ATTENDANCE_ALERT'
+  | 'EXAM_SCHEDULED'
+  | 'TIMETABLE_CHANGE'
+  | 'REPORT_CARD_READY'
+  | 'GENERAL';
+
+export type NotificationPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
+
+export type NotificationEntityType =
+  | 'ANNOUNCEMENT'
+  | 'FEE'
+  | 'EXAM'
+  | 'TEST'
+  | 'ASSIGNMENT'
+  | 'TIMETABLE'
+  | 'EVENT'
+  | 'REPORT_CARD';
 
 export type Day =
   | 'MONDAY'
