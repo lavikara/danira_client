@@ -407,9 +407,11 @@ export default function AttendancePage() {
                           </TD>
                           <TD>
                             <Tag>
-                              {selectTable.current === 'Staffs'
-                                ? `${attendance.staff?.position}`
-                                : `${attendance.student?.position}`}
+                              <div className="whitespace-nowrap">
+                                {selectTable.current === 'Staffs'
+                                  ? `${attendance.staff?.position}`
+                                  : `${attendance.student?.position}`}
+                              </div>
                             </Tag>
                           </TD>
                           <TD className="truncate">
@@ -421,7 +423,7 @@ export default function AttendancePage() {
                             <div className="mt-0.5 text-[11.5px] text-t3">
                               {selectTable.current === 'Staffs'
                                 ? `${attendance?.staff?.users?.status}`
-                                : `${attendance?.lesson?.class.name}`}
+                                : `${attendance?.lesson?.classInfo.name}`}
                             </div>
                           </TD>
                           <TD className="font-medium text-t2 whitespace-nowrap">
