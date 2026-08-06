@@ -206,7 +206,7 @@ export type Students = {
   image: string | null;
   accomodation: Accomodation | null;
   classId: string;
-  fees: Fees[] | string;
+  fees: Fees[];
   attendances: Attendance[] | number;
   guardianId: string;
   schoolId: string | null;
@@ -218,7 +218,7 @@ export type Students = {
   departmentId: string | null;
   position: string;
   users: Users;
-  class: Classes;
+  classInfo: Classes;
   department: Departments;
   subjects: Subjects[];
 };
@@ -234,7 +234,7 @@ export type Timetables = {
   classId: string | null;
   gradeYearId: string | null;
   termId: string | null;
-  class: Classes;
+  classInfo: Classes;
   gradeYear: GradeYears;
   term: Terms;
   lessons: Lessons;
@@ -289,7 +289,7 @@ export interface Lessons {
   attendances: Attendance[];
   subject: Subjects;
   subjectId: string;
-  class: Classes;
+  classInfo: Classes;
   classId: string;
   staff: Staffs;
   staffId: string;
@@ -337,7 +337,7 @@ export interface Fees {
   schoolId: string;
   school: Schools;
   classId: string;
-  class: Classes;
+  classInfo: Classes;
   feeStructureId: string;
   feeStructure: FeeStructures;
 }
@@ -353,6 +353,29 @@ export interface FeeStructures {
   school: Schools;
   fees: Fees[];
 }
+
+export interface FeeInvoice {
+  id: string;
+  invoiceNumber: string;
+  totalAmount: number;
+  totalPaid: number;
+  totalOutstanding: number;
+  currency: Currency;
+  status: FeeStatus;
+  notes: string;
+  studentId: string;
+  student: Students;
+  schoolId: string;
+  school: Schools;
+  classId: string;
+  classInfo: Classes;
+  termId: string;
+  term: Terms;
+  fees: Fees[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Events {
   id: string;
   title: string;
@@ -360,7 +383,7 @@ export interface Events {
   status: Duration;
   date: string;
   duration: string;
-  class: Classes;
+  classInfo: Classes;
   classId: string;
 }
 
@@ -370,7 +393,7 @@ export interface Announcements {
   description: string;
   status: AnnouncementStatus;
   date: string;
-  class: Classes;
+  classInfo: Classes;
   classId: string;
 }
 
@@ -457,6 +480,19 @@ export interface StaffAnalyticsResponse {
   staffsOnLeave: number;
   averageRating: number;
   topTeachersByWorkload: BarChart;
+}
+
+export interface FeeAnalyticsResponse {
+  collectionRate: number;
+  currency: string;
+  debtors: number;
+  totalCollected: number;
+  totalExpected: number;
+  fullyPaidStudents: number;
+  totalOutstanding: number;
+  averageRating: number;
+  feeTypeChart: BarChart;
+  monthlyChart: BarChart;
 }
 
 export interface NotificationAnalyticsResponse {
