@@ -101,10 +101,11 @@ export default function TimetablePage() {
               </CardBody>
             </div>
           </Card>
+
           <Card>
             <CardHeader
-              title={`${timetableDetails?.term.type} Timetable`}
-              subtitle={timetableDetails?.class.name}
+              title={`${timetableDetails?.term?.type} Timetable`}
+              subtitle={timetableDetails?.classInfo?.name}
             />
             <div className="overflow-x-auto p-4">
               <table className="w-full min-w-145 border-collapse">
