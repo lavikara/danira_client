@@ -82,13 +82,35 @@ export const capitalize = (phrase: string) => {
 
 export const formatAmount = (amount: number, decimal: number, currency: string) => {
   if (amount === undefined) return;
-  const value = new Intl.NumberFormat('en-US', {
+
+  const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency,
+    currency,
     minimumFractionDigits: decimal,
     currencyDisplay: 'narrowSymbol',
   });
-  return value.format(amount);
+
+  const parts = formatter.formatToParts(Math.abs(amount));
+  const currencySymbol = parts.find((part) => part.type === 'currency')?.value ?? '';
+  const sign = amount < 0 ? '-' : '';
+
+  const formatLargeValue = (value: number, suffix: string) => {
+    const formatted = value
+      .toFixed(decimal)
+      .replace(/\.0+$/, '')
+      .replace(/(\.[0-9]*?)0+$/, '$1');
+    return `${sign}${currencySymbol}${formatted}${suffix}`;
+  };
+
+  if (Math.abs(amount) >= 1_000_000_000) {
+    return formatLargeValue(amount / 1_000_000_000, 'B');
+  }
+
+  if (Math.abs(amount) >= 1_000_000) {
+    return formatLargeValue(amount / 1_000_000, 'M');
+  }
+
+  return formatter.format(amount);
 };
 
 export const abbreviate = (str: string): string => {
