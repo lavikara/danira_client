@@ -233,7 +233,7 @@ export default function TimetablePage() {
                     timetableDetails.map((timetable, index) => (
                       <Link
                         href={{
-                          pathname: `timetable/${timetable.class.name}`,
+                          pathname: `timetable/${timetable.classInfo.name}`,
                           query: { id: `${timetable.id}`, schoolId: `${timetable.schoolId}` },
                         }}
                         key={timetable.id}
@@ -241,10 +241,10 @@ export default function TimetablePage() {
                       >
                         <div className="mb-2.5 flex items-center justify-between">
                           <span className="text-[14px] font-bold text-t1 truncate">
-                            {timetable.class.name}
+                            {timetable.classInfo.name}
                           </span>
                           <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-bold text-primary">
-                            {timetable.class.type}
+                            {timetable.classInfo.type}
                           </span>
                         </div>
                         <div className="mb-3 flex items-center gap-2">

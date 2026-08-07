@@ -316,6 +316,15 @@ export default function StudentsPage() {
                       (studentDetails ?? []).map((student, index) => {
                         const rowNumber =
                           (query.current.page - 1) * query.current.limit + index + 1;
+                        const feeStatus = (() => {
+                          const feesArr = student.fees ?? [];
+                          if (feesArr.length === 0) return 'UNPAID';
+                          const allPaid = feesArr.every((f: any) => f.status === 'PAID');
+                          if (allPaid) return 'PAID';
+                          const allUnpaid = feesArr.every((f: any) => f.status === 'UNPAID');
+                          if (allUnpaid) return 'UNPAID';
+                          return 'PARTIAL';
+                        })();
                         return (
                           <TR key={student.id}>
                             <TD className="w-10 font-semibold text-t3">{rowNumber}</TD>
@@ -333,7 +342,9 @@ export default function StudentsPage() {
                               {student.studentId}
                             </TD>
                             <TD>
-                              <Tag>{student.class.name}</Tag>
+                              <Tag>
+                                <div className="whitespace-nowrap">{student.classInfo.name}</div>
+                              </Tag>
                             </TD>
                             <TD>
                               <Badge color={student.users.gender === 'FEMALE' ? 'pink' : 'purple'}>
@@ -349,14 +360,14 @@ export default function StudentsPage() {
                             <TD>
                               <Badge
                                 color={
-                                  student.fees === 'PAID'
+                                  feeStatus === 'PAID'
                                     ? 'green'
-                                    : student.fees === 'PARTIAL'
+                                    : feeStatus === 'PARTIAL'
                                       ? 'orange'
                                       : 'red'
                                 }
                               >
-                                {student.fees as string}
+                                {feeStatus as string}
                               </Badge>
                             </TD>
                             <TD>

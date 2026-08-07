@@ -22,7 +22,7 @@ export interface RawPeriod {
         email: string;
       };
     };
-    class: {
+    classInfo: {
       id: string;
       name: string;
     };
@@ -100,7 +100,7 @@ function getTeacherName(p: RawPeriod): string {
 }
 
 function getClassName(p: RawPeriod): string {
-  return p.lesson?.class.name ?? extractClassNameFallback(p.name) ?? '';
+  return p.lesson?.classInfo.name ?? extractClassNameFallback(p.name) ?? '';
 }
 
 function getRoom(p: RawPeriod): string {

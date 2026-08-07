@@ -120,8 +120,8 @@ export const useTimetablesStore = create<TimetableState>((set) => ({
       if (!response.success) throw new Error('Failed to fetch data');
 
       const data = Array.isArray(response?.data) ? response.data : (response?.data ?? response);
-      const subjectList = Array.isArray(data) ? (data as Timetables[]) : [];
-      set({ groupTimetableDetails: subjectList, paginationMeta: response?.meta });
+      const timetableList = Array.isArray(data) ? (data as Timetables[]) : [];
+      set({ groupTimetableDetails: timetableList, paginationMeta: response?.meta });
       set({ timetableLoading: false });
     } catch (err: any) {
       set({ timetableLoading: false });

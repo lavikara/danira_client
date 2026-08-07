@@ -321,11 +321,13 @@ export default function StaffsPage() {
                           </TD>
                           <TD>
                             <Tag>
-                              <span>{truncate(staff.lessons.subjectName, 20)}</span>
+                              <span className="whitespace-nowrap">
+                                {truncate(staff.lessons.subjectName, 20)}
+                              </span>
                             </Tag>
                           </TD>
                           <TD className="font-semibold">{staff.department.name}</TD>
-                          <TD className="font-semibold">{staff.position}</TD>
+                          <TD className="font-semibold whitespace-nowrap">{staff.position}</TD>
                           <TD className="font-semibold">{staff.lessons.lessonCount || '_'}</TD>
                           <TD>
                             <div className="flex items-center gap-1">
